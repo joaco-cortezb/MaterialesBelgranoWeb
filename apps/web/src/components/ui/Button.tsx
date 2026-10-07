@@ -14,7 +14,9 @@ const VARIANTS: Record<Variant, string> = {
   dark: "bg-ink-dark text-white hover:bg-ink",
   outline: "border border-ink/25 text-ink hover:border-ink hover:bg-surface",
   "outline-light": "border border-white/50 text-white hover:bg-white/10",
-  whatsapp: "bg-whatsapp text-ink-dark hover:brightness-105",
+  // En hover se levanta apenas y proyecta un halo verde; el ícono gira (`group`).
+  whatsapp:
+    "group bg-whatsapp text-ink-dark shadow-[0_0_0_0_rgba(37,211,102,0)] hover:-translate-y-0.5 hover:bg-[#30dd7a] hover:shadow-[0_10px_28px_-8px_rgba(37,211,102,0.85)] active:translate-y-0 [&>svg]:transition-transform [&>svg]:duration-300 [&>svg]:ease-[var(--ease-out-strong)] hover:[&>svg]:scale-110 hover:[&>svg]:-rotate-12",
 };
 
 const SIZES: Record<Size, string> = {

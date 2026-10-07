@@ -157,16 +157,16 @@ function BrandForm({
             <Hint>Se abre en una pestaña nueva desde la web. Tiene que empezar con https://</Hint>
           </div>
           <div>
-            <Label htmlFor="rubroSlug">Rubro</Label>
+            <Label htmlFor="rubroSlug">Solución</Label>
             <Select id="rubroSlug" name="rubroSlug" defaultValue={brand.rubroSlug}>
-              <option value="">Sin rubro</option>
+              <option value="">Sin solución</option>
               {RUBROS.map((rubro) => (
                 <option key={rubro.slug} value={rubro.slug}>
                   {rubro.name}
                 </option>
               ))}
             </Select>
-            <Hint>La marca aparece también en la página de ese rubro.</Hint>
+            <Hint>La marca aparece también en la página de esa solución.</Hint>
           </div>
           <label className="flex min-h-11 items-center gap-3 text-sm font-semibold text-ink">
             <input type="checkbox" name="active" defaultChecked={brand.active} /> Visible en la web

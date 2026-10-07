@@ -50,13 +50,13 @@ export default async function HomePage() {
             <Eyebrow light className="mb-3 sm:mb-4">
               Electricidad + Iluminación · Mendoza
             </Eyebrow>
-            <h1 className="text-balance text-[2rem] font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]">
-              Materiales eléctricos e iluminación con stock, precio y entrega en 24 hs.
+            <h1 className="text-balance text-[2.1rem] font-extrabold leading-[1.06] tracking-tight sm:text-5xl lg:text-[3.6rem]">
+              Materiales eléctricos e iluminación en Mendoza.
             </h1>
-            <p className="mt-4 max-w-xl text-pretty text-base leading-relaxed text-white/80 sm:mt-5 sm:text-lg">
-              Atendemos a instaladores, empresas, constructoras y hogares desde Godoy Cruz, Mendoza. Pasanos tu listado por WhatsApp y recibí la cotización completa en minutos.
+            <p className="mt-4 max-w-md text-pretty text-base leading-relaxed text-white/80 sm:mt-5 sm:text-lg">
+              Stock, precio y entrega en 24 hs para instaladores, empresas y hogares.
             </p>
-            <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row">
+            <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row">
               <TrackedLink
                 href={whatsappGoHref("inicio")}
                 event="whatsapp_click"
@@ -67,14 +67,9 @@ export default async function HomePage() {
                 Consultar por WhatsApp
               </TrackedLink>
               <ButtonLink href={ROUTES.rubros} variant="outline-light" size="lg">
-                Ver rubros
+                Ver soluciones
               </ButtonLink>
             </div>
-            <dl className="mt-7 grid grid-cols-3 gap-3 border-t border-white/15 pt-5 text-white/85 sm:mt-10 sm:gap-4 sm:pt-6">
-              <Stat value="+5.000" label="artículos en stock" />
-              <Stat value="24 hs" label="entrega en Mendoza, San Juan y San Luis" />
-              <Stat value="3" label="rangos de precio en cada línea" />
-            </dl>
           </div>
         </Container>
       </section>
@@ -104,15 +99,15 @@ export default async function HomePage() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <SectionHeading
               eyebrow="Qué vendemos"
-              title="Cinco rubros, un solo proveedor para toda la obra"
-              text="No somos un catálogo online: cada rubro tiene su página con lo que trabajamos, las marcas y las preguntas que más nos hacen. Lo puntual lo resolvemos por WhatsApp."
+              title="Cinco soluciones, un solo proveedor para toda la obra"
+              text="No somos un catálogo online: cada solución tiene su página con lo que trabajamos, las marcas y las preguntas que más nos hacen. Lo puntual lo resolvemos por WhatsApp."
             />
             <Link href={ROUTES.rubros} className="inline-flex min-h-11 items-center gap-2 font-semibold text-brand-700 hover:text-brand-800">
-              Ver todos los rubros <FaArrowRight className="h-3.5 w-3.5" aria-hidden />
+              Ver todas las soluciones <FaArrowRight className="h-3.5 w-3.5" aria-hidden />
             </Link>
           </div>
           <h2 id="rubros-title" className="sr-only">
-            Rubros
+            Soluciones
           </h2>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {RUBROS.map((rubro) => (
@@ -132,8 +127,8 @@ export default async function HomePage() {
         <Container>
           <SectionHeading
             eyebrow="Por qué elegirnos"
-            title="Los servicios que hacen la diferencia"
-            text="En un rubro donde todos vendemos las mismas marcas, lo que cambia es cómo te atendemos y cuándo te llega el material."
+            title="Lo que hace la diferencia"
+            text="Mismas marcas que todos; distinta forma de atenderte y de entregar."
             align="center"
           />
           <h2 id="servicios-title" className="sr-only">
@@ -146,8 +141,7 @@ export default async function HomePage() {
                   <ServicioIcon icon={servicio.icon} className="h-6 w-6" />
                 </span>
                 <h3 className="mt-5 text-lg font-bold tracking-tight text-ink-dark">{servicio.title}</h3>
-                <p className="mt-2 text-pretty text-sm leading-relaxed text-ink-soft">{servicio.description}</p>
-                {servicio.detail && <p className="mt-auto pt-4 text-xs leading-relaxed text-ink-soft/80">{servicio.detail}</p>}
+                <p className="mt-2 text-pretty text-sm leading-relaxed text-ink-soft">{servicio.short}</p>
               </li>
             ))}
           </ul>
@@ -222,12 +216,3 @@ export default async function HomePage() {
   );
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div>
-      <dt className="sr-only">{label}</dt>
-      <dd className="font-condensed text-2xl font-bold tracking-tight text-brand-400 sm:text-4xl">{value}</dd>
-      <dd className="mt-1 text-xs leading-snug text-white/70 sm:text-sm">{label}</dd>
-    </div>
-  );
-}

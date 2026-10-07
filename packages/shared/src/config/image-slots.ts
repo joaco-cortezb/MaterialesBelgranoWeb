@@ -32,8 +32,8 @@ export const IMAGE_SLOTS: readonly ImageSlotDefinition[] = [
   {
     key: "home.rubros",
     group: "inicio",
-    label: "Imagen de la sección de rubros",
-    hint: "Foto al costado del listado de rubros en el inicio.",
+    label: "Imagen de la sección de soluciones",
+    hint: "Foto al costado del listado de soluciones en el inicio.",
     recommended: [1600, 1200],
     fallback: "/images/exhibicion-iluminacion-materiales-belgrano.webp",
     fallbackAlt: "Exhibición de luminarias encendidas en el salón de Materiales Belgrano",
@@ -86,8 +86,8 @@ export const IMAGE_SLOTS: readonly ImageSlotDefinition[] = [
   {
     key: "rubros.materiales-electricos.hero",
     group: "rubros",
-    label: "Rubro: materiales eléctricos",
-    hint: "Imagen principal de la página del rubro.",
+    label: "Solución: materiales eléctricos",
+    hint: "Imagen principal de la página de la solución.",
     recommended: [2000, 1250],
     fallback: "",
     fallbackAlt: "Instalación eléctrica con tablero y cables",
@@ -95,8 +95,8 @@ export const IMAGE_SLOTS: readonly ImageSlotDefinition[] = [
   {
     key: "rubros.iluminacion.hero",
     group: "rubros",
-    label: "Rubro: iluminación",
-    hint: "Imagen principal de la página del rubro.",
+    label: "Solución: iluminación",
+    hint: "Imagen principal de la página de la solución.",
     recommended: [2000, 1250],
     fallback: "/images/exhibicion-iluminacion-materiales-belgrano.webp",
     fallbackAlt: "Luminarias encendidas en la exhibición de Materiales Belgrano",
@@ -104,8 +104,8 @@ export const IMAGE_SLOTS: readonly ImageSlotDefinition[] = [
   {
     key: "rubros.maquinas-y-herramientas.hero",
     group: "rubros",
-    label: "Rubro: máquinas y herramientas",
-    hint: "Imagen principal de la página del rubro.",
+    label: "Solución: máquinas y herramientas",
+    hint: "Imagen principal de la página de la solución.",
     recommended: [2000, 1250],
     fallback: "",
     fallbackAlt: "Herramientas eléctricas y a batería",
@@ -113,8 +113,8 @@ export const IMAGE_SLOTS: readonly ImageSlotDefinition[] = [
   {
     key: "rubros.dispositivos-smart.hero",
     group: "rubros",
-    label: "Rubro: dispositivos smart",
-    hint: "Imagen principal de la página del rubro.",
+    label: "Solución: dispositivos smart",
+    hint: "Imagen principal de la página de la solución.",
     recommended: [2000, 1250],
     fallback: "",
     fallbackAlt: "Dispositivos inteligentes instalados en un ambiente",
@@ -122,8 +122,8 @@ export const IMAGE_SLOTS: readonly ImageSlotDefinition[] = [
   {
     key: "rubros.camaras-y-videovigilancia.hero",
     group: "rubros",
-    label: "Rubro: cámaras y videovigilancia",
-    hint: "Imagen principal de la página del rubro.",
+    label: "Solución: cámaras y videovigilancia",
+    hint: "Imagen principal de la página de la solución.",
     recommended: [2000, 1250],
     fallback: "",
     fallbackAlt: "Cámara de seguridad instalada en una fachada",
@@ -139,5 +139,5 @@ export function findImageSlot(key: string): ImageSlotDefinition | undefined {
 export const IMAGE_SLOT_GROUP_LABELS: Record<ImageSlotGroup, string> = {
   inicio: "Inicio",
   nosotros: "Nosotros",
-  rubros: "Rubros",
+  rubros: "Soluciones",
 };

@@ -66,8 +66,8 @@ export const ROUTES = {
   nosotros: "/nosotros",
   /** Los servicios viven como sección del inicio. */
   servicios: "/#servicios",
-  rubros: "/rubros",
-  rubro: (slug: string) => `/rubros/${slug}`,
+  rubros: "/soluciones",
+  rubro: (slug: string) => `/soluciones/${slug}`,
   marcas: "/marcas",
   /** El contacto es la última sección de Nosotros. */
   contacto: "/nosotros#contacto",
@@ -75,7 +75,7 @@ export const ROUTES = {
 
 export const NAV_LINKS = [
   { href: ROUTES.home, label: "Inicio" },
-  { href: ROUTES.rubros, label: "Rubros" },
+  { href: ROUTES.rubros, label: "Soluciones" },
   { href: ROUTES.marcas, label: "Marcas" },
   { href: ROUTES.nosotros, label: "Nosotros" },
 ] as const;

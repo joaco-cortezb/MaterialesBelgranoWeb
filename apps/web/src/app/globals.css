@@ -167,6 +167,8 @@ body {
 }
 .bucly-credit:hover .bucly-shimmer {
   animation-duration: 1.4s;
+  /* El subrayado va como borde: `text-decoration` hereda el color transparente del texto. */
+  border-color: var(--color-brand-400);
 }
 @media (prefers-reduced-motion: reduce) {
   .bucly-shimmer {

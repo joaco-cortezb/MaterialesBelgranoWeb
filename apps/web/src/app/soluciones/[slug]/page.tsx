@@ -18,7 +18,7 @@ export function generateStaticParams() {
   return RUBRO_SLUGS.map((slug) => ({ slug }));
 }
 
-export async function generateMetadata(props: PageProps<"/rubros/[slug]">): Promise<Metadata> {
+export async function generateMetadata(props: PageProps<"/soluciones/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
   const rubro = findRubro(slug);
   if (!rubro) return {};
@@ -31,7 +31,7 @@ export async function generateMetadata(props: PageProps<"/rubros/[slug]">): Prom
   };
 }
 
-export default async function RubroPage(props: PageProps<"/rubros/[slug]">) {
+export default async function RubroPage(props: PageProps<"/soluciones/[slug]">) {
   const { slug } = await props.params;
   const rubro = findRubro(slug);
   if (!rubro) notFound();
@@ -44,14 +44,14 @@ export default async function RubroPage(props: PageProps<"/rubros/[slug]">) {
     <>
       <JsonLd
         schema={breadcrumbSchema([
-          { name: "Rubros", path: ROUTES.rubros },
+          { name: "Soluciones", path: ROUTES.rubros },
           { name: rubro.name, path: ROUTES.rubro(rubro.slug) },
         ])}
       />
       <JsonLd schema={rubroSchema(rubro)} />
       <JsonLd schema={faqSchema(rubro.faqs)} />
 
-      <PageHero eyebrow="Rubro" title={rubro.seoTitle} text={rubro.summary} image={image} />
+      <PageHero eyebrow="Solución" title={rubro.seoTitle} text={rubro.summary} image={image} />
 
       <section className="py-16 sm:py-24">
         <Container className="grid gap-12 lg:grid-cols-[1.2fr_1fr]">
@@ -79,7 +79,7 @@ export default async function RubroPage(props: PageProps<"/rubros/[slug]">) {
           <Container>
             <SectionHeading eyebrow="Marcas" title={`Marcas de ${rubro.name.toLowerCase()} que trabajamos`} text="Entrá al catálogo del fabricante y consultanos por WhatsApp el modelo que necesitás." />
             <h2 id="marcas-rubro" className="sr-only">
-              Marcas del rubro
+              Marcas de la solución
             </h2>
             <div className="mt-10">
               <BrandsGrid brands={brands} source={`rubro_${rubro.slug}`} />
@@ -100,9 +100,9 @@ export default async function RubroPage(props: PageProps<"/rubros/[slug]">) {
 
       <WhatsappCta source={source} title={`¿Consultas sobre ${rubro.name.toLowerCase()}?`} text="Escribinos por WhatsApp con lo que necesitás y te respondemos con stock, precio y plazo de entrega." />
 
-      <nav aria-label="Otros rubros" className="border-t border-line bg-surface py-10">
+      <nav aria-label="Otras soluciones" className="border-t border-line bg-surface py-10">
         <Container>
-          <p className="font-condensed text-sm font-semibold uppercase tracking-[0.18em] text-ink-soft">Otros rubros</p>
+          <p className="font-condensed text-sm font-semibold uppercase tracking-[0.18em] text-ink-soft">Otras soluciones</p>
           <ul className="mt-4 flex flex-wrap gap-2">
             {others.map((item) => (
               <li key={item.slug}>

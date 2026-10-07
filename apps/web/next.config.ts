@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
     // inicio y de Nosotros. 308 para no perder enlaces externos ni indexación.
     return [
       { source: "/servicios", destination: "/#servicios", permanent: true },
+      { source: "/rubros", destination: "/soluciones", permanent: true },
+      { source: "/rubros/:slug", destination: "/soluciones/:slug", permanent: true },
       { source: "/contacto", destination: "/nosotros#contacto", permanent: true },
     ];
   },

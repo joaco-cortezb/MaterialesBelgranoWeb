@@ -28,7 +28,7 @@ export function GET() {
 - Tienda online del grupo: ${SITE.distribuidora370.url}
 - Sitio oficial: ${base}
 
-## Rubros
+## Soluciones
 
 ${RUBROS.map((rubro) => `- [${rubro.name}](${base}${ROUTES.rubro(rubro.slug)}): ${rubro.summary}`).join("\n")}
 
@@ -39,7 +39,7 @@ ${SERVICIOS.map((servicio) => `- ${servicio.title}: ${servicio.description}`).jo
 ## Páginas principales
 
 - [Inicio](${base}${ROUTES.home})
-- [Rubros](${base}${ROUTES.rubros})
+- [Soluciones](${base}${ROUTES.rubros})
 - [Servicios](${base}${ROUTES.servicios}): entrega en 24 hs, envíos, financiación, cuenta corriente y stock (sección del inicio).
 - [Marcas](${base}${ROUTES.marcas}): fabricantes que trabaja la casa, con enlace a cada catálogo oficial.
 - [Nosotros y contacto](${base}${ROUTES.nosotros}): historia, salón, depósito, equipo, dirección, horarios, WhatsApp y mapa.

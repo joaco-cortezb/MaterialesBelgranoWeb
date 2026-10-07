@@ -9,11 +9,11 @@ import { breadcrumbSchema } from "@/lib/structured-data";
 import { getImageSlots } from "@/lib/cms";
 
 export const metadata: Metadata = {
-  title: "Rubros: materiales eléctricos, iluminación, herramientas, smart y cámaras",
+  title: "Soluciones: materiales eléctricos, iluminación, herramientas, smart y cámaras",
   description:
-    "Los cinco rubros de Materiales Belgrano en Mendoza: materiales eléctricos, iluminación, máquinas y herramientas, dispositivos smart y cámaras de videovigilancia.",
+    "Las cinco soluciones de Materiales Belgrano en Mendoza: materiales eléctricos, iluminación, máquinas y herramientas, dispositivos smart y cámaras de videovigilancia.",
   alternates: { canonical: ROUTES.rubros },
-  openGraph: { title: `Rubros | ${SITE.name}`, url: ROUTES.rubros },
+  openGraph: { title: `Soluciones | ${SITE.name}`, url: ROUTES.rubros },
 };
 
 export default async function RubrosPage() {
@@ -21,14 +21,14 @@ export default async function RubrosPage() {
 
   return (
     <>
-      <JsonLd schema={breadcrumbSchema([{ name: "Rubros", path: ROUTES.rubros }])} />
+      <JsonLd schema={breadcrumbSchema([{ name: "Soluciones", path: ROUTES.rubros }])} />
       <section className="py-16 sm:py-24">
         <Container>
           <SectionHeading
             as="h1"
-            eyebrow="Rubros"
+            eyebrow="Soluciones"
             title="Todo lo que lleva una instalación, en un solo proveedor"
-            text="Materiales Belgrano trabaja cinco rubros: materiales eléctricos, iluminación, máquinas y herramientas, dispositivos smart y cámaras. Cada página explica qué encontrás, con qué marcas y responde las preguntas más frecuentes. Lo puntual se resuelve por WhatsApp."
+            text="Materiales Belgrano trabaja cinco soluciones: materiales eléctricos, iluminación, máquinas y herramientas, dispositivos smart y cámaras. Cada página explica qué encontrás, con qué marcas y responde las preguntas más frecuentes. Lo puntual se resuelve por WhatsApp."
           />
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {RUBROS.map((rubro) => (
@@ -37,7 +37,7 @@ export default async function RubrosPage() {
           </div>
         </Container>
       </section>
-      <WhatsappCta source="inicio" title="¿No sabés en qué rubro está lo que buscás?" text="Mandanos una foto o el nombre del producto por WhatsApp y te decimos si lo tenemos." />
+      <WhatsappCta source="inicio" title="¿No sabés en qué solución está lo que buscás?" text="Mandanos una foto o el nombre del producto por WhatsApp y te decimos si lo tenemos." />
     </>
   );
 }

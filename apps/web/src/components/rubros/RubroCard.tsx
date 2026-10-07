@@ -23,7 +23,7 @@ export function RubroCard({ rubro, image }: { rubro: Rubro; image: ImageSlot | n
         <h3 className="text-lg font-bold tracking-tight text-ink-dark">{rubro.name}</h3>
         <p className="text-sm leading-relaxed text-ink-soft">{rubro.summary}</p>
         <span className="mt-auto inline-flex items-center gap-2 pt-2 text-sm font-semibold text-brand-700">
-          Ver rubro
+          Ver solución
           <FaArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
         </span>
       </div>
