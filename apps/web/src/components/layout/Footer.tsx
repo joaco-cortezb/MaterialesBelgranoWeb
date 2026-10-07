@@ -69,8 +69,7 @@ export function Footer() {
           </ul>
         </div>
 
-        {/* `pr-20` en desktop y `pb-20` en mobile dejan lugar al botón flotante de WhatsApp. */}
-        <div className="mt-4 flex flex-col gap-2 pb-20 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between sm:pb-0 sm:pr-20">
+        <div className="mt-4 flex flex-col gap-2 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()} {SITE.legalName} · {SITE.name}
           </p>

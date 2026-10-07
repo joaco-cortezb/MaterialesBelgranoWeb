@@ -21,7 +21,6 @@ export const PUBLIC_SETTING_KEYS: readonly SettingKey[] = Object.values(SETTING_
 
 export const WHATSAPP_SOURCES = [
   "header",
-  "flotante",
   "inicio",
   "nosotros",
   "servicios",
@@ -43,7 +42,6 @@ export function isWhatsappSource(value: string): value is WhatsappSource {
 /** Etiquetas legibles para el panel de métricas. */
 export const WHATSAPP_SOURCE_LABELS: Record<WhatsappSource, string> = {
   header: "Menú",
-  flotante: "Botón flotante",
   inicio: "Inicio",
   nosotros: "Nosotros",
   servicios: "Servicios",

@@ -5,7 +5,6 @@ import { SITE } from "@mb/shared";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { WhatsappFloat } from "@/components/layout/WhatsappFloat";
 import { GoogleTagManager } from "@/components/analytics/GoogleTagManager";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { storeSchema, websiteSchema } from "@/lib/structured-data";
@@ -81,7 +80,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           {children}
         </main>
         <Footer />
-        <WhatsappFloat />
         <GoogleTagManager />
         <Analytics />
       </body>
