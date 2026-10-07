@@ -1,0 +1,100 @@
+// Panel = fuente de verdad del esquema (Prisma migrate).
+// La web pública sólo LEE estas tablas (anon key + RLS); los clics a WhatsApp
+// los inserta server-side con la service role.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────────────────────
+// Auth
+// ─────────────────────────────────────────────────────────────
+
+/// Sólo quien tiene una fila acá puede entrar al panel (acceso por invitación).
+model Profile {
+  id        String   @id // = auth.users.id
+  email     String   @unique
+  fullName  String?
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+// ─────────────────────────────────────────────────────────────
+// Contenido administrable
+// ─────────────────────────────────────────────────────────────
+
+model Brand {
+  id         String   @id @default(cuid())
+  name       String
+  slug       String   @unique
+  logo       String? // URL pública en Storage
+  catalogUrl String
+  rubroSlug  String? // slug de `RUBROS` (packages/shared); null = sin rubro
+  order      Int      @default(0)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([active, order])
+}
+
+/// Imagen fija de la web, identificada por `key` (ver IMAGE_SLOTS en packages/shared).
+model ImageSlot {
+  key       String   @id
+  url       String
+  alt       String
+  position  String? // object-position "x% y%"
+  updatedAt DateTime @updatedAt
+}
+
+model WhatsappNumber {
+  id        String   @id @default(cuid())
+  label     String
+  phone     String // sólo dígitos con código de país (formato wa.me)
+  message   String   @default("")
+  audience  Audience @default(GENERAL)
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clicks WhatsappClick[]
+
+  @@index([active, order])
+}
+
+enum Audience {
+  GENERAL
+  EMPRESAS
+}
+
+/// Clave-valor JSON para contenido suelto (video del inicio, texto de Nosotros).
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+/// Un clic a WhatsApp desde la web (lo registra `/go/whatsapp/[source]`).
+model WhatsappClick {
+  id          String          @id @default(cuid())
+  source      String
+  numberId    String?
+  number      WhatsappNumber? @relation(fields: [numberId], references: [id], onDelete: SetNull)
+  referrer    String?
+  visitorHash String?
+  createdAt   DateTime        @default(now())
+
+  @@index([source, createdAt])
+  @@index([createdAt])
+}

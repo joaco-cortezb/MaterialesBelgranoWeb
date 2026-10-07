@@ -1,0 +1,47 @@
+# dependencies
+node_modules
+.pnp
+.pnp.*
+
+# next.js
+.next/
+out/
+next-env.d.ts
+
+# production
+build/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files. `.env*` sólo matchea nombres que EMPIEZAN con `.env`, así que un
+# archivo como `web-preview.env` (el que deja `vercel env pull`) se colaba al
+# `git add`. Ese archivo trae la SUPABASE_SERVICE_ROLE_KEY: nunca al repo.
+.env*
+*.env
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+
+# prisma (cliente generado)
+apps/panel/src/generated/
+
+# copias duplicadas de Finder ("archivo 2.tsx"): nunca se commitean
+*\ [0-9].ts
+*\ [0-9].tsx
+*\ [0-9].mjs
+*\ [0-9].json
+
+# fuentes de assets sin optimizar (originales del Drive)
+_assets-src/

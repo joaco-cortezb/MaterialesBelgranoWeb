@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+:root {
+  /* ── Verde de marca #7CB928 y su rampa ── */
+  --color-brand-50: #f4fae9;
+  --color-brand-100: #e6f3cc;
+  --color-brand-200: #cde79a;
+  --color-brand-300: #b0d866;
+  --color-brand-400: #95ca3d;
+  --color-brand-500: #7cb928;
+  --color-brand-600: #65981f;
+  --color-brand-700: #4f771a;
+  --color-brand-800: #3f5d18;
+  --color-brand-900: #344c17;
+
+  /* ── Tokens semánticos (del manual de marca: #393c35, #646464, #ffed00) ── */
+  --ink: #393c35;
+  --ink-soft: #646464;
+  --ink-dark: #24261f;
+  --bg: #f7f8f4;
+  --surface: #ffffff;
+  --surface-2: #eef1e8;
+  --line: #dfe3d8;
+  --accent: #ffed00;
+  --whatsapp: #25d366;
+
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-brand-50: var(--color-brand-50);
+  --color-brand-100: var(--color-brand-100);
+  --color-brand-200: var(--color-brand-200);
+  --color-brand-300: var(--color-brand-300);
+  --color-brand-400: var(--color-brand-400);
+  --color-brand-500: var(--color-brand-500);
+  --color-brand-600: var(--color-brand-600);
+  --color-brand-700: var(--color-brand-700);
+  --color-brand-800: var(--color-brand-800);
+  --color-brand-900: var(--color-brand-900);
+
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-dark: var(--ink-dark);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-whatsapp: var(--whatsapp);
+
+  --font-sans: var(--font-montserrat);
+  --font-condensed: var(--font-barlow);
+
+  --ease-out-strong: var(--ease-out-strong);
+  --default-transition-duration: 180ms;
+  --default-transition-timing-function: var(--ease-out-strong);
+}
+
+* {
+  border-color: var(--line);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* Un solo anillo de foco limpio, visible sobre fondos claros y oscuros. */
+:where(a, button, [tabindex], input, textarea, select, summary):focus-visible {
+  outline: 2px solid var(--color-brand-600);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--color-brand-500);
+  color: var(--ink-dark);
+}
+
+/* Feedback táctil de todo lo apretable (escala sutil, sólo transform). */
+.pressable {
+  transition:
+    transform 160ms var(--ease-out-strong),
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+.pressable:active {
+  transform: scale(0.97);
+}
+
+/* Hover sólo en punteros finos: en touch el hover queda pegado. */
+@media (hover: hover) and (pointer: fine) {
+  .card-hover {
+    transition:
+      transform 220ms var(--ease-out-strong),
+      box-shadow 220ms ease,
+      border-color 220ms ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px -16px rgba(36, 38, 31, 0.28);
+    border-color: var(--color-brand-300);
+  }
+}
+
+/* Entrada suave de bloques (una sola vez, sin scroll-jacking). */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 480ms var(--ease-out-strong) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-fade-up {
+    animation: none;
+  }
+  .pressable,
+  .card-hover {
+    transition: none;
+  }
+  .pressable:active,
+  .card-hover:hover {
+    transform: none;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
