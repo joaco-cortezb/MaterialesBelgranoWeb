@@ -19,7 +19,7 @@ export function Logo({
   size?: "md" | "lg";
   priority?: boolean;
 }) {
-  const src = variant === "light" ? "/brand/logo-materiales-belgrano-blanco.png" : "/brand/logo-materiales-belgrano.png";
+  const src = variant === "light" ? "/brand/logo-mb-blanco.png" : "/brand/logo-mb.png";
   return (
     <Link href={ROUTES.home} aria-label={`${SITE.name}: ir al inicio`} className={cn("group relative inline-flex shrink-0 items-center", className)}>
       <span

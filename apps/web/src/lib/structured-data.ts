@@ -17,7 +17,7 @@ export function storeSchema() {
     legalName: SITE.legalName,
     description: SITE.description,
     url: siteUrl(),
-    logo: absoluteUrl("/brand/logo-materiales-belgrano.png"),
+    logo: absoluteUrl("/brand/logo-mb.png"),
     image: absoluteUrl("/og-materiales-belgrano.jpg"),
     telephone: SITE.phone.e164,
     email: SITE.email,

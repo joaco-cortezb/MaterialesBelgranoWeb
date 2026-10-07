@@ -33,7 +33,7 @@ lado, `-strip`). Los originales NO se versionan (`_assets-src/` está en
 
 | Archivo | Uso | Origen |
 |---|---|---|
-| `apps/web/public/brand/logo-materiales-belgrano.png` | Header y footer | Logo completo (fondo blanco), recortado |
+| `apps/web/public/brand/logo-mb.png` (y `logo-mb-blanco.png` para el footer) | Header y footer | Logo completo (fondo blanco), recortado |
 | `apps/web/src/app/icon.png`, `apple-icon.png`, `favicon.ico` | Favicons | Logo en círculo verde |
 | `apps/web/public/icons/icon-192.png`, `icon-512.png`, `icon-512-maskable.png` | `manifest.webmanifest` | Logo en círculo verde |
 | `apps/web/public/og-materiales-belgrano.jpg` | Open Graph (1200×630) | Logo sobre blanco |
