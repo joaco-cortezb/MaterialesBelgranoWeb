@@ -23,7 +23,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-surface/55 backdrop-blur-xl backdrop-saturate-150">
-      <Container className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-4 sm:h-[72px]">
+      <Container className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-5 sm:h-20 lg:gap-8">
         <div className="flex items-center justify-start lg:justify-end">
           <MobileMenu links={NAV_LINKS} whatsappHref={whatsappHref} />
           <nav aria-label="Principal" className="hidden lg:block">
@@ -33,7 +33,7 @@ export function Header() {
 
         <Logo priority />
 
-        <div className="flex items-center justify-end gap-4">
+        <div className="flex items-center justify-end gap-5">
           <nav aria-label="Secciones" className="hidden lg:block lg:mr-auto">
             <NavLinks links={RIGHT_LINKS} />
           </nav>

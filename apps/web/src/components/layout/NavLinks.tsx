@@ -23,7 +23,7 @@ export function NavLinks({
   const pathname = usePathname();
 
   return (
-    <ul className={cn("flex", orientation === "horizontal" ? "items-center gap-1" : "flex-col gap-1")}>
+    <ul className={cn("flex", orientation === "horizontal" ? "items-center gap-2 xl:gap-4" : "flex-col gap-1")}>
       {links.map((link) => {
         const active = isActive(pathname, link.href);
         return (
@@ -35,7 +35,7 @@ export function NavLinks({
               className={cn(
                 "pressable relative flex items-center rounded-lg font-semibold transition-colors",
                 orientation === "horizontal"
-                  ? "px-3 py-2 text-[15px] text-ink-soft hover:text-ink-dark"
+                  ? "px-3 py-2 text-[17px] text-ink-soft hover:text-ink-dark"
                   : "min-h-12 px-4 text-lg text-ink hover:bg-surface-2",
                 active && (orientation === "horizontal" ? "text-ink-dark" : "bg-brand-50 text-brand-800"),
               )}

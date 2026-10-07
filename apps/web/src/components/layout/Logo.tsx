@@ -19,7 +19,7 @@ export function Logo({
   size?: "md" | "lg";
   priority?: boolean;
 }) {
-  const src = variant === "light" ? "/brand/logo-mb-blanco.png" : "/brand/logo-mb.png";
+  const src = variant === "light" ? "/brand/logo-materiales-belgrano-h-blanco.png" : "/brand/logo-materiales-belgrano-h.png";
   return (
     <Link href={ROUTES.home} aria-label={`${SITE.name}: ir al inicio`} className={cn("group relative inline-flex shrink-0 items-center", className)}>
       <span
@@ -30,12 +30,12 @@ export function Logo({
         src={src}
         alt={SITE.name}
         width={1640}
-        height={733}
+        height={739}
         sizes={size === "lg" ? "220px" : "120px"}
         preload={priority}
         className={cn(
           "w-auto transition-transform duration-300 ease-[var(--ease-out-strong)] group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:group-hover:scale-100",
-          size === "lg" ? "h-20 sm:h-24" : "h-10 sm:h-12",
+          size === "lg" ? "h-20 sm:h-24" : "h-11 sm:h-14",
         )}
       />
     </Link>
