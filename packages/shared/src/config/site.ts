@@ -64,18 +64,18 @@ export type Audience = (typeof SITE.audiences)[number];
 export const ROUTES = {
   home: "/",
   nosotros: "/nosotros",
-  servicios: "/servicios",
+  /** Los servicios viven como sección del inicio. */
+  servicios: "/#servicios",
   rubros: "/rubros",
   rubro: (slug: string) => `/rubros/${slug}`,
   marcas: "/marcas",
-  contacto: "/contacto",
+  /** El contacto es la última sección de Nosotros. */
+  contacto: "/nosotros#contacto",
 } as const;
 
 export const NAV_LINKS = [
   { href: ROUTES.home, label: "Inicio" },
   { href: ROUTES.rubros, label: "Rubros" },
-  { href: ROUTES.servicios, label: "Servicios" },
   { href: ROUTES.marcas, label: "Marcas" },
   { href: ROUTES.nosotros, label: "Nosotros" },
-  { href: ROUTES.contacto, label: "Contacto" },
 ] as const;

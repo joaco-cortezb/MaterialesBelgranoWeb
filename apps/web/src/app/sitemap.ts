@@ -17,9 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
       priority: 0.9,
     })),
-    { url: `${base}${ROUTES.servicios}`, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}${ROUTES.marcas}`, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${base}${ROUTES.nosotros}`, changeFrequency: "yearly", priority: 0.6 },
-    { url: `${base}${ROUTES.contacto}`, changeFrequency: "yearly", priority: 0.8 },
+    { url: `${base}${ROUTES.nosotros}`, changeFrequency: "monthly", priority: 0.8 },
   ];
 }

@@ -4,17 +4,16 @@ import { Container } from "@/components/ui/Container";
 import { Media } from "@/components/ui/Media";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
-import { WhatsappCta } from "@/components/sections/WhatsappCta";
+import { ContactSection } from "@/components/contact/ContactSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/structured-data";
-import { getAboutContent, getImageSlots } from "@/lib/cms";
+import { getAboutContent, getDefaultWhatsapp, getImageSlots, getWhatsappNumbers } from "@/lib/cms";
 
 export const metadata: Metadata = {
-  title: "Nosotros",
-  description:
-    "Casi 10 años como casa de materiales eléctricos e iluminación en Godoy Cruz, Mendoza. Salón moderno, depósito con stock permanente y un equipo joven que asesora.",
+  title: "Nosotros y contacto",
+  description: `Casi 10 años como casa de materiales eléctricos e iluminación en ${SITE.address.singleLine}. Salón moderno, depósito con stock permanente, equipo joven. Horarios, WhatsApp y mapa.`,
   alternates: { canonical: ROUTES.nosotros },
-  openGraph: { title: `Nosotros | ${SITE.name}`, url: ROUTES.nosotros },
+  openGraph: { title: `Nosotros y contacto | ${SITE.name}`, url: ROUTES.nosotros },
 };
 
 const GALLERY = [
@@ -24,10 +23,13 @@ const GALLERY = [
 ] as const;
 
 export default async function NosotrosPage() {
-  const [about, images] = await Promise.all([
+  const [about, images, numbers, fallback] = await Promise.all([
     getAboutContent(),
     getImageSlots(["nosotros.hero", ...GALLERY.map((item) => item.key)]),
+    getWhatsappNumbers(),
+    getDefaultWhatsapp(),
   ]);
+  const whatsapps = numbers.length > 0 ? numbers : [fallback];
 
   return (
     <>
@@ -93,7 +95,7 @@ export default async function NosotrosPage() {
         </Container>
       </section>
 
-      <WhatsappCta source="nosotros" title="Pasá a conocernos o escribinos por WhatsApp." text={`${SITE.address.singleLine}. ${SITE.hours.map((slot) => `${slot.days} de ${slot.opens} a ${slot.closes} hs`).join(" · ")}.`} />
+      <ContactSection whatsapps={whatsapps} />
     </>
   );
 }

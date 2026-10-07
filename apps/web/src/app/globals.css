@@ -148,6 +148,34 @@ body {
   }
 }
 
+/* "Desarrollado por Bucly": brillo que recorre el nombre y se acelera en hover. */
+@keyframes bucly-shimmer {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+.bucly-shimmer {
+  background: linear-gradient(100deg, #c5cdb9 0%, #ffffff 40%, var(--color-brand-400) 50%, #ffffff 60%, #c5cdb9 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: bucly-shimmer 6s linear infinite;
+}
+.bucly-credit:hover .bucly-shimmer {
+  animation-duration: 1.4s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bucly-shimmer {
+    animation: none;
+    color: var(--color-brand-400);
+    background: none;
+  }
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

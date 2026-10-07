@@ -10,6 +10,14 @@ const storageHost = (() => {
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@mb/shared"],
+  async redirects() {
+    // Servicios y Contacto dejaron de ser páginas: viven como secciones del
+    // inicio y de Nosotros. 308 para no perder enlaces externos ni indexación.
+    return [
+      { source: "/servicios", destination: "/#servicios", permanent: true },
+      { source: "/contacto", destination: "/nosotros#contacto", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

@@ -19,7 +19,7 @@ const POSITIONS = [
   { value: "50% 75%", label: "Centro-abajo" },
 ];
 
-const GROUPS: ImageSlotGroup[] = ["inicio", "nosotros", "servicios", "rubros"];
+const GROUPS: ImageSlotGroup[] = ["inicio", "nosotros", "rubros"];
 
 export function ImageSlotsBoard({ values }: { values: Record<string, SlotValue> }) {
   const [group, setGroup] = useState<ImageSlotGroup>("inicio");

@@ -12,14 +12,14 @@ import { RubroCard } from "@/components/rubros/RubroCard";
 import { ServicioIcon } from "@/components/servicios/ServicioIcon";
 import { YouTubeFacade } from "@/components/home/YouTubeFacade";
 import { WhatsappCta } from "@/components/sections/WhatsappCta";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { servicesSchema } from "@/lib/structured-data";
 import { getBrands, getHomeVideoId, getImageSlot, getImageSlots } from "@/lib/cms";
 import { whatsappGoHref } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
-
-const HOME_SERVICIOS = SERVICIOS.slice(0, 4);
 
 export default async function HomePage() {
   const [hero, rubrosImage, distribuidoraImage, rubroImages, brands, videoId] = await Promise.all([
@@ -33,6 +33,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd schema={servicesSchema(SERVICIOS)} />
       {/* Hero */}
       {/*
         El hero ocupa exactamente la primera pantalla (viewport menos el header)
@@ -127,7 +128,7 @@ export default async function HomePage() {
       </section>
 
       {/* Servicios */}
-      <section aria-labelledby="servicios-title" className="py-16 sm:py-24">
+      <section id="servicios" aria-labelledby="servicios-title" className="scroll-mt-20 py-16 sm:py-24">
         <Container>
           <SectionHeading
             eyebrow="Por qué elegirnos"
@@ -138,22 +139,18 @@ export default async function HomePage() {
           <h2 id="servicios-title" className="sr-only">
             Servicios
           </h2>
-          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {HOME_SERVICIOS.map((servicio) => (
-              <li key={servicio.slug} className="card-hover rounded-2xl border border-line bg-surface p-6">
+          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {SERVICIOS.map((servicio) => (
+              <li key={servicio.slug} id={servicio.slug} className="card-hover flex flex-col rounded-2xl border border-line bg-surface p-6">
                 <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-800">
                   <ServicioIcon icon={servicio.icon} className="h-6 w-6" />
                 </span>
                 <h3 className="mt-5 text-lg font-bold tracking-tight text-ink-dark">{servicio.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-soft">{servicio.description}</p>
+                <p className="mt-2 text-pretty text-sm leading-relaxed text-ink-soft">{servicio.description}</p>
+                {servicio.detail && <p className="mt-auto pt-4 text-xs leading-relaxed text-ink-soft/80">{servicio.detail}</p>}
               </li>
             ))}
           </ul>
-          <div className="mt-10 text-center">
-            <ButtonLink href={ROUTES.servicios} variant="dark">
-              Conocer todos los servicios
-            </ButtonLink>
-          </div>
         </Container>
       </section>
 

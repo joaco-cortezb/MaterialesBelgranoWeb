@@ -40,10 +40,9 @@ ${SERVICIOS.map((servicio) => `- ${servicio.title}: ${servicio.description}`).jo
 
 - [Inicio](${base}${ROUTES.home})
 - [Rubros](${base}${ROUTES.rubros})
-- [Servicios](${base}${ROUTES.servicios})
+- [Servicios](${base}${ROUTES.servicios}): entrega en 24 hs, envíos, financiación, cuenta corriente y stock (sección del inicio).
 - [Marcas](${base}${ROUTES.marcas}): fabricantes que trabaja la casa, con enlace a cada catálogo oficial.
-- [Nosotros](${base}${ROUTES.nosotros})
-- [Contacto](${base}${ROUTES.contacto})
+- [Nosotros y contacto](${base}${ROUTES.nosotros}): historia, salón, depósito, equipo, dirección, horarios, WhatsApp y mapa.
 
 ## Datos estructurados
 

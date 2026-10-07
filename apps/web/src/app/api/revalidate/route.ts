@@ -13,8 +13,8 @@ const RUBRO_PATHS = RUBROS.map((rubro) => ROUTES.rubro(rubro.slug));
 /** Qué páginas muestran cada tipo de contenido. */
 const TAG_PATHS: Record<CmsTag, string[]> = {
   brands: [ROUTES.home, ROUTES.marcas, ...RUBRO_PATHS],
-  images: [ROUTES.home, ROUTES.nosotros, ROUTES.servicios, ROUTES.rubros, ...RUBRO_PATHS],
-  whatsapp: [ROUTES.contacto],
+  images: [ROUTES.home, ROUTES.nosotros, ROUTES.rubros, ...RUBRO_PATHS],
+  whatsapp: [ROUTES.nosotros],
   settings: [ROUTES.home, ROUTES.nosotros],
 };
 

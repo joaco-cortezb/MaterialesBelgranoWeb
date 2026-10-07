@@ -1,7 +1,7 @@
 # Imágenes de la web
 
 Qué foto va en cada lugar, de qué archivo original del Drive sale, y qué huecos
-quedan. Los huecos se completan desde el panel (sección **Imágenes**) con fotos
+quedan. (Servicios y Contacto ya no son páginas: los servicios van en el inicio sin foto y el contacto al final de Nosotros.) Los huecos se completan desde el panel (sección **Imágenes**) con fotos
 nuevas o generadas con IA; mientras tanto la web muestra un bloque de color.
 
 Drive de origen: `Materiales Belgrano / Fotos` (carpeta `1hZF_jeQJnhw_uFniLZohF10bab3fI4B5`).
@@ -23,13 +23,6 @@ lado, `-strip`). Los originales NO se versionan (`_assets-src/` está en
 | `nosotros.salon` | Galería Nosotros: salón | `salon-exhibicion-materiales-belgrano.webp` | `_134` |
 | `nosotros.deposito` | Galería Nosotros: depósito | **HUECO** | — |
 | `nosotros.equipo` | Galería Nosotros: equipo | `equipo-materiales-belgrano.webp` | `_136` |
-| `servicios.hero` | Portada de Servicios | **HUECO** (fondo oscuro; la foto con personas sólo va en el hero de Nosotros) | — |
-| `servicios.entrega` | Banner transporte propio | **HUECO** | — |
-| `servicios.envios` | Banner Andreani | **HUECO** | — |
-| `servicios.financiacion` | Banner financiación | **HUECO** | — |
-| `servicios.cuenta-corriente` | Banner cuenta corriente | **HUECO** | — |
-| `servicios.stock` | Banner stock | **HUECO** | — |
-| `servicios.atencion` | Banner atención | `equipo-materiales-belgrano.webp` | `_136` |
 | `rubros.materiales-electricos.hero` | Página del rubro | **HUECO** | — |
 | `rubros.iluminacion.hero` | Página del rubro | `exhibicion-iluminacion-materiales-belgrano.webp` | `_51` |
 | `rubros.maquinas-y-herramientas.hero` | Página del rubro | **HUECO** | — |

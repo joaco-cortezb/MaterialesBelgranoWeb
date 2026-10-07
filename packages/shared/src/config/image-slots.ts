@@ -5,7 +5,7 @@
  * `recommended` es la medida sugerida en el panel; el servidor reescala a
  * `maxDimension` de la carpeta (ver `upload-limits` del panel), nunca agranda.
  */
-export type ImageSlotGroup = "inicio" | "nosotros" | "servicios" | "rubros";
+export type ImageSlotGroup = "inicio" | "nosotros" | "rubros";
 
 export type ImageSlotDefinition = {
   key: string;
@@ -84,69 +84,6 @@ export const IMAGE_SLOTS: readonly ImageSlotDefinition[] = [
     fallbackAlt: "Equipo de Materiales Belgrano",
   },
   {
-    key: "servicios.hero",
-    group: "servicios",
-    label: "Portada de Servicios",
-    hint: "Imagen grande al inicio de la página Servicios.",
-    recommended: [2400, 1200],
-    fallback: "",
-    fallbackAlt: "Depósito de Materiales Belgrano listo para despachar pedidos",
-  },
-  {
-    key: "servicios.entrega",
-    group: "servicios",
-    label: "Banner: entrega en 24 hs",
-    hint: "Foto del banner de transporte propio.",
-    recommended: [1600, 1000],
-    fallback: "",
-    fallbackAlt: "Camión de reparto de Materiales Belgrano",
-  },
-  {
-    key: "servicios.envios",
-    group: "servicios",
-    label: "Banner: envíos a todo el país",
-    hint: "Foto del banner de envíos por Andreani.",
-    recommended: [1600, 1000],
-    fallback: "",
-    fallbackAlt: "Pedido embalado para envío",
-  },
-  {
-    key: "servicios.financiacion",
-    group: "servicios",
-    label: "Banner: financiación",
-    hint: "Foto del banner de financiación y medios de pago.",
-    recommended: [1600, 1000],
-    fallback: "",
-    fallbackAlt: "Caja y medios de pago en Materiales Belgrano",
-  },
-  {
-    key: "servicios.cuenta-corriente",
-    group: "servicios",
-    label: "Banner: cuenta corriente",
-    hint: "Foto del banner de cuenta corriente.",
-    recommended: [1600, 1000],
-    fallback: "",
-    fallbackAlt: "Atención a empresas en Materiales Belgrano",
-  },
-  {
-    key: "servicios.stock",
-    group: "servicios",
-    label: "Banner: stock amplio",
-    hint: "Foto del banner de stock.",
-    recommended: [1600, 1000],
-    fallback: "",
-    fallbackAlt: "Estanterías con stock en el depósito de Materiales Belgrano",
-  },
-  {
-    key: "servicios.atencion",
-    group: "servicios",
-    label: "Banner: atención personalizada",
-    hint: "Foto del banner de atención.",
-    recommended: [1600, 1000],
-    fallback: "/images/equipo-materiales-belgrano.webp",
-    fallbackAlt: "Vendedor de Materiales Belgrano asesorando a un cliente",
-  },
-  {
     key: "rubros.materiales-electricos.hero",
     group: "rubros",
     label: "Rubro: materiales eléctricos",
@@ -202,6 +139,5 @@ export function findImageSlot(key: string): ImageSlotDefinition | undefined {
 export const IMAGE_SLOT_GROUP_LABELS: Record<ImageSlotGroup, string> = {
   inicio: "Inicio",
   nosotros: "Nosotros",
-  servicios: "Servicios",
   rubros: "Rubros",
 };
