@@ -8,7 +8,10 @@ import { spawnSync } from "node:child_process";
  * tiene que tocarla. Para aplicarlas a mano: `RUN_MIGRATIONS=1 pnpm build`
  * o `pnpm db:deploy`.
  */
-const hasDatabaseUrl = Boolean(process.env.DIRECT_URL || process.env.DATABASE_URL);
+// Un placeholder ("cambiame", "placeholder") cuenta como no configurado: así el
+// deploy del panel no revienta antes de que estén las credenciales reales.
+const databaseUrl = process.env.DIRECT_URL || process.env.DATABASE_URL || "";
+const hasDatabaseUrl = /^postgres(ql)?:\/\//.test(databaseUrl);
 
 if (process.env.SKIP_MIGRATIONS === "1") {
   console.log("CI build: skipping migrations (SKIP_MIGRATIONS=1).");
