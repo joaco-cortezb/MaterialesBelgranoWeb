@@ -34,23 +34,28 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative isolate overflow-hidden bg-ink-dark text-white">
+      {/*
+        El hero ocupa exactamente la primera pantalla (viewport menos el header)
+        y centra el contenido: sin padding fijo, para que en una laptop de
+        800 px de alto no queden las estadísticas cortadas.
+      */}
+      <section className="relative isolate flex min-h-[calc(100svh-4rem)] max-h-[960px] items-center overflow-hidden bg-ink-dark text-white sm:min-h-[calc(100svh-4.5rem)]">
         {hero && (
           <Media src={hero.url} alt={hero.alt} position={hero.position} priority sizes="100vw" quality={70} className="absolute inset-0 -z-10" />
         )}
         <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-r from-ink-dark via-ink-dark/85 to-ink-dark/40" />
-        <Container className="py-24 sm:py-32 lg:py-40">
+        <Container className="py-10 sm:py-14">
           <div className="max-w-2xl animate-fade-up">
-            <Eyebrow light className="mb-4">
+            <Eyebrow light className="mb-3 sm:mb-4">
               Electricidad + Iluminación · Mendoza
             </Eyebrow>
-            <h1 className="text-balance text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="text-balance text-[2rem] font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]">
               Materiales eléctricos e iluminación con stock, precio y entrega en 24 hs.
             </h1>
-            <p className="mt-5 max-w-xl text-pretty text-lg leading-relaxed text-white/80">
+            <p className="mt-4 max-w-xl text-pretty text-base leading-relaxed text-white/80 sm:mt-5 sm:text-lg">
               Atendemos a instaladores, empresas, constructoras y hogares desde Godoy Cruz, Mendoza. Pasanos tu listado por WhatsApp y recibí la cotización completa en minutos.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row">
               <TrackedLink
                 href={whatsappGoHref("inicio")}
                 event="whatsapp_click"
@@ -64,7 +69,7 @@ export default async function HomePage() {
                 Ver rubros
               </ButtonLink>
             </div>
-            <dl className="mt-10 grid grid-cols-3 gap-4 border-t border-white/15 pt-6 text-white/85">
+            <dl className="mt-7 grid grid-cols-3 gap-3 border-t border-white/15 pt-5 text-white/85 sm:mt-10 sm:gap-4 sm:pt-6">
               <Stat value="+5.000" label="artículos en stock" />
               <Stat value="24 hs" label="entrega en Mendoza, San Juan y San Luis" />
               <Stat value="3" label="rangos de precio en cada línea" />
@@ -224,7 +229,7 @@ function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div>
       <dt className="sr-only">{label}</dt>
-      <dd className="font-condensed text-3xl font-bold tracking-tight text-brand-400 sm:text-4xl">{value}</dd>
+      <dd className="font-condensed text-2xl font-bold tracking-tight text-brand-400 sm:text-4xl">{value}</dd>
       <dd className="mt-1 text-xs leading-snug text-white/70 sm:text-sm">{label}</dd>
     </div>
   );

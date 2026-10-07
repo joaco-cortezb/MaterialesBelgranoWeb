@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Materiales Belgrano">
+  <!--
+    Isologo de Materiales Belgrano: tres losas en perspectiva vistas desde
+    abajo (frente verde #7CB928 que sube hacia la derecha; cara lateral gris
+    #393C35, más angosta cuanto más arriba), tomado del logo oficial.
+    Dibujado a mano en SVG para que sea nítido a cualquier tamaño.
+  -->
+  <g transform="translate(-9 32)">
+    <!-- losa superior -->
+    <polygon fill="#393c35" points="100,190 180,160 180,202 100,212"/>
+    <polygon fill="#7cb928" points="180,160 430,100 430,142 180,202"/>
+    <!-- losa media -->
+    <polygon fill="#393c35" points="100,290 180,260 180,302 100,324"/>
+    <polygon fill="#7cb928" points="180,260 430,200 430,242 180,302"/>
+    <!-- losa inferior -->
+    <polygon fill="#393c35" points="100,390 180,360 180,402 100,436"/>
+    <polygon fill="#7cb928" points="180,360 430,300 430,342 180,402"/>
+  </g>
+</svg>

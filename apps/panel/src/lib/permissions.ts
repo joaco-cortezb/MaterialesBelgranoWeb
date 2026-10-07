@@ -5,7 +5,7 @@ import type { Role } from "@/generated/prisma";
  * páginas y el de los server actions. No es server-only a propósito: el
  * sidebar (cliente) lo usa para ocultar lo que el rol no puede ver.
  */
-export type PanelSection = "marcas" | "imagenes" | "whatsapp" | "inicio" | "nosotros";
+export type PanelSection = "marcas" | "imagenes" | "whatsapp" | "inicio" | "nosotros" | "usuarios";
 
 export const SECTION_MANAGE_ROLES: Record<PanelSection, Role[]> = {
   marcas: ["ADMIN", "EDITOR"],
@@ -13,6 +13,7 @@ export const SECTION_MANAGE_ROLES: Record<PanelSection, Role[]> = {
   whatsapp: ["ADMIN"],
   inicio: ["ADMIN", "EDITOR"],
   nosotros: ["ADMIN", "EDITOR"],
+  usuarios: ["ADMIN"],
 };
 
 export const SECTION_VIEW_ROLES: Record<PanelSection, Role[]> = {
