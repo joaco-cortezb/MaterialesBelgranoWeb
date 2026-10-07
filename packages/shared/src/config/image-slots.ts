@@ -26,8 +26,8 @@ export const IMAGE_SLOTS: readonly ImageSlotDefinition[] = [
     label: "Portada del inicio",
     hint: "Imagen grande detrás del título de la página de inicio.",
     recommended: [2400, 1350],
-    fallback: "/images/salon-materiales-belgrano-mendoza.webp",
-    fallbackAlt: "Salón de ventas de Materiales Belgrano en Godoy Cruz, Mendoza",
+    fallback: "/images/exhibicion-iluminacion-materiales-belgrano.webp",
+    fallbackAlt: "Luminarias colgantes encendidas en el salón de Materiales Belgrano, Mendoza",
   },
   {
     key: "home.rubros",
@@ -89,8 +89,8 @@ export const IMAGE_SLOTS: readonly ImageSlotDefinition[] = [
     label: "Portada de Servicios",
     hint: "Imagen grande al inicio de la página Servicios.",
     recommended: [2400, 1200],
-    fallback: "/images/salon-materiales-belgrano-mendoza.webp",
-    fallbackAlt: "Salón de ventas de Materiales Belgrano en Godoy Cruz, Mendoza",
+    fallback: "",
+    fallbackAlt: "Depósito de Materiales Belgrano listo para despachar pedidos",
   },
   {
     key: "servicios.entrega",
