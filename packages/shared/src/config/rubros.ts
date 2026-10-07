@@ -75,7 +75,7 @@ export const RUBROS: readonly Rubro[] = [
     shortName: "Iluminación",
     seoTitle: "Iluminación LED y de diseño en Mendoza",
     seoDescription:
-      "Iluminación profesional, interior, exterior y de diseño en Mendoza. Luminarias LED, tiras, lámparas y proyectos. Marcas como Macroled, Leuk y 180°. Consultá por WhatsApp.",
+      "Iluminación profesional, interior, exterior y de diseño en Mendoza. Luminarias LED, tiras y lámparas. Marcas Macroled, Leuk y 180°. Consultá por WhatsApp.",
     summary: "Luminarias profesionales, iluminación integrada, exterior y jardín, lámparas, tubos y tiras LED.",
     description: [
       "En Materiales Belgrano encontrás iluminación LED para proyectos profesionales, iluminación integrada para interiores, luminarias de exterior y jardín, y lámparas, tubos y tiras LED de alta rotación. Nuestro salón en Godoy Cruz, Mendoza, tiene exhibición de marcas de diseño como Leuk y 180° para que veas las luminarias encendidas antes de elegir.",
