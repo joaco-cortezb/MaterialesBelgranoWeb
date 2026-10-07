@@ -5,15 +5,15 @@
     #393C35, más angosta cuanto más arriba), tomado del logo oficial.
     Dibujado a mano en SVG para que sea nítido a cualquier tamaño.
   -->
-  <g transform="translate(-9 32)">
+  <g transform="translate(-39 0)">
     <!-- losa superior -->
-    <polygon fill="#393c35" points="100,190 180,160 180,202 100,212"/>
-    <polygon fill="#7cb928" points="180,160 430,100 430,142 180,202"/>
+    <polygon fill="#393c35" points="120,208 180,180 180,212 120,226"/>
+    <polygon fill="#7cb928" points="180,180 470,110 470,142 180,212"/>
     <!-- losa media -->
-    <polygon fill="#393c35" points="100,290 180,260 180,302 100,324"/>
-    <polygon fill="#7cb928" points="180,260 430,200 430,242 180,302"/>
+    <polygon fill="#393c35" points="120,288 180,260 180,292 120,314"/>
+    <polygon fill="#7cb928" points="180,260 470,190 470,222 180,292"/>
     <!-- losa inferior -->
-    <polygon fill="#393c35" points="100,390 180,360 180,402 100,436"/>
-    <polygon fill="#7cb928" points="180,360 430,300 430,342 180,402"/>
+    <polygon fill="#393c35" points="120,368 180,340 180,372 120,402"/>
+    <polygon fill="#7cb928" points="180,340 470,270 470,302 180,372"/>
   </g>
 </svg>
