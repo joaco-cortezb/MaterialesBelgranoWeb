@@ -57,6 +57,20 @@ model ImageSlot {
   updatedAt DateTime @updatedAt
 }
 
+/// Foto del carrusel de la portada del inicio, en orden.
+model HeroSlide {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String
+  position  String   @default("50% 50%")
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, order])
+}
+
 model WhatsappNumber {
   id        String   @id @default(cuid())
   label     String

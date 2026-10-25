@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FaArrowRight, FaWhatsapp } from "react-icons/fa6";
+import { FaArrowRight } from "react-icons/fa6";
 import { ROUTES, RUBROS, SERVICIOS, SITE } from "@mb/shared";
 import { Container } from "@/components/ui/Container";
-import { ButtonLink, buttonClassName } from "@/components/ui/Button";
+import { buttonClassName } from "@/components/ui/Button";
 import { Media } from "@/components/ui/Media";
 import { Eyebrow, SectionHeading } from "@/components/ui/SectionHeading";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
@@ -14,16 +14,16 @@ import { YouTubeFacade } from "@/components/home/YouTubeFacade";
 import { WhatsappCta } from "@/components/sections/WhatsappCta";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { servicesSchema } from "@/lib/structured-data";
-import { getBrands, getHomeVideoId, getImageSlot, getImageSlots } from "@/lib/cms";
-import { whatsappGoHref } from "@/lib/whatsapp";
+import { getBrands, getHeroSlides, getHomeVideoId, getImageSlot, getImageSlots } from "@/lib/cms";
+import { HomeHero } from "@/components/home/HomeHero";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
 export default async function HomePage() {
-  const [hero, distribuidoraImage, rubroImages, brands, videoId] = await Promise.all([
-    getImageSlot("home.hero"),
+  const [heroSlides, distribuidoraImage, rubroImages, brands, videoId] = await Promise.all([
+    getHeroSlides(),
     getImageSlot("home.distribuidora"),
     getImageSlots(RUBROS.map((rubro) => rubro.imageSlot)),
     getBrands(),
@@ -33,45 +33,7 @@ export default async function HomePage() {
   return (
     <>
       <JsonLd schema={servicesSchema(SERVICIOS)} />
-      {/* Hero */}
-      {/*
-        El hero ocupa exactamente la primera pantalla (viewport menos el header)
-        y centra el contenido: sin padding fijo, para que en una laptop de
-        800 px de alto no queden las estadísticas cortadas.
-      */}
-      <section className="relative isolate flex min-h-[calc(100svh-4rem)] max-h-[960px] items-center overflow-hidden bg-ink-dark text-white sm:min-h-[calc(100svh-4.5rem)]">
-        {hero && (
-          <Media src={hero.url} alt={hero.alt} position={hero.position} priority sizes="100vw" quality={70} className="absolute inset-0 -z-10" />
-        )}
-        <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-r from-ink-dark via-ink-dark/85 to-ink-dark/40" />
-        <Container className="py-10 sm:py-14">
-          <div className="max-w-2xl animate-fade-up">
-            <Eyebrow light className="mb-3 sm:mb-4">
-              Electricidad + Iluminación · Mendoza
-            </Eyebrow>
-            <h1 className="text-balance text-[2.1rem] font-extrabold leading-[1.06] tracking-tight sm:text-5xl lg:text-[3.6rem]">
-              Materiales eléctricos e iluminación en Mendoza.
-            </h1>
-            <p className="mt-4 max-w-md text-pretty text-base leading-relaxed text-white/80 sm:mt-5 sm:text-lg">
-              Stock, precio y entrega en 24 hs para instaladores, empresas y hogares.
-            </p>
-            <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row">
-              <TrackedLink
-                href={whatsappGoHref("inicio")}
-                event="whatsapp_click"
-                params={{ source: "inicio" }}
-                className={buttonClassName({ variant: "whatsapp", size: "lg" })}
-              >
-                <FaWhatsapp className="h-6 w-6" aria-hidden />
-                Consultar por WhatsApp
-              </TrackedLink>
-              <ButtonLink href={ROUTES.rubros} variant="outline-light" size="lg">
-                Ver soluciones
-              </ButtonLink>
-            </div>
-          </div>
-        </Container>
-      </section>
+      <HomeHero slides={heroSlides} />
 
       {/* Video */}
       {videoId && (

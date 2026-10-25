@@ -50,6 +50,23 @@ export const whatsappNumberSchema = z.object({
   active: checkbox,
 });
 
+export const heroSlideSchema = z.object({
+  url: z
+    .string()
+    .trim()
+    .min(1, "Subí una imagen")
+    .max(500)
+    .refine((value) => value.startsWith("https://") || value.startsWith("/"), "URL de imagen inválida"),
+  alt: z.string().trim().min(1, "El texto alternativo es obligatorio").max(200),
+  position: z
+    .string()
+    .trim()
+    .max(20)
+    .optional()
+    .default("50% 50%")
+    .refine((value) => /^\d{1,3}% \d{1,3}%$/.test(value), "Encuadre inválido"),
+});
+
 export const homeVideoSchema = z.object({
   videoUrl: z
     .string()

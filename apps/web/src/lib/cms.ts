@@ -3,6 +3,7 @@ import "server-only";
 import { unstable_cache } from "next/cache";
 import {
   findImageSlot,
+  HERO_FALLBACK_SLIDES,
   IMAGE_SLOTS,
   PUBLIC_SETTING_KEYS,
   SETTING_KEYS,
@@ -10,6 +11,7 @@ import {
   youtubeVideoId,
   type AboutContent,
   type Brand,
+  type HeroSlide,
   type ImageSlot,
   type WhatsappNumber,
 } from "@mb/shared";
@@ -120,6 +122,38 @@ export async function getImageSlots(keys: readonly string[]): Promise<Record<str
 }
 
 export const ALL_IMAGE_SLOT_KEYS = IMAGE_SLOTS.map((slot) => slot.key);
+
+/* ── Portada del inicio ──────────────────────────────────────────────────── */
+
+type HeroSlideRow = { id: string; url: string; alt: string; position: string | null };
+
+const getHeroSlideRows = unstable_cache(
+  async (): Promise<HeroSlideRow[]> => {
+    const supabase = getSupabaseClient();
+    if (!supabase) return [];
+    const { data, error } = await supabase
+      .from("HeroSlide")
+      .select("id, url, alt, position")
+      .eq("active", true)
+      .order("order", { ascending: true });
+    if (error) {
+      console.error("[cms] no se pudieron leer las fotos de la portada", error.message);
+      return [];
+    }
+    return data as HeroSlideRow[];
+  },
+  ["cms-hero-slides"],
+  { tags: ["images"], revalidate: FALLBACK_TTL_SECONDS },
+);
+
+/** Fotos activas del carrusel del inicio; si no hay ninguna, las del repo. */
+export async function getHeroSlides(): Promise<HeroSlide[]> {
+  const rows = (await getHeroSlideRows()).filter((row) => row.url);
+  if (rows.length) {
+    return rows.map((row) => ({ id: row.id, url: row.url, alt: row.alt, position: row.position || "50% 50%" }));
+  }
+  return HERO_FALLBACK_SLIDES.map((slide, index) => ({ id: `fallback-${index}`, url: slide.url, alt: slide.alt, position: "50% 50%" }));
+}
 
 /* ── WhatsApp ────────────────────────────────────────────────────────────── */
 

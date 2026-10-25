@@ -131,6 +131,59 @@ body {
   animation: fade-up 480ms var(--ease-out-strong) both;
 }
 
+/* Portada: la foto activa se acerca muy despacio (Ken Burns sutil). */
+.hero-slide > div {
+  transform: scale(1.08);
+  transition: transform 9s linear;
+}
+.hero-slide[data-active="true"] > div {
+  transform: scale(1);
+}
+@keyframes hero-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+.hero-progress {
+  animation: hero-progress linear both;
+}
+
+/* Flecha que entra y sale del círculo del CTA principal. */
+.hero-cta .hero-arrow {
+  transition: transform 500ms var(--ease-out-strong);
+}
+.hero-cta .hero-arrow-in {
+  transform: translate(-2.5rem, 2.5rem);
+}
+@media (hover: hover) and (pointer: fine) {
+  .hero-cta:hover .hero-arrow-out {
+    transform: translate(2.5rem, -2.5rem);
+  }
+  .hero-cta:hover .hero-arrow-in {
+    transform: translate(0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide > div,
+  .hero-slide[data-active="true"] > div {
+    transform: none;
+    transition: none;
+  }
+  .hero-slide {
+    transition: none !important;
+  }
+  .hero-progress {
+    display: none;
+  }
+  .hero-cta .hero-arrow {
+    transition: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

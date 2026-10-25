@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { BookText, Images, KeyRound, LayoutDashboard, MessageCircle, Tags, Video } from "lucide-react";
+import { BookText, GalleryHorizontalEnd, Images, KeyRound, LayoutDashboard, MessageCircle, Tags, Video } from "lucide-react";
 import type { PanelSection } from "@/lib/permissions";
 
 export type NavItem = {
@@ -14,6 +14,7 @@ export type NavItem = {
 export const NAV_ITEMS: NavItem[] = [
   { href: "/panel", label: "Inicio", icon: LayoutDashboard, description: "Resumen y clics a WhatsApp" },
   { href: "/panel/marcas", label: "Marcas", icon: Tags, description: "Logos y catálogos", section: "marcas" },
+  { href: "/panel/portada", label: "Portada", icon: GalleryHorizontalEnd, description: "Fotos del inicio", section: "imagenes" },
   { href: "/panel/imagenes", label: "Imágenes", icon: Images, description: "Fotos de la web", section: "imagenes" },
   { href: "/panel/whatsapp", label: "WhatsApp", icon: MessageCircle, description: "Números y mensajes", section: "whatsapp" },
   { href: "/panel/inicio", label: "Video", icon: Video, description: "Video del inicio", section: "inicio" },

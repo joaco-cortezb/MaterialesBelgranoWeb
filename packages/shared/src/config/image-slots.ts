@@ -21,15 +21,6 @@ export type ImageSlotDefinition = {
 
 export const IMAGE_SLOTS: readonly ImageSlotDefinition[] = [
   {
-    key: "home.hero",
-    group: "inicio",
-    label: "Portada del inicio",
-    hint: "Imagen grande detrás del título de la página de inicio.",
-    recommended: [2400, 1350],
-    fallback: "/images/exhibicion-iluminacion-materiales-belgrano.webp",
-    fallbackAlt: "Luminarias colgantes encendidas en el salón de Materiales Belgrano, Mendoza",
-  },
-  {
     key: "home.distribuidora",
     group: "inicio",
     label: "Banner Distribuidora 370",
@@ -132,3 +123,21 @@ export const IMAGE_SLOT_GROUP_LABELS: Record<ImageSlotGroup, string> = {
   nosotros: "Nosotros",
   rubros: "Soluciones",
 };
+
+/**
+ * Portada del inicio: un carrusel de fotos que se administra en el panel
+ * (tabla `HeroSlide`). Si no hay ninguna activa, la web muestra estas.
+ */
+export const HERO_RECOMMENDED: readonly [number, number] = [2400, 1350];
+export const HERO_MAX_SLIDES = 8;
+
+export const HERO_FALLBACK_SLIDES = [
+  {
+    url: "/images/exhibicion-iluminacion-materiales-belgrano.webp",
+    alt: "Luminarias colgantes encendidas en el salón de Materiales Belgrano, Mendoza",
+  },
+  {
+    url: "/images/salon-exhibicion-materiales-belgrano.webp",
+    alt: "Salón de ventas de Materiales Belgrano con exhibición de luminarias",
+  },
+] as const;

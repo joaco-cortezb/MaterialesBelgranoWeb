@@ -23,6 +23,15 @@ export type ImageSlot = {
   position: string;
 };
 
+/** Foto del carrusel de la portada del inicio. */
+export type HeroSlide = {
+  id: string;
+  url: string;
+  alt: string;
+  /** `object-position` ("x% y%"). */
+  position: string;
+};
+
 export type WhatsappAudience = "GENERAL" | "EMPRESAS";
 
 export type WhatsappNumber = {
