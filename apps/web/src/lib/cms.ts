@@ -8,9 +8,12 @@ import {
   PUBLIC_SETTING_KEYS,
   SETTING_KEYS,
   SITE,
+  seedCategories,
   youtubeVideoId,
   type AboutContent,
   type Brand,
+  type Category,
+  type Faq,
   type HeroSlide,
   type ImageSlot,
   type WhatsappNumber,
@@ -122,6 +125,80 @@ export async function getImageSlots(keys: readonly string[]): Promise<Record<str
 }
 
 export const ALL_IMAGE_SLOT_KEYS = IMAGE_SLOTS.map((slot) => slot.key);
+
+/* ── Soluciones ──────────────────────────────────────────────────────────── */
+
+type CategoryRow = {
+  id: string;
+  slug: string;
+  name: string;
+  summary: string;
+  description: string[] | null;
+  subcategories: string[] | null;
+  faqs: unknown;
+  image: string | null;
+  imageAlt: string | null;
+  imagePosition: string | null;
+  whatsappMessage: string;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  order: number;
+};
+
+function faqsFromJson(value: unknown): Faq[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(
+    (item): item is Faq => typeof item?.question === "string" && typeof item?.answer === "string",
+  );
+}
+
+function categoryFromRow(row: CategoryRow): Category {
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    summary: row.summary,
+    description: row.description ?? [],
+    subcategories: row.subcategories ?? [],
+    faqs: faqsFromJson(row.faqs),
+    image: row.image ?? "",
+    imageAlt: row.imageAlt || row.name,
+    imagePosition: row.imagePosition || "50% 50%",
+    whatsappMessage: row.whatsappMessage,
+    seoTitle: row.seoTitle || row.name,
+    seoDescription: row.seoDescription || row.summary,
+    order: row.order,
+  };
+}
+
+/**
+ * Soluciones activas, en orden. Si la base no está configurada o falla, usa el
+ * contenido inicial del repo para que las páginas clave de SEO no se caigan.
+ * (Si la base responde vacía es porque se borraron todas: se respeta.)
+ */
+export const getCategories = unstable_cache(
+  async (): Promise<Category[]> => {
+    const supabase = getSupabaseClient();
+    if (!supabase) return seedCategories();
+    const { data, error } = await supabase
+      .from("Category")
+      .select("id, slug, name, summary, description, subcategories, faqs, image, imageAlt, imagePosition, whatsappMessage, seoTitle, seoDescription, order")
+      .eq("active", true)
+      .order("order", { ascending: true });
+    if (error) {
+      console.error("[cms] no se pudieron leer las soluciones", error.message);
+      return seedCategories();
+    }
+    return (data as CategoryRow[]).map(categoryFromRow);
+  },
+  ["cms-categories"],
+  { tags: ["categories"], revalidate: FALLBACK_TTL_SECONDS },
+);
+
+export async function getCategory(slug: string): Promise<Category | undefined> {
+  const categories = await getCategories();
+  return categories.find((category) => category.slug === slug);
+}
 
 /* ── Portada del inicio ──────────────────────────────────────────────────── */
 

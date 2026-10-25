@@ -8,7 +8,7 @@
  * - `WHATSAPP_SOURCES`: orígenes válidos de un clic a WhatsApp. Se usan en la
  *   URL `/go/whatsapp/[source]`, en el evento de GA4 y en el contador del panel.
  */
-export const CMS_TAGS = ["brands", "images", "whatsapp", "settings"] as const;
+export const CMS_TAGS = ["brands", "images", "whatsapp", "settings", "categories"] as const;
 export type CmsTag = (typeof CMS_TAGS)[number];
 
 export const SETTING_KEYS = {
@@ -19,38 +19,39 @@ export const SETTING_KEYS = {
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];
 export const PUBLIC_SETTING_KEYS: readonly SettingKey[] = Object.values(SETTING_KEYS);
 
-export const WHATSAPP_SOURCES = [
-  "header",
-  "inicio",
-  "nosotros",
-  "servicios",
-  "marcas",
-  "contacto",
-  "rubro_materiales-electricos",
-  "rubro_iluminacion",
-  "rubro_maquinas-y-herramientas",
-  "rubro_dispositivos-smart",
-  "rubro_camaras-y-videovigilancia",
-  "404",
-] as const;
-export type WhatsappSource = (typeof WHATSAPP_SOURCES)[number];
+/** Orígenes fijos. Las soluciones suman `rubro_<slug>` (se crean en el panel). */
+export const WHATSAPP_SOURCES = ["header", "inicio", "nosotros", "servicios", "marcas", "contacto", "404"] as const;
+type StaticWhatsappSource = (typeof WHATSAPP_SOURCES)[number];
+export type WhatsappSource = StaticWhatsappSource | `rubro_${string}`;
+
+const RUBRO_SOURCE = /^rubro_[a-z0-9-]{1,80}$/;
 
 export function isWhatsappSource(value: string): value is WhatsappSource {
-  return (WHATSAPP_SOURCES as readonly string[]).includes(value);
+  return (WHATSAPP_SOURCES as readonly string[]).includes(value) || RUBRO_SOURCE.test(value);
 }
 
-/** Etiquetas legibles para el panel de métricas. */
-export const WHATSAPP_SOURCE_LABELS: Record<WhatsappSource, string> = {
+export function rubroWhatsappSource(slug: string): WhatsappSource {
+  return `rubro_${slug}`;
+}
+
+/** Slug de la solución si el origen es `rubro_<slug>`. */
+export function rubroSlugFromSource(source: string): string | null {
+  return RUBRO_SOURCE.test(source) ? source.slice("rubro_".length) : null;
+}
+
+const STATIC_SOURCE_LABELS: Record<StaticWhatsappSource, string> = {
   header: "Menú",
   inicio: "Inicio",
   nosotros: "Nosotros",
   servicios: "Servicios",
   marcas: "Marcas",
   contacto: "Contacto",
-  "rubro_materiales-electricos": "Solución: materiales eléctricos",
-  "rubro_iluminacion": "Solución: iluminación",
-  "rubro_maquinas-y-herramientas": "Solución: máquinas y herramientas",
-  "rubro_dispositivos-smart": "Solución: dispositivos smart",
-  "rubro_camaras-y-videovigilancia": "Solución: cámaras",
   "404": "Página no encontrada",
 };
+
+/** Etiqueta legible de un origen. `categoryNames` resuelve `rubro_<slug>`. */
+export function whatsappSourceLabel(source: string, categoryNames: Record<string, string> = {}): string {
+  const slug = rubroSlugFromSource(source);
+  if (slug) return `Solución: ${categoryNames[slug] ?? slug.replace(/-/g, " ")}`;
+  return STATIC_SOURCE_LABELS[source as StaticWhatsappSource] ?? source;
+}

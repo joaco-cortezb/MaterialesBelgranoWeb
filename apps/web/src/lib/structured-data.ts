@@ -1,4 +1,4 @@
-import { ROUTES, SITE, type Faq, type Rubro, type Servicio } from "@mb/shared";
+import { ROUTES, SITE, type Category, type Faq, type Servicio } from "@mb/shared";
 import { absoluteUrl, siteUrl } from "@/lib/site-url";
 
 /**
@@ -100,7 +100,7 @@ export function faqSchema(faqs: readonly Faq[]) {
 }
 
 /** Un rubro es una categoría de oferta del negocio. */
-export function rubroSchema(rubro: Rubro) {
+export function rubroSchema(rubro: Category) {
   const url = absoluteUrl(ROUTES.rubro(rubro.slug));
   return {
     "@context": "https://schema.org",

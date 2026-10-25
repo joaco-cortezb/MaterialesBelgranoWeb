@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { RUBRO_SLUGS } from "./config/rubros.ts";
 import { IMAGE_SLOT_KEYS } from "./config/image-slots.ts";
 import { safeExternalUrl, youtubeVideoId } from "./lib/safe-url.ts";
 import { normalizeWhatsappPhone } from "./lib/whatsapp-url.ts";
@@ -7,6 +6,22 @@ import { normalizeWhatsappPhone } from "./lib/whatsapp-url.ts";
 /** Validación de los formularios del panel. Un solo lugar para web y panel. */
 
 const checkbox = z.union([z.literal("on"), z.literal("")]).optional();
+
+export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+const lines = (max: number, maxItems: number) =>
+  z
+    .string()
+    .max(max)
+    .optional()
+    .default("")
+    .transform((value) => value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean))
+    .refine((items) => items.length <= maxItems, `Máximo ${maxItems} ítems`);
+
+const faqItem = z.object({
+  question: z.string().trim().min(1, "Falta la pregunta").max(200),
+  answer: z.string().trim().min(1, "Falta la respuesta").max(1200),
+});
 
 export const brandSchema = z.object({
   name: z.string().trim().min(1, "El nombre es obligatorio").max(120),
@@ -21,7 +36,7 @@ export const brandSchema = z.object({
     .trim()
     .optional()
     .default("")
-    .refine((value) => value === "" || RUBRO_SLUGS.includes(value), "Rubro inválido"),
+    .refine((value) => value === "" || SLUG_PATTERN.test(value), "Solución inválida"),
   active: checkbox,
 });
 
@@ -78,4 +93,57 @@ export const homeVideoSchema = z.object({
 export const aboutSchema = z.object({
   headline: z.string().trim().min(1, "El título es obligatorio").max(160),
   body: z.string().trim().min(1, "El texto es obligatorio").max(6000),
+});
+
+/** Formulario de solución del panel. `faqs` llega como JSON (lista de preguntas). */
+export const categorySchema = z.object({
+  name: z.string().trim().min(1, "El nombre es obligatorio").max(80),
+  slug: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(1, "La URL es obligatoria")
+    .max(80)
+    .refine((value) => SLUG_PATTERN.test(value), "URL inválida: sólo minúsculas, números y guiones"),
+  summary: z.string().trim().min(1, "La bajada es obligatoria").max(160),
+  description: z
+    .string()
+    .trim()
+    .max(6000)
+    .optional()
+    .default("")
+    .transform((value) => value.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean)),
+  subcategories: lines(2000, 20),
+  faqs: z
+    .string()
+    .optional()
+    .default("[]")
+    .transform((value, ctx) => {
+      try {
+        return JSON.parse(value) as unknown;
+      } catch {
+        ctx.addIssue({ code: "custom", message: "Preguntas frecuentes inválidas" });
+        return z.NEVER;
+      }
+    })
+    .pipe(z.array(faqItem).max(12, "Máximo 12 preguntas")),
+  image: z
+    .string()
+    .trim()
+    .max(500)
+    .optional()
+    .default("")
+    .refine((value) => value === "" || value.startsWith("https://") || value.startsWith("/"), "URL de imagen inválida"),
+  imageAlt: z.string().trim().max(200).optional().default(""),
+  imagePosition: z
+    .string()
+    .trim()
+    .max(20)
+    .optional()
+    .default("50% 50%")
+    .refine((value) => /^\d{1,3}% \d{1,3}%$/.test(value), "Encuadre inválido"),
+  whatsappMessage: z.string().trim().max(500).optional().default(""),
+  seoTitle: z.string().trim().max(70).optional().default(""),
+  seoDescription: z.string().trim().max(160, "La descripción para Google no puede pasar de 160 caracteres").optional().default(""),
+  active: checkbox,
 });

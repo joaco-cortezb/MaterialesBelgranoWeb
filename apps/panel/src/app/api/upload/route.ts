@@ -6,7 +6,7 @@ import { canManageSection } from "@/lib/permissions";
 import { uploadToStorage } from "@/lib/storage";
 import { FUNCTION_UPLOAD_LIMIT_BYTES, isAllowedUploadFile, MAX_FUNCTION_UPLOAD_MB, UPLOAD_MANAGE_SECTION } from "@/lib/upload-limits";
 
-const folderSchema = z.enum(["brands", "slots"]);
+const folderSchema = z.enum(["brands", "slots", "categories"]);
 
 export const runtime = "nodejs";
 export const maxDuration = 60;

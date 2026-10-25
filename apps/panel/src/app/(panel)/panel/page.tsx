@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, MessageCircle } from "lucide-react";
-import { IMAGE_SLOTS, WHATSAPP_SOURCE_LABELS, isWhatsappSource } from "@mb/shared";
+import { IMAGE_SLOTS, whatsappSourceLabel } from "@mb/shared";
 import { prisma } from "@/lib/prisma";
 import { Card, PageHeader } from "@/components/ui";
 import { NAV_ITEMS } from "@/components/panel/nav";
@@ -12,15 +12,17 @@ const DAYS = 30;
 async function getStats() {
   const since = new Date();
   since.setDate(since.getDate() - DAYS);
-  const [brands, slots, numbers, clicksTotal, clicks30, bySource] = await Promise.all([
+  const [brands, slots, numbers, clicksTotal, clicks30, bySource, categories] = await Promise.all([
     prisma.brand.count({ where: { active: true } }),
     prisma.imageSlot.count(),
     prisma.whatsappNumber.count({ where: { active: true } }),
     prisma.whatsappClick.count(),
     prisma.whatsappClick.count({ where: { createdAt: { gte: since } } }),
     prisma.whatsappClick.groupBy({ by: ["source"], where: { createdAt: { gte: since } }, _count: { _all: true } }),
+    prisma.category.findMany({ select: { slug: true, name: true } }),
   ]);
   return {
+    categoryNames: Object.fromEntries(categories.map((category) => [category.slug, category.name])),
     brands,
     slots,
     numbers,
@@ -68,7 +70,7 @@ export default async function PanelHome() {
             stats.bySource.map((row) => (
               <div key={row.source} className="flex items-center gap-4 px-5 py-3">
                 <span className="w-44 shrink-0 truncate text-sm font-semibold text-ink sm:w-64">
-                  {isWhatsappSource(row.source) ? WHATSAPP_SOURCE_LABELS[row.source] : row.source}
+                  {whatsappSourceLabel(row.source, stats.categoryNames)}
                 </span>
                 <span className="h-2 flex-1 overflow-hidden rounded-full bg-surface-2">
                   <span className="block h-full rounded-full bg-brand" style={{ width: `${maxCount ? (row.count / maxCount) * 100 : 0}%` }} />

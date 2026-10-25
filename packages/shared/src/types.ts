@@ -50,3 +50,26 @@ export type AboutContent = {
   /** Párrafos. */
   body: string[];
 };
+
+export type Faq = { question: string; answer: string };
+
+/** Una solución (rubro), tal como la consume la web. Se administra en el panel. */
+export type Category = {
+  id: string;
+  slug: string;
+  name: string;
+  /** Bajada de una línea para el carrusel y las cards. */
+  summary: string;
+  /** Párrafos de la página de la solución. */
+  description: string[];
+  subcategories: string[];
+  faqs: Faq[];
+  /** URL pública (Storage) o ruta en `public/`; vacío = sin foto. */
+  image: string;
+  imageAlt: string;
+  imagePosition: string;
+  whatsappMessage: string;
+  seoTitle: string;
+  seoDescription: string;
+  order: number;
+};

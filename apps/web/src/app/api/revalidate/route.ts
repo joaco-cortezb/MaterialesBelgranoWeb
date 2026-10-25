@@ -1,6 +1,6 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { CMS_TAGS, ROUTES, RUBROS, type CmsTag } from "@mb/shared";
+import { CMS_TAGS, ROUTES, type CmsTag } from "@mb/shared";
 import { env, revalidateConfigured } from "@/lib/env";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 
@@ -8,7 +8,8 @@ function isCmsTag(value: unknown): value is CmsTag {
   return typeof value === "string" && (CMS_TAGS as readonly string[]).includes(value);
 }
 
-const RUBRO_PATHS = RUBROS.map((rubro) => ROUTES.rubro(rubro.slug));
+/** Todas las páginas de solución (ruta dinámica). */
+const RUBRO_PATHS = ["/soluciones/[slug]"];
 
 /** Qué páginas muestran cada tipo de contenido. */
 const TAG_PATHS: Record<CmsTag, string[]> = {
@@ -16,6 +17,7 @@ const TAG_PATHS: Record<CmsTag, string[]> = {
   images: [ROUTES.home, ROUTES.nosotros, ROUTES.rubros, ...RUBRO_PATHS],
   whatsapp: [ROUTES.nosotros],
   settings: [ROUTES.home, ROUTES.nosotros],
+  categories: [ROUTES.home, ROUTES.rubros, ROUTES.marcas, "/sitemap.xml", "/llms.txt", ...RUBRO_PATHS],
 };
 
 export async function POST(request: Request) {
@@ -52,7 +54,10 @@ export async function POST(request: Request) {
   }
 
   revalidateTag(body.tag, "max");
-  for (const path of TAG_PATHS[body.tag]) revalidatePath(path);
+  for (const path of TAG_PATHS[body.tag]) {
+    if (path.includes("[")) revalidatePath(path, "page");
+    else revalidatePath(path);
+  }
 
   return Response.json({ ok: true, tag: body.tag, paths: TAG_PATHS[body.tag] });
 }

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-import { ROUTES, RUBROS } from "@mb/shared";
+import { ROUTES } from "@mb/shared";
+import { getCategories } from "@/lib/cms";
 import { siteUrl } from "@/lib/site-url";
 
 /**
@@ -7,12 +8,13 @@ import { siteUrl } from "@/lib/site-url";
  * y Google descarta el lastmod del sitio entero cuando detecta que no refleja
  * cambios.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
+  const categories = await getCategories().catch(() => []);
   return [
     { url: `${base}${ROUTES.home}`, changeFrequency: "weekly", priority: 1 },
     { url: `${base}${ROUTES.rubros}`, changeFrequency: "monthly", priority: 0.9 },
-    ...RUBROS.map((rubro) => ({
+    ...categories.map((rubro) => ({
       url: `${base}${ROUTES.rubro(rubro.slug)}`,
       changeFrequency: "monthly" as const,
       priority: 0.9,

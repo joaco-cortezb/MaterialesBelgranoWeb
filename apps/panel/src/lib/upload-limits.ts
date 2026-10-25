@@ -3,24 +3,27 @@
  * (`media-optimizer.ts`) y los campos del cliente, así el texto de ayuda no
  * puede desincronizarse de lo que el sistema hace. Sin dependencias de server.
  */
-export type UploadFolder = "brands" | "slots";
+export type UploadFolder = "brands" | "slots" | "categories";
 
 /** Sección de permisos que autoriza cada carpeta. */
 export const UPLOAD_MANAGE_SECTION = {
   brands: "marcas",
   slots: "imagenes",
+  categories: "soluciones",
 } as const;
 
 /** Lado máximo al que reescala el servidor (`fit: inside`, nunca agranda). */
 export const UPLOAD_MAX_DIMENSION: Readonly<Record<UploadFolder, number>> = {
   brands: 800,
   slots: 2400,
+  categories: 2000,
 };
 
 /** Calidad WebP por carpeta. */
 export const UPLOAD_QUALITY: Readonly<Record<UploadFolder, number>> = {
   brands: 88,
   slots: 82,
+  categories: 82,
 };
 
 /**

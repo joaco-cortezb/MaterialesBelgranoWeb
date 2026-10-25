@@ -1,4 +1,5 @@
-import { ROUTES, RUBROS, SERVICIOS, SITE } from "@mb/shared";
+import { ROUTES, SERVICIOS, SITE } from "@mb/shared";
+import { getCategories } from "@/lib/cms";
 import { siteUrl } from "@/lib/site-url";
 
 /**
@@ -8,8 +9,9 @@ import { siteUrl } from "@/lib/site-url";
  */
 export const dynamic = "force-static";
 
-export function GET() {
+export async function GET() {
   const base = siteUrl();
+  const categories = await getCategories();
   const hours = SITE.hours.map((slot) => `${slot.days} de ${slot.opens} a ${slot.closes} hs`).join("; ");
 
   const body = `# ${SITE.name}
@@ -30,7 +32,7 @@ export function GET() {
 
 ## Soluciones
 
-${RUBROS.map((rubro) => `- [${rubro.name}](${base}${ROUTES.rubro(rubro.slug)}): ${rubro.summary}`).join("\n")}
+${categories.map((rubro) => `- [${rubro.name}](${base}${ROUTES.rubro(rubro.slug)}): ${rubro.summary}`).join("\n")}
 
 ## Servicios
 

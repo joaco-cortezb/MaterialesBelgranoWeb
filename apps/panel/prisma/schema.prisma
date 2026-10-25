@@ -39,7 +39,7 @@ model Brand {
   slug       String   @unique
   logo       String? // URL pública en Storage
   catalogUrl String
-  rubroSlug  String? // slug de `RUBROS` (packages/shared); null = sin rubro
+  rubroSlug  String? // slug de `Category`; null = sin solución
   order      Int      @default(0)
   active     Boolean  @default(true)
   createdAt  DateTime @default(now())
@@ -67,6 +67,30 @@ model HeroSlide {
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([active, order])
+}
+
+/// Una solución (rubro) de la web: página propia, card del carrusel del inicio
+/// y agrupador de marcas (`Brand.rubroSlug`).
+model Category {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  summary         String
+  description     String[] // párrafos
+  subcategories   String[]
+  faqs            Json     @default("[]") // [{ question, answer }]
+  image           String?
+  imageAlt        String?
+  imagePosition   String   @default("50% 50%")
+  whatsappMessage String   @default("")
+  seoTitle        String?
+  seoDescription  String?
+  order           Int      @default(0)
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([active, order])
 }

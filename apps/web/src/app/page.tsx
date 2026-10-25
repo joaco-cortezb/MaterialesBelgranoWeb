@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa6";
-import { ROUTES, RUBROS, SERVICIOS, SITE } from "@mb/shared";
+import { ROUTES, SERVICIOS, SITE } from "@mb/shared";
 import { Container } from "@/components/ui/Container";
 import { buttonClassName } from "@/components/ui/Button";
 import { Media } from "@/components/ui/Media";
 import { Eyebrow, SectionHeading } from "@/components/ui/SectionHeading";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
-import { BrandsGrid } from "@/components/brands/BrandsGrid";
-import { SolucionesGrid } from "@/components/rubros/SolucionesGrid";
+import { LogoCloud } from "@/components/brands/LogoCloud";
+import { CategoriesCarousel } from "@/components/rubros/CategoriesCarousel";
 import { ServicioIcon } from "@/components/servicios/ServicioIcon";
 import { YouTubeAutoplay } from "@/components/home/YouTubeAutoplay";
 import { WhatsappCta } from "@/components/sections/WhatsappCta";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { servicesSchema } from "@/lib/structured-data";
-import { getBrands, getHeroSlides, getHomeVideoId, getImageSlot, getImageSlots } from "@/lib/cms";
+import { getBrands, getCategories, getHeroSlides, getHomeVideoId, getImageSlot } from "@/lib/cms";
 import { HomeHero } from "@/components/home/HomeHero";
 
 export const metadata: Metadata = {
@@ -22,10 +22,10 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [heroSlides, distribuidoraImage, rubroImages, brands, videoId] = await Promise.all([
+  const [heroSlides, distribuidoraImage, categories, brands, videoId] = await Promise.all([
     getHeroSlides(),
     getImageSlot("home.distribuidora"),
-    getImageSlots(RUBROS.map((rubro) => rubro.imageSlot)),
+    getCategories(),
     getBrands(),
     getHomeVideoId(),
   ]);
@@ -55,30 +55,47 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Rubros */}
-      <section aria-labelledby="rubros-title" className="bg-surface py-16 sm:py-24">
+      {/* Soluciones */}
+      <section aria-labelledby="soluciones-title" className="overflow-hidden bg-surface py-16 sm:py-24">
         <Container>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <SectionHeading
-              eyebrow="Qué vendemos"
-              title="Cinco soluciones, un solo proveedor para toda la obra"
-              text="No somos un catálogo online: cada solución tiene su página con lo que trabajamos, las marcas y las preguntas que más nos hacen. Lo puntual lo resolvemos por WhatsApp."
-            />
-            <Link href={ROUTES.rubros} className="inline-flex min-h-11 items-center gap-2 font-semibold text-brand-700 hover:text-brand-800">
-              Ver todas las soluciones <FaArrowRight className="h-3.5 w-3.5" aria-hidden />
-            </Link>
-          </div>
-          <h2 id="rubros-title" className="sr-only">
+          <SectionHeading
+            eyebrow="Soluciones"
+            title="Todo lo que lleva una instalación."
+            text="Cinco líneas con stock permanente y gente que sabe lo que vende. Elegí la tuya y mirá con qué trabajamos."
+            align="center"
+          />
+          <h2 id="soluciones-title" className="sr-only">
             Soluciones
           </h2>
-          <div className="mt-10">
-            <SolucionesGrid images={rubroImages} source="inicio" />
+          <div className="mt-10 sm:mt-12">
+            <CategoriesCarousel categories={categories} />
+          </div>
+        </Container>
+      </section>
+
+      {/* Marcas */}
+      <section aria-labelledby="marcas-title" className="py-16 sm:py-24">
+        <Container>
+          <SectionHeading
+            eyebrow="Marcas"
+            title="Trabajamos con los que saben."
+            text="Fabricantes líderes del mercado eléctrico, con respaldo ante fallas y devoluciones. Tocá un logo para ver su catálogo."
+            align="center"
+          />
+          <h2 id="marcas-title" className="sr-only">
+            Marcas
+          </h2>
+          <LogoCloud brands={brands} source="inicio" className="mx-auto mt-10 max-w-5xl sm:mt-12" />
+          <div className="mt-8 text-center">
+            <Link href={ROUTES.marcas} className="inline-flex min-h-11 items-center gap-2 font-semibold text-brand-700 hover:text-brand-800">
+              Ver marcas por solución <FaArrowRight className="h-3.5 w-3.5" aria-hidden />
+            </Link>
           </div>
         </Container>
       </section>
 
       {/* Servicios */}
-      <section id="servicios" aria-labelledby="servicios-title" className="scroll-mt-20 py-16 sm:py-24">
+      <section id="servicios" aria-labelledby="servicios-title" className="scroll-mt-20 bg-surface py-16 sm:py-24">
         <Container>
           <SectionHeading
             eyebrow="Por qué elegirnos"
@@ -106,28 +123,6 @@ export default async function HomePage() {
               </li>
             ))}
           </ul>
-        </Container>
-      </section>
-
-      {/* Marcas */}
-      <section aria-labelledby="marcas-title" className="bg-surface py-16 sm:py-24">
-        <Container>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <SectionHeading
-              eyebrow="Marcas"
-              title="Las marcas que trabajamos"
-              text="Trabajamos con los fabricantes líderes del mercado eléctrico argentino. Entrá al catálogo de cada uno y consultanos por WhatsApp lo que necesitás."
-            />
-            <Link href={ROUTES.marcas} className="inline-flex min-h-11 items-center gap-2 font-semibold text-brand-700 hover:text-brand-800">
-              Ver todas las marcas <FaArrowRight className="h-3.5 w-3.5" aria-hidden />
-            </Link>
-          </div>
-          <h2 id="marcas-title" className="sr-only">
-            Marcas
-          </h2>
-          <div className="mt-10">
-            <BrandsGrid brands={brands.slice(0, 8)} source="inicio" />
-          </div>
         </Container>
       </section>
 

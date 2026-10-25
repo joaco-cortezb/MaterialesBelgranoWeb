@@ -1,6 +1,7 @@
 import type { IconType } from "react-icons";
-import { FaBolt, FaCamera, FaLightbulb, FaScrewdriverWrench, FaWifi } from "react-icons/fa6";
+import { FaBolt, FaCamera, FaLayerGroup, FaLightbulb, FaScrewdriverWrench, FaWifi } from "react-icons/fa6";
 
+/** Ícono por slug conocido; las soluciones nuevas usan uno genérico. */
 const ICONS: Record<string, IconType> = {
   "materiales-electricos": FaBolt,
   iluminacion: FaLightbulb,
@@ -10,6 +11,6 @@ const ICONS: Record<string, IconType> = {
 };
 
 export function RubroIcon({ slug, className }: { slug: string; className?: string }) {
-  const Icon = ICONS[slug] ?? FaBolt;
+  const Icon = ICONS[slug] ?? FaLayerGroup;
   return <Icon className={className} aria-hidden />;
 }

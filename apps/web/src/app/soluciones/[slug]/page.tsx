@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FaCheck } from "react-icons/fa6";
-import { findRubro, ROUTES, RUBRO_SLUGS, RUBROS, SITE } from "@mb/shared";
+import { ROUTES, SITE } from "@mb/shared";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
@@ -11,16 +11,18 @@ import { BrandsGrid } from "@/components/brands/BrandsGrid";
 import { FaqList } from "@/components/rubros/FaqList";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, faqSchema, rubroSchema } from "@/lib/structured-data";
-import { getBrandsForRubro, getImageSlot } from "@/lib/cms";
+import { getBrandsForRubro, getCategories, getCategory } from "@/lib/cms";
 import { rubroWhatsappSource } from "@/lib/whatsapp";
 
-export function generateStaticParams() {
-  return RUBRO_SLUGS.map((slug) => ({ slug }));
+/** Se pre-generan las soluciones activas; las nuevas del panel se generan a pedido. */
+export async function generateStaticParams() {
+  const categories = await getCategories();
+  return categories.map((category) => ({ slug: category.slug }));
 }
 
 export async function generateMetadata(props: PageProps<"/soluciones/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
-  const rubro = findRubro(slug);
+  const rubro = await getCategory(slug);
   if (!rubro) return {};
   const path = ROUTES.rubro(rubro.slug);
   return {
@@ -33,11 +35,12 @@ export async function generateMetadata(props: PageProps<"/soluciones/[slug]">): 
 
 export default async function RubroPage(props: PageProps<"/soluciones/[slug]">) {
   const { slug } = await props.params;
-  const rubro = findRubro(slug);
+  const [rubro, categories] = await Promise.all([getCategory(slug), getCategories()]);
   if (!rubro) notFound();
 
-  const [image, brands] = await Promise.all([getImageSlot(rubro.imageSlot), getBrandsForRubro(rubro.slug)]);
-  const others = RUBROS.filter((item) => item.slug !== rubro.slug);
+  const brands = await getBrandsForRubro(rubro.slug);
+  const image = rubro.image ? { key: rubro.slug, url: rubro.image, alt: rubro.imageAlt, position: rubro.imagePosition } : null;
+  const others = categories.filter((item) => item.slug !== rubro.slug);
   const source = rubroWhatsappSource(rubro.slug);
 
   return (
@@ -49,7 +52,7 @@ export default async function RubroPage(props: PageProps<"/soluciones/[slug]">) 
         ])}
       />
       <JsonLd schema={rubroSchema(rubro)} />
-      <JsonLd schema={faqSchema(rubro.faqs)} />
+      {rubro.faqs.length > 0 && <JsonLd schema={faqSchema(rubro.faqs)} />}
 
       <PageHero eyebrow="Solución" title={rubro.seoTitle} text={rubro.summary} image={image} />
 
@@ -60,6 +63,7 @@ export default async function RubroPage(props: PageProps<"/soluciones/[slug]">) 
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
+          {rubro.subcategories.length > 0 && (
           <aside className="rounded-3xl border border-line bg-surface p-7 sm:p-8">
             <h2 className="font-condensed text-sm font-semibold uppercase tracking-[0.18em] text-brand-700">Qué incluye</h2>
             <ul className="mt-5 space-y-3">
@@ -71,6 +75,7 @@ export default async function RubroPage(props: PageProps<"/soluciones/[slug]">) 
               ))}
             </ul>
           </aside>
+          )}
         </Container>
       </section>
 
@@ -88,6 +93,7 @@ export default async function RubroPage(props: PageProps<"/soluciones/[slug]">) 
         </section>
       )}
 
+      {rubro.faqs.length > 0 && (
       <section aria-labelledby="faq-title" className="py-16 sm:py-24">
         <Container className="grid gap-10 lg:grid-cols-[1fr_1.5fr]">
           <SectionHeading eyebrow="Preguntas frecuentes" title={`Lo que más nos preguntan sobre ${rubro.name.toLowerCase()}`} />
@@ -97,6 +103,7 @@ export default async function RubroPage(props: PageProps<"/soluciones/[slug]">) 
           <FaqList faqs={rubro.faqs} />
         </Container>
       </section>
+      )}
 
       <WhatsappCta source={source} title={`¿Consultas sobre ${rubro.name.toLowerCase()}?`} text="Escribinos por WhatsApp con lo que necesitás y te respondemos con stock, precio y plazo de entrega." />
 

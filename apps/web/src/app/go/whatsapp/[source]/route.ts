@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
-import { composeWhatsappMessage, findRubro, isWhatsappSource, whatsappUrl } from "@mb/shared";
-import { getDefaultWhatsapp, getWhatsappNumbers } from "@/lib/cms";
+import { composeWhatsappMessage, isWhatsappSource, rubroSlugFromSource, whatsappUrl } from "@mb/shared";
+import { getCategory, getDefaultWhatsapp, getWhatsappNumbers } from "@/lib/cms";
 import { env } from "@/lib/env";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { getSupabaseAdminClient } from "@/lib/supabase";
@@ -24,8 +24,11 @@ export async function GET(request: Request, context: RouteContext<"/go/whatsapp/
   const numbers = await getWhatsappNumbers();
   const number = (requestedId && numbers.find((item) => item.id === requestedId)) || (await getDefaultWhatsapp());
 
-  const rubro = source.startsWith("rubro_") ? findRubro(source.slice("rubro_".length)) : undefined;
-  const message = rubro ? rubro.whatsappMessage : composeWhatsappMessage(number.message, whatsappPageLabel(source));
+  const categorySlug = rubroSlugFromSource(source);
+  const category = categorySlug ? await getCategory(categorySlug) : undefined;
+  const message = category?.whatsappMessage
+    ? category.whatsappMessage
+    : composeWhatsappMessage(number.message, whatsappPageLabel(source, category?.name));
 
   await recordClick(request, source, number.id);
 

@@ -1,13 +1,13 @@
 /**
- * Rubros de la casa. Son las páginas clave para SEO/GEO/AEO, así que viven en
- * código y no en el panel: el panel administra sus imágenes (slots) y las
- * marcas asociadas, no el texto.
+ * Contenido INICIAL de las soluciones (rubros). Desde octubre de 2026 las
+ * soluciones se administran en el panel (tabla `Category`): esto sólo se usa
+ * para la carga inicial de la base y como respaldo si la base no responde.
  *
  * Las subcategorías salen del brief del cliente (sección 2). Las FAQ están
  * escritas como respuestas directas y citables (40-60 palabras), que es lo que
  * extraen los motores de IA.
  */
-export type Faq = { question: string; answer: string };
+import type { Category, Faq } from "../types.ts";
 
 export type Rubro = {
   slug: string;
@@ -26,8 +26,8 @@ export type Rubro = {
   faqs: Faq[];
   /** Mensaje precargado de WhatsApp para este rubro. */
   whatsappMessage: string;
-  /** Slot de imagen que administra el panel. */
-  imageSlot: string;
+  /** Imagen inicial (ruta en `public/` de la web) o vacío. */
+  fallbackImage: string;
 };
 
 export const RUBROS: readonly Rubro[] = [
@@ -38,7 +38,7 @@ export const RUBROS: readonly Rubro[] = [
     seoTitle: "Materiales eléctricos en Mendoza",
     seoDescription:
       "Cables, cañerías, tableros, protecciones y accesorios eléctricos en Mendoza. Stock para instaladores, empresas y hogar. Entrega en 24 hs. Consultá por WhatsApp.",
-    summary: "Cables, cañerías, tableros, protecciones y todo lo que lleva una instalación domiciliaria o industrial.",
+    summary: "Cables, caños, tableros y protecciones para cualquier instalación, de la casa a la obra.",
     description: [
       "Materiales Belgrano es una casa de materiales eléctricos en Godoy Cruz, Mendoza, con stock permanente de cables, cañerías, tableros, protecciones y accesorios para instalaciones domiciliarias e industriales. Vendemos a instaladores, empresas, constructoras y consumidor final, con entrega en 24 hs en Mendoza, San Juan y San Luis.",
       "Trabajamos tres rangos de precio en la mayoría de las líneas, con proveedores que responden ante fallas y devoluciones. Si tenés una obra en marcha, pasanos el listado por WhatsApp y te cotizamos todo junto en minutos.",
@@ -67,7 +67,7 @@ export const RUBROS: readonly Rubro[] = [
       },
     ],
     whatsappMessage: "Hola, vengo de la web de Materiales Belgrano. Quiero consultar por materiales eléctricos.",
-    imageSlot: "rubros.materiales-electricos.hero",
+    fallbackImage: "",
   },
   {
     slug: "iluminacion",
@@ -76,7 +76,7 @@ export const RUBROS: readonly Rubro[] = [
     seoTitle: "Iluminación LED y de diseño en Mendoza",
     seoDescription:
       "Iluminación profesional, interior, exterior y de diseño en Mendoza. Luminarias LED, tiras y lámparas. Marcas Macroled, Leuk y 180°. Consultá por WhatsApp.",
-    summary: "Luminarias profesionales, iluminación integrada, exterior y jardín, lámparas, tubos y tiras LED.",
+    summary: "Luminarias LED, de diseño y para proyectos, con exhibición encendida en el salón.",
     description: [
       "En Materiales Belgrano encontrás iluminación LED para proyectos profesionales, iluminación integrada para interiores, luminarias de exterior y jardín, y lámparas, tubos y tiras LED de alta rotación. Nuestro salón en Godoy Cruz, Mendoza, tiene exhibición de marcas de diseño como Leuk y 180° para que veas las luminarias encendidas antes de elegir.",
       "Si estás armando un proyecto de iluminación para una obra, un local o una casa, traé el plano o mandanos fotos por WhatsApp: te ayudamos a elegir la solución y te la cotizamos completa.",
@@ -106,7 +106,7 @@ export const RUBROS: readonly Rubro[] = [
       },
     ],
     whatsappMessage: "Hola, vengo de la web de Materiales Belgrano. Quiero consultar por iluminación.",
-    imageSlot: "rubros.iluminacion.hero",
+    fallbackImage: "/images/exhibicion-iluminacion-materiales-belgrano.webp",
   },
   {
     slug: "maquinas-y-herramientas",
@@ -115,7 +115,7 @@ export const RUBROS: readonly Rubro[] = [
     seoTitle: "Máquinas y herramientas para electricistas en Mendoza",
     seoDescription:
       "Herramientas de mano, a batería y eléctricas, consumibles e instrumental de medición en Mendoza. Marcas Jadever y DCK. Stock para instaladores y empresas.",
-    summary: "Herramientas de mano, a batería y eléctricas, consumibles e instrumental de medición.",
+    summary: "Herramientas de mano, a batería y eléctricas, más instrumental de medición.",
     description: [
       "Materiales Belgrano vende máquinas y herramientas para instaladores electricistas, empresas y uso doméstico en Mendoza: herramientas de mano y consumibles, herramientas a batería y eléctricas, e instrumental de medición. Trabajamos marcas como Jadever y DCK, con respaldo del fabricante ante fallas.",
       "Es una de las líneas que más crece en la casa porque el instalador encuentra en un mismo lugar el material y la herramienta para la obra.",
@@ -139,7 +139,7 @@ export const RUBROS: readonly Rubro[] = [
       },
     ],
     whatsappMessage: "Hola, vengo de la web de Materiales Belgrano. Quiero consultar por máquinas y herramientas.",
-    imageSlot: "rubros.maquinas-y-herramientas.hero",
+    fallbackImage: "",
   },
   {
     slug: "dispositivos-smart",
@@ -148,7 +148,7 @@ export const RUBROS: readonly Rubro[] = [
     seoTitle: "Dispositivos smart y domótica en Mendoza",
     seoDescription:
       "Dispositivos inteligentes wifi para el hogar y la empresa en Mendoza: medición y control, cerraduras smart y automatización. Consultá por WhatsApp.",
-    summary: "Accesorios de medición y control wifi, cerraduras inteligentes y automatización.",
+    summary: "Tomas, interruptores y cerraduras que se manejan desde el celular.",
     description: [
       "En Materiales Belgrano vendemos dispositivos smart para el hogar y la empresa en Mendoza: accesorios de medición y control por wifi, cerraduras inteligentes y productos de automatización que se integran a la instalación eléctrica.",
       "Es una línea en crecimiento: si tenés un proyecto de domótica o querés automatizar un ambiente, contanos qué necesitás por WhatsApp y te orientamos con lo que tenemos en stock.",
@@ -162,7 +162,7 @@ export const RUBROS: readonly Rubro[] = [
       },
     ],
     whatsappMessage: "Hola, vengo de la web de Materiales Belgrano. Quiero consultar por dispositivos smart.",
-    imageSlot: "rubros.dispositivos-smart.hero",
+    fallbackImage: "",
   },
   {
     slug: "camaras-y-videovigilancia",
@@ -171,7 +171,7 @@ export const RUBROS: readonly Rubro[] = [
     seoTitle: "Cámaras de seguridad y videovigilancia en Mendoza",
     seoDescription:
       "Cámaras de seguridad, videoporteros y accesorios de videovigilancia en Mendoza. Marca Uniview. Para obras, comercios y hogares. Consultá por WhatsApp.",
-    summary: "Cámaras de seguridad, videoporteros y accesorios para obras, comercios y hogares.",
+    summary: "Cámaras, videoporteros y grabadores para obras, comercios y casas.",
     description: [
       "Materiales Belgrano vende cámaras de seguridad, videoporteros y accesorios de videovigilancia en Mendoza, con la marca Uniview como línea principal. Hoy prácticamente toda obra lleva cámaras, así que el instalador encuentra en la casa el material eléctrico y el sistema de videovigilancia juntos.",
       "Si estás instalando cámaras en una obra, un comercio o una casa, mandanos por WhatsApp qué necesitás cubrir y te cotizamos el kit completo.",
@@ -190,12 +190,26 @@ export const RUBROS: readonly Rubro[] = [
       },
     ],
     whatsappMessage: "Hola, vengo de la web de Materiales Belgrano. Quiero consultar por cámaras y videovigilancia.",
-    imageSlot: "rubros.camaras-y-videovigilancia.hero",
+    fallbackImage: "",
   },
 ] as const;
 
-export const RUBRO_SLUGS = RUBROS.map((rubro) => rubro.slug);
-
-export function findRubro(slug: string): Rubro | undefined {
-  return RUBROS.find((rubro) => rubro.slug === slug);
+/** Soluciones iniciales con la forma de la base: respaldo si la base no responde. */
+export function seedCategories(): Category[] {
+  return RUBROS.map((rubro, order) => ({
+    id: `seed-${rubro.slug}`,
+    slug: rubro.slug,
+    name: rubro.name,
+    summary: rubro.summary,
+    description: rubro.description,
+    subcategories: rubro.subcategories,
+    faqs: rubro.faqs,
+    image: rubro.fallbackImage,
+    imageAlt: rubro.fallbackImage ? `${rubro.name} en Materiales Belgrano` : "",
+    imagePosition: "50% 50%",
+    whatsappMessage: rubro.whatsappMessage,
+    seoTitle: rubro.seoTitle,
+    seoDescription: rubro.seoDescription,
+    order,
+  }));
 }

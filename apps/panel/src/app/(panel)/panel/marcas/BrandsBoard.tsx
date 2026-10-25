@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
-import { RUBROS } from "@mb/shared";
 import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, PageHeader, Select, Spinner, Switch } from "@/components/ui";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
@@ -19,9 +18,11 @@ export type BrandDTO = {
   active: boolean;
 };
 
+export type CategoryOption = { slug: string; name: string };
+
 const EMPTY: BrandDTO = { id: "", name: "", logo: "", catalogUrl: "", rubroSlug: "", active: true };
 
-export function BrandsBoard({ brands }: { brands: BrandDTO[] }) {
+export function BrandsBoard({ brands, categories }: { brands: BrandDTO[]; categories: CategoryOption[] }) {
   const [editing, setEditing] = useState<BrandDTO | null>(null);
   const [deleting, setDeleting] = useState<BrandDTO | null>(null);
   const [pending, startTransition] = useTransition();
@@ -49,6 +50,7 @@ export function BrandsBoard({ brands }: { brands: BrandDTO[] }) {
 
       {editing && (
         <BrandForm
+          categories={categories}
           key={editing.id || "new"}
           brand={editing}
           pending={pending}
@@ -76,7 +78,7 @@ export function BrandsBoard({ brands }: { brands: BrandDTO[] }) {
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="truncate font-semibold text-ink">{brand.name}</span>
                     <Badge tone={brand.active ? "green" : "gray"}>{brand.active ? "Visible" : "Oculta"}</Badge>
-                    {brand.rubroSlug && <Badge>{RUBROS.find((rubro) => rubro.slug === brand.rubroSlug)?.shortName ?? brand.rubroSlug}</Badge>}
+                    {brand.rubroSlug && <Badge>{categories.find((category) => category.slug === brand.rubroSlug)?.name ?? brand.rubroSlug}</Badge>}
                   </div>
                   <a href={brand.catalogUrl} target="_blank" rel="noopener noreferrer" className="mt-0.5 inline-flex max-w-full items-center gap-1 truncate text-xs text-ink-soft hover:text-ink">
                     <ExternalLink className="h-3 w-3 shrink-0" /> <span className="truncate">{brand.catalogUrl}</span>
@@ -118,11 +120,13 @@ export function BrandsBoard({ brands }: { brands: BrandDTO[] }) {
 }
 
 function BrandForm({
+  categories,
   brand,
   pending,
   onCancel,
   onSubmit,
 }: {
+  categories: CategoryOption[];
   brand: BrandDTO;
   pending: boolean;
   onCancel: () => void;
@@ -160,7 +164,7 @@ function BrandForm({
             <Label htmlFor="rubroSlug">Solución</Label>
             <Select id="rubroSlug" name="rubroSlug" defaultValue={brand.rubroSlug}>
               <option value="">Sin solución</option>
-              {RUBROS.map((rubro) => (
+              {categories.map((rubro) => (
                 <option key={rubro.slug} value={rubro.slug}>
                   {rubro.name}
                 </option>

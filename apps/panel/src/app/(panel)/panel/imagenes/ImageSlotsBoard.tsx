@@ -19,7 +19,7 @@ const POSITIONS = [
   { value: "50% 75%", label: "Centro-abajo" },
 ];
 
-const GROUPS: ImageSlotGroup[] = ["inicio", "nosotros", "rubros"];
+const GROUPS: ImageSlotGroup[] = ["inicio", "nosotros"];
 
 export function ImageSlotsBoard({ values }: { values: Record<string, SlotValue> }) {
   const [group, setGroup] = useState<ImageSlotGroup>("inicio");
@@ -27,7 +27,7 @@ export function ImageSlotsBoard({ values }: { values: Record<string, SlotValue> 
 
   return (
     <div>
-      <PageHeader title="Imágenes" subtitle="Cada lugar de la web tiene su foto. Reemplazala acá; si la quitás, vuelve la imagen por defecto." />
+      <PageHeader title="Imágenes" subtitle="Cada lugar de la web tiene su foto. Reemplazala acá; si la quitás, vuelve la imagen por defecto. Las fotos de las soluciones se cambian en Soluciones." />
 
       <div role="tablist" aria-label="Sección de la web" className="mb-6 flex gap-1 overflow-x-auto rounded-xl bg-surface-2 p-1">
         {GROUPS.map((item) => (

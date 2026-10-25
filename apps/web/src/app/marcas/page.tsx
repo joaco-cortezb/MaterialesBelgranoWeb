@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { ROUTES, RUBROS, SITE } from "@mb/shared";
+import { ROUTES, SITE } from "@mb/shared";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { BrandsGrid } from "@/components/brands/BrandsGrid";
 import { WhatsappCta } from "@/components/sections/WhatsappCta";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/structured-data";
-import { getBrands } from "@/lib/cms";
+import { getBrands, getCategories } from "@/lib/cms";
 
 export const metadata: Metadata = {
   title: "Marcas",
@@ -17,11 +17,11 @@ export const metadata: Metadata = {
 };
 
 export default async function MarcasPage() {
-  const brands = await getBrands();
-  const grouped = RUBROS.map((rubro) => ({ rubro, brands: brands.filter((brand) => brand.rubroSlug === rubro.slug) })).filter(
+  const [brands, categories] = await Promise.all([getBrands(), getCategories()]);
+  const grouped = categories.map((rubro) => ({ rubro, brands: brands.filter((brand) => brand.rubroSlug === rubro.slug) })).filter(
     (group) => group.brands.length > 0,
   );
-  const ungrouped = brands.filter((brand) => !brand.rubroSlug || !RUBROS.some((rubro) => rubro.slug === brand.rubroSlug));
+  const ungrouped = brands.filter((brand) => !brand.rubroSlug || !categories.some((rubro) => rubro.slug === brand.rubroSlug));
 
   return (
     <>

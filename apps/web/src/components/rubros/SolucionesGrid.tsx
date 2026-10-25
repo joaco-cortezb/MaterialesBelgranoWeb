@@ -1,18 +1,18 @@
 import { FaWhatsapp } from "react-icons/fa6";
-import { RUBROS, type ImageSlot, type WhatsappSource } from "@mb/shared";
+import type { Category, WhatsappSource } from "@mb/shared";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { RubroCard } from "@/components/rubros/RubroCard";
 import { whatsappGoHref } from "@/lib/whatsapp";
 
 /**
- * Las cinco soluciones + una sexta celda de consulta, así la grilla cierra
- * pareja (3×2 en desktop, 2×3 en mobile) sin rellenar con fotos repetidas.
+ * Las soluciones + una celda de consulta al final (con cinco soluciones la
+ * grilla cierra pareja: 3×2 en desktop, 2×3 en mobile).
  */
-export function SolucionesGrid({ images, source }: { images: Record<string, ImageSlot | null>; source: WhatsappSource }) {
+export function SolucionesGrid({ categories, source }: { categories: Category[]; source: WhatsappSource }) {
   return (
     <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
-      {RUBROS.map((rubro, index) => (
-        <RubroCard key={rubro.slug} rubro={rubro} image={images[rubro.imageSlot]} index={index} />
+      {categories.map((category, index) => (
+        <RubroCard key={category.slug} category={category} index={index} />
       ))}
       <TrackedLink
         href={whatsappGoHref(source)}

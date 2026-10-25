@@ -5,7 +5,7 @@
  * `recommended` es la medida sugerida en el panel; el servidor reescala a
  * `maxDimension` de la carpeta (ver `upload-limits` del panel), nunca agranda.
  */
-export type ImageSlotGroup = "inicio" | "nosotros" | "rubros";
+export type ImageSlotGroup = "inicio" | "nosotros";
 
 export type ImageSlotDefinition = {
   key: string;
@@ -65,51 +65,6 @@ export const IMAGE_SLOTS: readonly ImageSlotDefinition[] = [
     fallback: "/images/equipo-materiales-belgrano.webp",
     fallbackAlt: "Equipo de Materiales Belgrano",
   },
-  {
-    key: "rubros.materiales-electricos.hero",
-    group: "rubros",
-    label: "Solución: materiales eléctricos",
-    hint: "Imagen principal de la página de la solución.",
-    recommended: [2000, 1250],
-    fallback: "",
-    fallbackAlt: "Instalación eléctrica con tablero y cables",
-  },
-  {
-    key: "rubros.iluminacion.hero",
-    group: "rubros",
-    label: "Solución: iluminación",
-    hint: "Imagen principal de la página de la solución.",
-    recommended: [2000, 1250],
-    fallback: "/images/exhibicion-iluminacion-materiales-belgrano.webp",
-    fallbackAlt: "Luminarias encendidas en la exhibición de Materiales Belgrano",
-  },
-  {
-    key: "rubros.maquinas-y-herramientas.hero",
-    group: "rubros",
-    label: "Solución: máquinas y herramientas",
-    hint: "Imagen principal de la página de la solución.",
-    recommended: [2000, 1250],
-    fallback: "",
-    fallbackAlt: "Herramientas eléctricas y a batería",
-  },
-  {
-    key: "rubros.dispositivos-smart.hero",
-    group: "rubros",
-    label: "Solución: dispositivos smart",
-    hint: "Imagen principal de la página de la solución.",
-    recommended: [2000, 1250],
-    fallback: "",
-    fallbackAlt: "Dispositivos inteligentes instalados en un ambiente",
-  },
-  {
-    key: "rubros.camaras-y-videovigilancia.hero",
-    group: "rubros",
-    label: "Solución: cámaras y videovigilancia",
-    hint: "Imagen principal de la página de la solución.",
-    recommended: [2000, 1250],
-    fallback: "",
-    fallbackAlt: "Cámara de seguridad instalada en una fachada",
-  },
 ] as const;
 
 export const IMAGE_SLOT_KEYS = IMAGE_SLOTS.map((slot) => slot.key);
@@ -121,7 +76,6 @@ export function findImageSlot(key: string): ImageSlotDefinition | undefined {
 export const IMAGE_SLOT_GROUP_LABELS: Record<ImageSlotGroup, string> = {
   inicio: "Inicio",
   nosotros: "Nosotros",
-  rubros: "Soluciones",
 };
 
 /**

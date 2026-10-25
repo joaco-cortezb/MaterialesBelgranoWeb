@@ -31,6 +31,9 @@ export async function saveBrand(id: string, formData: FormData): Promise<ActionR
   const parsed = brandSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return fail(firstIssue(parsed.error));
   const d = parsed.data;
+  if (d.rubroSlug && !(await prisma.category.findUnique({ where: { slug: d.rubroSlug }, select: { id: true } }))) {
+    return fail("La solución elegida no existe.");
+  }
   const data = {
     name: d.name,
     catalogUrl: d.catalogUrl,

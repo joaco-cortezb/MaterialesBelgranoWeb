@@ -1,4 +1,4 @@
-import { findRubro, ROUTES, WHATSAPP_SOURCE_LABELS, type WhatsappSource } from "@mb/shared";
+import { ROUTES, rubroWhatsappSource, whatsappSourceLabel, type WhatsappSource } from "@mb/shared";
 
 /**
  * Todos los CTA a WhatsApp apuntan a `/go/whatsapp/<origen>`: la ruta cuenta
@@ -11,18 +11,12 @@ export function whatsappGoHref(source: WhatsappSource, numberId?: string): strin
   return numberId ? `${base}?n=${encodeURIComponent(numberId)}` : base;
 }
 
-/** Origen de un rubro, tipado. */
-export function rubroWhatsappSource(slug: string): WhatsappSource {
-  return `rubro_${slug}` as WhatsappSource;
-}
+export { rubroWhatsappSource };
 
 /** Texto que se adjunta al mensaje para que el vendedor sepa de qué página viene. */
-export function whatsappPageLabel(source: WhatsappSource): string {
-  if (source.startsWith("rubro_")) {
-    const rubro = findRubro(source.slice("rubro_".length));
-    return rubro ? rubro.name : WHATSAPP_SOURCE_LABELS[source];
-  }
-  return WHATSAPP_SOURCE_LABELS[source];
+export function whatsappPageLabel(source: WhatsappSource, categoryName?: string): string {
+  if (categoryName) return categoryName;
+  return whatsappSourceLabel(source);
 }
 
 /** A dónde volver si el origen o el número no existen. */
