@@ -7,7 +7,7 @@ import { buttonClassName } from "@/components/ui/Button";
 import { Media } from "@/components/ui/Media";
 import { Eyebrow, SectionHeading } from "@/components/ui/SectionHeading";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
-import { LogoCloud } from "@/components/brands/LogoCloud";
+import { LogoMarquee } from "@/components/brands/LogoMarquee";
 import { CategoriesCarousel } from "@/components/rubros/CategoriesCarousel";
 import { ServicioIcon } from "@/components/servicios/ServicioIcon";
 import { YouTubeAutoplay } from "@/components/home/YouTubeAutoplay";
@@ -85,7 +85,9 @@ export default async function HomePage() {
           <h2 id="marcas-title" className="sr-only">
             Marcas
           </h2>
-          <LogoCloud brands={brands} source="inicio" className="mx-auto mt-10 max-w-5xl sm:mt-12" />
+        </Container>
+        <LogoMarquee brands={brands} source="inicio" className="mt-10 sm:mt-12" />
+        <Container>
           <div className="mt-8 text-center">
             <Link href={ROUTES.marcas} className="inline-flex min-h-11 items-center gap-2 font-semibold text-brand-700 hover:text-brand-800">
               Ver marcas por solución <FaArrowRight className="h-3.5 w-3.5" aria-hidden />
