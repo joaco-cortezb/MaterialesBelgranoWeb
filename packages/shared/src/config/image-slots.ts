@@ -30,15 +30,6 @@ export const IMAGE_SLOTS: readonly ImageSlotDefinition[] = [
     fallbackAlt: "Luminarias colgantes encendidas en el salón de Materiales Belgrano, Mendoza",
   },
   {
-    key: "home.rubros",
-    group: "inicio",
-    label: "Imagen de la sección de soluciones",
-    hint: "Foto al costado del listado de soluciones en el inicio.",
-    recommended: [1600, 1200],
-    fallback: "/images/exhibicion-iluminacion-materiales-belgrano.webp",
-    fallbackAlt: "Exhibición de luminarias encendidas en el salón de Materiales Belgrano",
-  },
-  {
     key: "home.distribuidora",
     group: "inicio",
     label: "Banner Distribuidora 370",

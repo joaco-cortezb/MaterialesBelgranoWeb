@@ -185,3 +185,18 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/*
+ * Motivo de marca para slots sin foto: franjas inclinadas como las losas del
+ * isotipo (verde la cara frontal, gris el lateral), muy tenues.
+ */
+.brand-slabs {
+  background-image:
+    repeating-linear-gradient(
+      -14deg,
+      transparent 0 34px,
+      rgba(124, 185, 40, 0.09) 34px 40px,
+      transparent 40px 72px
+    ),
+    radial-gradient(120% 90% at 85% 10%, rgba(124, 185, 40, 0.2), transparent 60%);
+}

@@ -7,3 +7,12 @@ allowBuilds:
   prisma: true
   sharp: true
   unrs-resolver: true
+
+# Parches de seguridad para dependencias transitivas del CLI de Prisma
+# (auditoría 25/10/2026). Revisar al actualizar Prisma.
+overrides:
+  fast-uri: ">=3.1.9"
+  deepmerge-ts: ">=8.0.0"
+  "@hono/node-server": ">=1.19.15"
+  valibot: ">=1.4.2"
+  mysql2: ">=3.23.1"

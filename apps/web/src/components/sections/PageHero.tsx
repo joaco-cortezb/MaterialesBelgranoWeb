@@ -30,7 +30,7 @@ export function PageHero({
       )}
       <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-t from-ink-dark via-ink-dark/75 to-ink-dark/40" />
       <Container className="py-20 sm:py-28">
-        <SectionHeading as="h1" eyebrow={eyebrow} title={title} text={text} light />
+        <SectionHeading as="h1" eyebrow={eyebrow} title={title} text={text} light className="max-w-3xl" />
       </Container>
     </section>
   );

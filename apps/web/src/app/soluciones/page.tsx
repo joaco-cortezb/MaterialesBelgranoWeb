@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ROUTES, RUBROS, SITE } from "@mb/shared";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { RubroCard } from "@/components/rubros/RubroCard";
+import { SolucionesGrid } from "@/components/rubros/SolucionesGrid";
 import { WhatsappCta } from "@/components/sections/WhatsappCta";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/structured-data";
@@ -30,10 +30,8 @@ export default async function RubrosPage() {
             title="Todo lo que lleva una instalación, en un solo proveedor"
             text="Materiales Belgrano trabaja cinco soluciones: materiales eléctricos, iluminación, máquinas y herramientas, dispositivos smart y cámaras. Cada página explica qué encontrás, con qué marcas y responde las preguntas más frecuentes. Lo puntual se resuelve por WhatsApp."
           />
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {RUBROS.map((rubro) => (
-              <RubroCard key={rubro.slug} rubro={rubro} image={images[rubro.imageSlot]} />
-            ))}
+          <div className="mt-12">
+            <SolucionesGrid images={images} source="inicio" />
           </div>
         </Container>
       </section>

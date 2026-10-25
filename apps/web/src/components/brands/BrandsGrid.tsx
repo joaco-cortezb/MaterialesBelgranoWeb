@@ -34,7 +34,7 @@ export function BrandsGrid({ brands, source }: { brands: Brand[]; source: string
                 width={240}
                 height={120}
                 sizes="(min-width: 1024px) 220px, (min-width: 640px) 30vw, 45vw"
-                className="h-12 w-auto max-w-[160px] object-contain"
+                className="h-11 w-full max-w-[150px] object-contain"
               />
             ) : (
               <span className="text-center text-base font-bold tracking-tight text-ink-dark">{brand.name}</span>

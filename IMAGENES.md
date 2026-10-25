@@ -17,7 +17,6 @@ lado, `-strip`). Los originales NO se versionan (`_assets-src/` está en
 | Slot (panel) | Dónde se ve | Archivo en el repo | Original del Drive |
 |---|---|---|---|
 | `home.hero` | Portada del inicio | `exhibicion-iluminacion-materiales-belgrano.webp` | `Materiales Belgrano_51.jpg` |
-| `home.rubros` | Foto al lado de los rubros (inicio) | `exhibicion-iluminacion-materiales-belgrano.webp` | `Materiales Belgrano_51.jpg` |
 | `home.distribuidora` | Fondo del banner Distribuidora 370 | `salon-exhibicion-materiales-belgrano.webp` | `Materiales Belgrano_134.jpg` |
 | `nosotros.hero` | Portada de Nosotros | `salon-materiales-belgrano-mendoza.webp` | `_135` |
 | `nosotros.salon` | Galería Nosotros: salón | `salon-exhibicion-materiales-belgrano.webp` | `_134` |

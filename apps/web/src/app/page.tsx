@@ -8,7 +8,7 @@ import { Media } from "@/components/ui/Media";
 import { Eyebrow, SectionHeading } from "@/components/ui/SectionHeading";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { BrandsGrid } from "@/components/brands/BrandsGrid";
-import { RubroCard } from "@/components/rubros/RubroCard";
+import { SolucionesGrid } from "@/components/rubros/SolucionesGrid";
 import { ServicioIcon } from "@/components/servicios/ServicioIcon";
 import { YouTubeFacade } from "@/components/home/YouTubeFacade";
 import { WhatsappCta } from "@/components/sections/WhatsappCta";
@@ -22,9 +22,8 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [hero, rubrosImage, distribuidoraImage, rubroImages, brands, videoId] = await Promise.all([
+  const [hero, distribuidoraImage, rubroImages, brands, videoId] = await Promise.all([
     getImageSlot("home.hero"),
-    getImageSlot("home.rubros"),
     getImageSlot("home.distribuidora"),
     getImageSlots(RUBROS.map((rubro) => rubro.imageSlot)),
     getBrands(),
@@ -109,15 +108,8 @@ export default async function HomePage() {
           <h2 id="rubros-title" className="sr-only">
             Soluciones
           </h2>
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {RUBROS.map((rubro) => (
-              <RubroCard key={rubro.slug} rubro={rubro} image={rubroImages[rubro.imageSlot]} />
-            ))}
-            {rubrosImage && (
-              <div className="relative hidden overflow-hidden rounded-2xl border border-line lg:block">
-                <Media src={rubrosImage.url} alt={rubrosImage.alt} position={rubrosImage.position} sizes="30vw" className="absolute inset-0" />
-              </div>
-            )}
+          <div className="mt-10">
+            <SolucionesGrid images={rubroImages} source="inicio" />
           </div>
         </Container>
       </section>
@@ -134,14 +126,20 @@ export default async function HomePage() {
           <h2 id="servicios-title" className="sr-only">
             Servicios
           </h2>
-          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-10 grid gap-3 sm:mt-12 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
             {SERVICIOS.map((servicio) => (
-              <li key={servicio.slug} id={servicio.slug} className="card-hover flex flex-col rounded-2xl border border-line bg-surface p-6">
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-800">
-                  <ServicioIcon icon={servicio.icon} className="h-6 w-6" />
+              <li
+                key={servicio.slug}
+                id={servicio.slug}
+                className="card-hover flex gap-4 rounded-2xl border border-line bg-surface p-4 sm:flex-col sm:gap-0 sm:p-6"
+              >
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-800 sm:h-12 sm:w-12">
+                  <ServicioIcon icon={servicio.icon} className="h-5 w-5 sm:h-6 sm:w-6" />
                 </span>
-                <h3 className="mt-5 text-lg font-bold tracking-tight text-ink-dark">{servicio.title}</h3>
-                <p className="mt-2 text-pretty text-sm leading-relaxed text-ink-soft">{servicio.short}</p>
+                <div>
+                  <h3 className="text-balance text-base font-bold leading-snug tracking-tight text-ink-dark sm:mt-5 sm:text-lg">{servicio.title}</h3>
+                  <p className="mt-1 text-pretty text-sm leading-relaxed text-ink-soft sm:mt-2">{servicio.short}</p>
+                </div>
               </li>
             ))}
           </ul>
@@ -171,7 +169,7 @@ export default async function HomePage() {
       </section>
 
       {/* Distribuidora 370 */}
-      <section aria-labelledby="d370-title" className="py-16 sm:py-24">
+      <section aria-labelledby="d370-title" className="pt-16 sm:pt-24">
         <Container>
           <div className="relative isolate overflow-hidden rounded-3xl bg-ink-dark text-white">
             {distribuidoraImage && (

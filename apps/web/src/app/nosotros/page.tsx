@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { ROUTES, SITE } from "@mb/shared";
 import { Container } from "@/components/ui/Container";
+import { FaWarehouse } from "react-icons/fa6";
 import { Media } from "@/components/ui/Media";
+import { BrandPlaceholder } from "@/components/ui/BrandPlaceholder";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
 import { ContactSection } from "@/components/contact/ContactSection";
@@ -71,7 +73,7 @@ export default async function NosotrosPage() {
                     {image ? (
                       <Media src={image.url} alt={image.alt} position={image.position} sizes="(min-width: 768px) 30vw, 92vw" className="absolute inset-0" />
                     ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-brand-100 to-brand-300" />
+                      <BrandPlaceholder icon={<FaWarehouse />} />
                     )}
                   </div>
                   <div className="p-5">
