@@ -1,5 +1,5 @@
 import { FaArrowRight, FaWhatsapp } from "react-icons/fa6";
-import { LuArrowUpRight } from "react-icons/lu";
+import { LuChevronDown } from "react-icons/lu";
 import { ROUTES, type HeroSlide } from "@mb/shared";
 import Link from "next/link";
 import { Eyebrow } from "@/components/ui/SectionHeading";
@@ -8,11 +8,11 @@ import { HeroSlides } from "@/components/home/HeroSlides";
 import { whatsappGoHref } from "@/lib/whatsapp";
 
 /**
- * Portada del inicio: foto (o carrusel) a pantalla completa, velo oscuro,
- * líneas verticales finas que ordenan la composición y el título centrado.
+ * Portada del inicio: foto (o carrusel) a pantalla completa, velo oscuro
+ * y el título centrado, con una flecha que baja a la sección siguiente.
  * Ocupa la primera pantalla menos el header.
  */
-export function HomeHero({ slides }: { slides: HeroSlide[] }) {
+export function HomeHero({ slides, nextSectionId }: { slides: HeroSlide[]; nextSectionId?: string }) {
   return (
     <section className="relative isolate flex min-h-[calc(100svh-4rem)] max-h-[1000px] items-center justify-center overflow-hidden bg-ink-dark text-white sm:min-h-[calc(100svh-5rem)]">
       <HeroSlides slides={slides} />
@@ -22,24 +22,15 @@ export function HomeHero({ slides }: { slides: HeroSlide[] }) {
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(36,38,31,0.55)_0%,transparent_70%)]" />
       <div aria-hidden className="absolute inset-x-0 bottom-0 -z-10 h-1/3 bg-gradient-to-t from-ink-dark/80 to-transparent" />
 
-      {/* Líneas de grilla (1 · 3 · 4 · 3 · 1 de 12 columnas). */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 hidden grid-cols-12 divide-x divide-white/15 md:grid">
-        <div className="col-span-1" />
-        <div className="col-span-3" />
-        <div className="col-span-4" />
-        <div className="col-span-3" />
-        <div className="col-span-1" />
-      </div>
-
       <div className="relative z-10 mx-auto max-w-5xl px-5 py-16 text-center sm:px-6">
         <div className="animate-fade-up">
           <Eyebrow light className="mb-4 sm:mb-5">
             Electricidad + Iluminación · Mendoza
           </Eyebrow>
-          <h1 className="text-balance text-[2.4rem] font-extrabold leading-[1.02] tracking-tight sm:text-6xl lg:text-[5.25rem]">
+          <h1 className="text-balance text-[2rem] font-extrabold leading-[1.06] tracking-tight sm:text-5xl lg:text-[3.75rem]">
             Materiales eléctricos e iluminación en Mendoza
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-pretty text-base font-light leading-relaxed text-white/85 sm:mt-6 sm:text-xl">
+          <p className="mx-auto mt-4 max-w-xl text-pretty text-base font-light leading-relaxed text-white/85 sm:mt-5 sm:text-lg">
             Stock, precio y entrega en 24 hs para instaladores, empresas y hogares.
           </p>
 
@@ -48,30 +39,31 @@ export function HomeHero({ slides }: { slides: HeroSlide[] }) {
               href={whatsappGoHref("inicio")}
               event="whatsapp_click"
               params={{ source: "inicio" }}
-              className="hero-cta pressable group inline-flex items-center rounded-full"
+              className="pressable inline-flex min-h-13 items-center gap-2.5 whitespace-nowrap rounded-full bg-brand-500 px-7 text-base font-semibold text-ink-dark !duration-500 hover:bg-white"
             >
-              <span className="inline-flex min-h-14 items-center gap-2.5 whitespace-nowrap rounded-full bg-brand-500 px-5 text-[15px] font-semibold sm:px-6 sm:text-base text-ink-dark transition-colors duration-500 group-hover:bg-white">
-                <FaWhatsapp className="h-5 w-5" aria-hidden />
-                Consultar por WhatsApp
-              </span>
-              <span
-                aria-hidden
-                className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-brand-500 text-ink-dark transition-colors duration-500 group-hover:bg-white"
-              >
-                <LuArrowUpRight className="hero-arrow hero-arrow-out absolute h-5 w-5" />
-                <LuArrowUpRight className="hero-arrow hero-arrow-in absolute h-5 w-5" />
-              </span>
+              <FaWhatsapp className="h-5 w-5" aria-hidden />
+              Consultar por WhatsApp
             </TrackedLink>
 
             <Link
               href={ROUTES.rubros}
-              className="pressable inline-flex min-h-14 items-center gap-2 rounded-full border border-white/50 px-7 text-base font-semibold tracking-tight text-white backdrop-blur-sm hover:border-white hover:bg-white/10"
+              className="pressable group inline-flex min-h-13 items-center gap-2 rounded-full border border-white/60 px-7 text-base font-semibold text-white backdrop-blur-sm !duration-500 hover:border-white hover:bg-white hover:text-ink-dark"
             >
-              Ver soluciones <FaArrowRight className="h-3.5 w-3.5" aria-hidden />
+              Ver soluciones <FaArrowRight className="h-3.5 w-3.5 transition-transform duration-500 group-hover:translate-x-1" aria-hidden />
             </Link>
           </div>
         </div>
       </div>
+
+      {nextSectionId && (
+        <a
+          href={`#${nextSectionId}`}
+          aria-label="Bajar a la sección siguiente"
+          className="hero-scroll absolute bottom-5 left-1/2 z-20 flex h-12 w-12 -translate-x-1/2 items-center justify-center rounded-full border border-white/40 text-white backdrop-blur-sm transition-colors duration-300 hover:border-white hover:bg-white hover:text-ink-dark sm:bottom-7"
+        >
+          <LuChevronDown className="h-5 w-5" aria-hidden />
+        </a>
+      )}
     </section>
   );
 }

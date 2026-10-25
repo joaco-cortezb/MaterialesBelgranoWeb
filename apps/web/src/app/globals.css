@@ -151,20 +151,21 @@ body {
   animation: hero-progress linear both;
 }
 
-/* Flecha que entra y sale del círculo del CTA principal. */
-.hero-cta .hero-arrow {
-  transition: transform 500ms var(--ease-out-strong);
-}
-.hero-cta .hero-arrow-in {
-  transform: translate(-2.5rem, 2.5rem);
-}
-@media (hover: hover) and (pointer: fine) {
-  .hero-cta:hover .hero-arrow-out {
-    transform: translate(2.5rem, -2.5rem);
+/* Flecha de la portada: un rebote suave que invita a bajar. */
+@keyframes hero-scroll {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
   }
-  .hero-cta:hover .hero-arrow-in {
-    transform: translate(0, 0);
+  50% {
+    transform: translate(-50%, 6px);
   }
+}
+.hero-scroll {
+  animation: hero-scroll 2.4s var(--ease-out-strong) infinite;
+}
+.hero-scroll:hover {
+  animation-play-state: paused;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -179,8 +180,8 @@ body {
   .hero-progress {
     display: none;
   }
-  .hero-cta .hero-arrow {
-    transition: none;
+  .hero-scroll {
+    animation: none;
   }
 }
 

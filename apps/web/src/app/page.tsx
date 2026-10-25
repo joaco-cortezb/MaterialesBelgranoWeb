@@ -10,7 +10,7 @@ import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { BrandsGrid } from "@/components/brands/BrandsGrid";
 import { SolucionesGrid } from "@/components/rubros/SolucionesGrid";
 import { ServicioIcon } from "@/components/servicios/ServicioIcon";
-import { YouTubeFacade } from "@/components/home/YouTubeFacade";
+import { YouTubeAutoplay } from "@/components/home/YouTubeAutoplay";
 import { WhatsappCta } from "@/components/sections/WhatsappCta";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { servicesSchema } from "@/lib/structured-data";
@@ -33,19 +33,20 @@ export default async function HomePage() {
   return (
     <>
       <JsonLd schema={servicesSchema(SERVICIOS)} />
-      <HomeHero slides={heroSlides} />
+      <HomeHero slides={heroSlides} nextSectionId={videoId ? "conocenos" : undefined} />
 
       {/* Video */}
       {videoId && (
-        <section aria-labelledby="video-title" className="py-16 sm:py-24">
-          <Container className="grid items-center gap-10 lg:grid-cols-[2fr_3fr]">
+        <section id="conocenos" aria-labelledby="video-title" className="scroll-mt-16 py-16 sm:scroll-mt-20 sm:py-20">
+          <Container>
             <SectionHeading
               eyebrow="Conocenos"
               title="Así es Materiales Belgrano por dentro"
-              text="Un salón de ventas moderno, un depósito ordenado y un equipo joven que sabe lo que vende. Mirá el video y después pasá a conocernos."
+              text="Un salón de ventas moderno, un depósito ordenado y un equipo joven que sabe lo que vende."
+              align="center"
             />
-            <div className="relative aspect-video overflow-hidden rounded-2xl border border-line bg-ink-dark shadow-xl">
-              <YouTubeFacade videoId={videoId} title={`Video institucional de ${SITE.name}`} />
+            <div className="relative mx-auto mt-8 aspect-video max-w-3xl overflow-hidden rounded-2xl border border-line bg-ink-dark shadow-xl sm:mt-10">
+              <YouTubeAutoplay videoId={videoId} title={`Video institucional de ${SITE.name}`} />
             </div>
           </Container>
           <h2 id="video-title" className="sr-only">

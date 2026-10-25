@@ -62,7 +62,7 @@ export function HeroSlides({ slides }: { slides: HeroSlide[] }) {
 
       {many && (
         <div
-          className="absolute inset-x-0 bottom-6 z-20 flex justify-center gap-2 sm:bottom-8"
+          className="absolute bottom-5 right-4 z-20 flex gap-1 sm:bottom-7 sm:right-8"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
