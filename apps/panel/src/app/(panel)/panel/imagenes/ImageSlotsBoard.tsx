@@ -19,10 +19,11 @@ const POSITIONS = [
   { value: "50% 75%", label: "Centro-abajo" },
 ];
 
-const GROUPS: ImageSlotGroup[] = ["inicio", "nosotros"];
+// Sólo las secciones que tienen al menos un slot (las portadas viven en "Portadas").
+const GROUPS = (["inicio", "nosotros"] as ImageSlotGroup[]).filter((item) => IMAGE_SLOTS.some((slot) => slot.group === item));
 
 export function ImageSlotsBoard({ values }: { values: Record<string, SlotValue> }) {
-  const [group, setGroup] = useState<ImageSlotGroup>("inicio");
+  const [group, setGroup] = useState<ImageSlotGroup>(GROUPS[0] ?? "nosotros");
   const slots = IMAGE_SLOTS.filter((slot) => slot.group === group);
 
   return (

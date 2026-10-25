@@ -57,9 +57,10 @@ model ImageSlot {
   updatedAt DateTime @updatedAt
 }
 
-/// Foto del carrusel de la portada del inicio, en orden.
+/// Foto del carrusel de portada de una página (`page`: inicio | marcas | nosotros), en orden.
 model HeroSlide {
   id        String   @id @default(cuid())
+  page      String   @default("inicio")
   url       String
   alt       String
   position  String   @default("50% 50%")
@@ -68,7 +69,7 @@ model HeroSlide {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([active, order])
+  @@index([page, active, order])
 }
 
 /// Una solución (rubro) de la web: página propia, card del carrusel del inicio
@@ -93,6 +94,17 @@ model Category {
   updatedAt       DateTime @updatedAt
 
   @@index([active, order])
+}
+
+/// Banner del inicio (`key`: lugar donde se muestra). Con `url`, todo el banner es un link.
+model Banner {
+  key       String   @id
+  title     String
+  text      String   @default("")
+  image     String   @default("")
+  url       String   @default("")
+  active    Boolean  @default(true)
+  updatedAt DateTime @updatedAt
 }
 
 model WhatsappNumber {

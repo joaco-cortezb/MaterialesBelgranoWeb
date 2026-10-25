@@ -63,6 +63,9 @@
   border-color: var(--line);
 }
 
+/* Scroll suave sólo para anclas de la misma página: con
+   `data-scroll-behavior="smooth"` Next lo desactiva al cambiar de ruta, así
+   la página nueva aparece arriba directamente. */
 html {
   scroll-behavior: smooth;
 }
@@ -151,14 +154,15 @@ body {
   animation: hero-progress linear both;
 }
 
-/* Flecha de la portada: un rebote suave que invita a bajar. */
+/* Flecha de la portada: un rebote suave que invita a bajar. Sólo mueve en Y:
+   el centrado horizontal lo hace la propiedad `translate` de Tailwind. */
 @keyframes hero-scroll {
   0%,
   100% {
-    transform: translate(-50%, 0);
+    transform: translateY(0);
   }
   50% {
-    transform: translate(-50%, 6px);
+    transform: translateY(6px);
   }
 }
 .hero-scroll {

@@ -14,10 +14,10 @@ const RUBRO_PATHS = ["/soluciones/[slug]"];
 /** Qué páginas muestran cada tipo de contenido. */
 const TAG_PATHS: Record<CmsTag, string[]> = {
   brands: [ROUTES.home, ROUTES.marcas, ...RUBRO_PATHS],
-  images: [ROUTES.home, ROUTES.nosotros, ROUTES.rubros, ...RUBRO_PATHS],
+  images: [ROUTES.home, ROUTES.nosotros, ROUTES.marcas, ...RUBRO_PATHS],
   whatsapp: [ROUTES.nosotros],
   settings: [ROUTES.home, ROUTES.nosotros],
-  categories: [ROUTES.home, ROUTES.rubros, ROUTES.marcas, "/sitemap.xml", "/llms.txt", ...RUBRO_PATHS],
+  categories: [ROUTES.home, ROUTES.marcas, "/sitemap.xml", "/llms.txt", ...RUBRO_PATHS],
 };
 
 export async function POST(request: Request) {

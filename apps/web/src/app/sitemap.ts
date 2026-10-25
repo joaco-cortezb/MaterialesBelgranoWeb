@@ -13,7 +13,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const categories = await getCategories().catch(() => []);
   return [
     { url: `${base}${ROUTES.home}`, changeFrequency: "weekly", priority: 1 },
-    { url: `${base}${ROUTES.rubros}`, changeFrequency: "monthly", priority: 0.9 },
     ...categories.map((rubro) => ({
       url: `${base}${ROUTES.rubro(rubro.slug)}`,
       changeFrequency: "monthly" as const,

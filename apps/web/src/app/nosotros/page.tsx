@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { ROUTES, SITE } from "@mb/shared";
-import { Container } from "@/components/ui/Container";
 import { FaWarehouse } from "react-icons/fa6";
+import { ROUTES, SITE, type ImageSlot } from "@mb/shared";
+import { Container } from "@/components/ui/Container";
 import { Media } from "@/components/ui/Media";
 import { BrandPlaceholder } from "@/components/ui/BrandPlaceholder";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { PageHero } from "@/components/sections/PageHero";
+import { Eyebrow } from "@/components/ui/SectionHeading";
+import { PageBanner } from "@/components/sections/PageBanner";
 import { ContactSection } from "@/components/contact/ContactSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/structured-data";
-import { getAboutContent, getDefaultWhatsapp, getImageSlots, getWhatsappNumbers } from "@/lib/cms";
+import { getAboutContent, getDefaultWhatsapp, getHeroSlides, getImageSlots, getWhatsappNumbers } from "@/lib/cms";
 
 export const metadata: Metadata = {
   title: "Nosotros y contacto",
@@ -19,15 +19,22 @@ export const metadata: Metadata = {
 };
 
 const GALLERY = [
-  { key: "nosotros.salon", title: "Salón de ventas", text: "Renovado por completo para que elegir sea cómodo: exhibición de iluminación encendida y atención sin mostrador tradicional." },
-  { key: "nosotros.deposito", title: "Depósito", text: "Stock permanente y ordenado de cables, cañerías, tableros y luminarias, listo para despachar en el día." },
-  { key: "nosotros.equipo", title: "Equipo", text: "Un equipo joven y capacitado, con menos de 30 años de promedio, que resuelve en el salón o por WhatsApp." },
+  { key: "nosotros.salon", title: "Salón de ventas" },
+  { key: "nosotros.deposito", title: "Depósito" },
+  { key: "nosotros.equipo", title: "Equipo" },
 ] as const;
 
+const FACTS = [
+  { value: `Desde ${SITE.foundedYear}`, label: "en Godoy Cruz, Mendoza" },
+  { value: "+5.000", label: "artículos en stock" },
+  { value: "24 hs", label: "entrega con transporte propio" },
+];
+
 export default async function NosotrosPage() {
-  const [about, images, numbers, fallback] = await Promise.all([
+  const [about, slides, images, numbers, fallback] = await Promise.all([
     getAboutContent(),
-    getImageSlots(["nosotros.hero", ...GALLERY.map((item) => item.key)]),
+    getHeroSlides("nosotros"),
+    getImageSlots(GALLERY.map((item) => item.key)),
     getWhatsappNumbers(),
     getDefaultWhatsapp(),
   ]);
@@ -36,64 +43,40 @@ export default async function NosotrosPage() {
   return (
     <>
       <JsonLd schema={breadcrumbSchema([{ name: "Nosotros", path: ROUTES.nosotros }])} />
-      <PageHero
-        eyebrow="Nosotros"
-        title={about.headline}
-        text={`Materiales eléctricos e iluminación en ${SITE.address.locality}, ${SITE.address.region}, para instaladores, empresas y hogares.`}
-        image={images["nosotros.hero"]}
-      />
+      <PageBanner slides={slides} eyebrow="Nosotros" title={about.headline} />
 
+      {/* Historia: poco texto, centrado, con tres datos que la resumen. */}
       <section className="py-16 sm:py-24">
-        <Container className="grid gap-12 lg:grid-cols-[1fr_1.2fr]">
-          <SectionHeading eyebrow="Nuestra historia" title="Crecimos por recomendación, no por publicidad" />
-          <div className="space-y-5 text-pretty text-base leading-relaxed text-ink sm:text-lg">
+        <Container className="max-w-3xl text-center">
+          <Eyebrow>Nuestra historia</Eyebrow>
+          <div className="mt-5 space-y-4 text-pretty text-lg leading-relaxed text-ink sm:text-xl">
             {about.body.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
-        </Container>
-      </section>
-
-      <section aria-labelledby="galeria-title" className="bg-surface py-16 sm:py-24">
-        <Container>
-          <SectionHeading
-            eyebrow="El negocio"
-            title="Tamaño, orden y stock: lo que ves cuando entrás"
-            text="Un negocio se conoce por su depósito. El nuestro está ordenado, con stock permanente y listo para despachar en el día."
-          />
-          <h2 id="galeria-title" className="sr-only">
-            Galería
-          </h2>
-          <ul className="mt-12 grid gap-6 md:grid-cols-3">
-            {GALLERY.map((item) => {
-              const image = images[item.key];
-              return (
-                <li key={item.key} className="overflow-hidden rounded-2xl border border-line bg-bg">
-                  <div className="relative aspect-[4/3]">
-                    {image ? (
-                      <Media src={image.url} alt={image.alt} position={image.position} sizes="(min-width: 768px) 30vw, 92vw" className="absolute inset-0" />
-                    ) : (
-                      <BrandPlaceholder icon={<FaWarehouse />} />
-                    )}
-                  </div>
-                  <div className="p-5">
-                    <h3 className="text-lg font-bold tracking-tight text-ink-dark">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-ink-soft">{item.text}</p>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </Container>
-      </section>
-
-      <section className="py-16 sm:py-24">
-        <Container>
-          <dl className="grid gap-6 rounded-3xl border border-line bg-surface p-8 sm:grid-cols-3 sm:p-10">
-            <Fact value={`Desde ${SITE.foundedYear}`} label="en Godoy Cruz, Mendoza" />
-            <Fact value="3 públicos" label="instaladores, empresas y consumidor final" />
-            <Fact value="50 %" label="de las ventas en cuenta corriente a clientes frecuentes" />
+          <dl className="mt-12 grid grid-cols-3 gap-4 border-t border-line pt-10">
+            {FACTS.map((fact) => (
+              <div key={fact.label}>
+                <dt className="sr-only">{fact.label}</dt>
+                <dd className="font-condensed text-3xl font-bold tracking-tight text-brand-700 sm:text-5xl">{fact.value}</dd>
+                <dd className="mt-1 text-xs text-ink-soft sm:text-sm">{fact.label}</dd>
+              </div>
+            ))}
           </dl>
+        </Container>
+      </section>
+
+      {/* Fotos del negocio en mosaico, sin cards de texto. */}
+      <section aria-labelledby="galeria-title" className="pb-16 sm:pb-24">
+        <Container>
+          <h2 id="galeria-title" className="sr-only">
+            El negocio por dentro
+          </h2>
+          <ul className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:grid-rows-2">
+            {GALLERY.map((item, index) => (
+              <GalleryTile key={item.key} title={item.title} image={images[item.key]} large={index === 0} />
+            ))}
+          </ul>
         </Container>
       </section>
 
@@ -102,12 +85,27 @@ export default async function NosotrosPage() {
   );
 }
 
-function Fact({ value, label }: { value: string; label: string }) {
+function GalleryTile({ title, image, large }: { title: string; image: ImageSlot | null; large: boolean }) {
   return (
-    <div>
-      <dt className="sr-only">{label}</dt>
-      <dd className="font-condensed text-4xl font-bold tracking-tight text-brand-700">{value}</dd>
-      <dd className="mt-1 text-sm text-ink-soft">{label}</dd>
-    </div>
+    <li
+      className={
+        large
+          ? "relative aspect-[4/3] overflow-hidden rounded-3xl bg-surface-2 sm:col-span-2 lg:row-span-2 lg:aspect-auto lg:min-h-[480px]"
+          : "relative aspect-[4/3] overflow-hidden rounded-3xl bg-surface-2"
+      }
+    >
+      {image ? (
+        <Media
+          src={image.url}
+          alt={image.alt}
+          position={image.position}
+          sizes={large ? "(min-width: 1024px) 66vw, 100vw" : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"}
+          className="absolute inset-0"
+        />
+      ) : (
+        <BrandPlaceholder icon={<FaWarehouse />} />
+      )}
+      <span className="absolute bottom-4 left-4 rounded-full bg-ink-dark/75 px-4 py-1.5 text-sm font-semibold text-white backdrop-blur-sm">{title}</span>
+    </li>
   );
 }

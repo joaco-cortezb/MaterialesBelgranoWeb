@@ -2,13 +2,13 @@
 
 import { useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
-import { HERO_FALLBACK_SLIDES, HERO_MAX_SLIDES, HERO_RECOMMENDED } from "@mb/shared";
-import { Badge, Button, Card, Hint, IconButton, Input, Label, PageHeader, Select, Spinner, Switch } from "@/components/ui";
+import { HERO_MAX_SLIDES, HERO_PAGE_CONFIG, HERO_PAGES, type HeroPage } from "@mb/shared";
+import { Badge, Button, Card, Hint, IconButton, Input, Label, PageHeader, Select, Spinner, Switch, Textarea } from "@/components/ui";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
 import type { ActionResult } from "@/lib/actions";
-import { deleteHeroSlide, reorderHeroSlide, saveHeroSlide, toggleHeroSlideActive } from "./actions";
+import { deleteHeroSlide, reorderHeroSlide, saveHeroSlide, saveHomeHeroText, toggleHeroSlideActive } from "./actions";
 
 export type HeroSlideDTO = { id: string; url: string; alt: string; position: string; active: boolean };
 
@@ -24,7 +24,20 @@ const POSITIONS = [
 
 const NEW_SLIDE: HeroSlideDTO = { id: "", url: "", alt: "", position: "50% 50%", active: true };
 
-export function HeroSlidesBoard({ slides }: { slides: HeroSlideDTO[] }) {
+type HeroTextValue = { title: string; text: string; defaultTitle: string };
+
+export function HeroSlidesBoard({
+  slides: allSlides,
+  initialPage,
+  heroText,
+}: {
+  slides: (HeroSlideDTO & { page: string })[];
+  initialPage: HeroPage;
+  heroText: HeroTextValue;
+}) {
+  const [page, setPage] = useState<HeroPage>(initialPage);
+  const slides = allSlides.filter((slide) => slide.page === page);
+  const config = HERO_PAGE_CONFIG[page];
   const [adding, setAdding] = useState(false);
   const [deleting, setDeleting] = useState<HeroSlideDTO | null>(null);
   const [pending, startTransition] = useTransition();
@@ -47,17 +60,37 @@ export function HeroSlidesBoard({ slides }: { slides: HeroSlideDTO[] }) {
   return (
     <div>
       <PageHeader
-        title="Portada del inicio"
-        subtitle="Las fotos grandes detrás del título de la página de inicio. Con más de una visible, pasan solas cada pocos segundos, en este orden."
+        title="Portadas"
+        subtitle="Las fotos grandes del inicio de cada página. Con más de una visible, pasan solas cada pocos segundos, en este orden."
       >
         <Button onClick={() => setAdding(true)} disabled={adding || full}>
           <Plus className="h-4 w-4" /> Agregar foto
         </Button>
       </PageHeader>
 
+      <div role="tablist" aria-label="Página de la web" className="mb-6 flex gap-1 overflow-x-auto rounded-xl bg-surface-2 p-1">
+        {HERO_PAGES.map((item) => (
+          <button
+            key={item}
+            role="tab"
+            aria-selected={page === item}
+            onClick={() => {
+              setPage(item);
+              setAdding(false);
+            }}
+            className={`min-h-10 shrink-0 rounded-lg px-4 text-sm font-semibold transition-colors ${page === item ? "bg-surface text-ink shadow-sm" : "text-ink-soft hover:text-ink"}`}
+          >
+            {HERO_PAGE_CONFIG[item].label}
+          </button>
+        ))}
+      </div>
+      <p className="mb-5 text-sm text-ink-soft">{config.hint}</p>
+
+      {page === "inicio" && <HeroTextCard value={heroText} />}
+
       {visibleCount === 0 && (
         <Card className="mb-5 px-5 py-4 text-sm text-ink-soft">
-          No hay fotos visibles: la web muestra las {HERO_FALLBACK_SLIDES.length} fotos por defecto del salón.
+          No hay fotos visibles: la web muestra {config.fallback.length === 1 ? "una foto" : `${config.fallback.length} fotos`} por defecto del salón.
         </Card>
       )}
       {full && <p className="mb-5 text-sm text-ink-soft">Llegaste al máximo de {HERO_MAX_SLIDES} fotos. Eliminá una para agregar otra.</p>}
@@ -65,7 +98,9 @@ export function HeroSlidesBoard({ slides }: { slides: HeroSlideDTO[] }) {
       {adding && (
         <div className="mb-5">
           <SlideCard
+            key={page}
             slide={NEW_SLIDE}
+            page={page}
             isNew
             onCancel={() => setAdding(false)}
             onSaved={() => setAdding(false)}
@@ -78,6 +113,7 @@ export function HeroSlidesBoard({ slides }: { slides: HeroSlideDTO[] }) {
           <li key={slide.id}>
             <SlideCard
               slide={slide}
+              page={page}
               index={index}
               toolbar={
                 <div className="flex items-center gap-2">
@@ -119,6 +155,7 @@ export function HeroSlidesBoard({ slides }: { slides: HeroSlideDTO[] }) {
 
 function SlideCard({
   slide,
+  page,
   index,
   isNew = false,
   toolbar,
@@ -126,6 +163,7 @@ function SlideCard({
   onSaved,
 }: {
   slide: HeroSlideDTO;
+  page: HeroPage;
   index?: number;
   isNew?: boolean;
   toolbar?: React.ReactNode;
@@ -142,6 +180,7 @@ function SlideCard({
 
   function save() {
     const formData = new FormData();
+    formData.set("page", page);
     formData.set("url", url);
     formData.set("alt", alt);
     formData.set("position", position);
@@ -172,7 +211,7 @@ function SlideCard({
           onChange={setUrl}
           folder="slots"
           label="Foto de portada"
-          recommended={HERO_RECOMMENDED}
+          recommended={HERO_PAGE_CONFIG[page].recommended}
           position={position}
           previewClassName="aspect-video w-full"
         />
@@ -212,6 +251,54 @@ function SlideCard({
             "Agregar a la portada"
           ) : (
             "Guardar"
+          )}
+        </Button>
+      </div>
+    </Card>
+  );
+}
+
+function HeroTextCard({ value }: { value: HeroTextValue }) {
+  const [title, setTitle] = useState(value.title);
+  const [text, setText] = useState(value.text);
+  const [pending, startTransition] = useTransition();
+  const toast = useToast();
+  const dirty = title !== value.title || text !== value.text;
+
+  function save() {
+    const formData = new FormData();
+    formData.set("title", title);
+    formData.set("text", text);
+    startTransition(async () => {
+      const result = await saveHomeHeroText(formData);
+      if (result.ok) toast.success(result.message ?? "Guardado.");
+      else toast.error(result.error);
+    });
+  }
+
+  return (
+    <Card className="mb-5 p-5">
+      <h2 className="font-bold text-ink">Texto de la portada</h2>
+      <div className="mt-4 grid gap-4">
+        <div>
+          <Label htmlFor="hero-title">Título</Label>
+          <Input id="hero-title" value={title} onChange={(event) => setTitle(event.target.value)} maxLength={120} placeholder={value.defaultTitle} />
+          <Hint>Si lo dejás vacío se muestra: “{value.defaultTitle}”.</Hint>
+        </div>
+        <div>
+          <Label htmlFor="hero-text">Bajada (opcional)</Label>
+          <Textarea id="hero-text" value={text} onChange={(event) => setText(event.target.value)} maxLength={240} rows={2} />
+          <Hint>Una línea corta debajo del título. Vacío = sin bajada.</Hint>
+        </div>
+      </div>
+      <div className="mt-4 flex justify-end">
+        <Button onClick={save} disabled={pending || !dirty}>
+          {pending ? (
+            <>
+              <Spinner /> Guardando…
+            </>
+          ) : (
+            "Guardar texto"
           )}
         </Button>
       </div>

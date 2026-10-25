@@ -1,9 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
-import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa6";
-import { NAV_LINKS, SITE } from "@mb/shared";
+import { FaClock, FaEnvelope, FaFacebook, FaInstagram, FaLocationDot, FaPhone, FaYoutube } from "react-icons/fa6";
+import { NAV_LINKS, ROUTES, SITE } from "@mb/shared";
 import { Container } from "@/components/ui/Container";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
-import { Logo } from "@/components/layout/Logo";
 
 const SOCIAL = [
   { href: SITE.social.instagram, label: "Instagram", Icon: FaInstagram },
@@ -13,25 +13,38 @@ const SOCIAL = [
 
 const BUCLY_URL = "https://bucly.tech/?utm_source=materialesbelgrano.com&utm_medium=footer&utm_campaign=desarrollado-por";
 
-/** Footer oscuro y compacto: logo, datos de contacto, menú y crédito. */
+/** Footer oscuro: logo oficial, datos de contacto con íconos, menú y crédito. */
 export function Footer() {
   return (
     <footer className="bg-ink-dark text-white">
       <Container className="py-10 sm:py-12">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-          <Logo variant="light" size="lg" />
+          <Link href={ROUTES.home} aria-label={`${SITE.name}: ir al inicio`} className="shrink-0 self-start transition-transform duration-300 hover:scale-[1.04] lg:self-center">
+            {/* Logo oficial de la marca (versión en círculo verde, pensada para fondos de color). */}
+            <Image src="/brand/logo-materiales-belgrano-circulo.png" alt={SITE.name} width={400} height={400} sizes="112px" className="h-24 w-24 sm:h-28 sm:w-28" />
+          </Link>
 
-          <address className="grid gap-x-10 gap-y-1.5 text-sm not-italic text-white/75 sm:grid-cols-2">
-            <span>{SITE.address.singleLine}</span>
-            <span>
-              {SITE.hours.map((slot) => `${slot.days} ${slot.opens}–${slot.closes} hs`).join(" · ")}
-            </span>
-            <a href={`tel:${SITE.phone.e164}`} className="hover:text-white">
-              {SITE.phone.display}
-            </a>
-            <a href={`mailto:${SITE.email}`} className="break-all hover:text-white">
-              {SITE.email}
-            </a>
+          <address className="grid gap-x-10 gap-y-4 not-italic sm:grid-cols-2">
+            <FooterItem icon={<FaLocationDot />} label="Dirección">
+              {SITE.address.singleLine}
+            </FooterItem>
+            <FooterItem icon={<FaClock />} label="Horarios">
+              {SITE.hours.map((slot) => (
+                <span key={slot.days} className="block">
+                  {slot.days} {slot.opens}–{slot.closes} hs
+                </span>
+              ))}
+            </FooterItem>
+            <FooterItem icon={<FaPhone />} label="Teléfono">
+              <a href={`tel:${SITE.phone.e164}`} className="hover:text-white">
+                {SITE.phone.display}
+              </a>
+            </FooterItem>
+            <FooterItem icon={<FaEnvelope />} label="Email">
+              <a href={`mailto:${SITE.email}`} className="break-all hover:text-white">
+                {SITE.email}
+              </a>
+            </FooterItem>
           </address>
         </div>
 
@@ -79,5 +92,19 @@ export function Footer() {
         </div>
       </Container>
     </footer>
+  );
+}
+
+function FooterItem({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex items-start gap-3">
+      <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-500/15 text-brand-400 ring-1 ring-brand-500/30 [&>svg]:h-4 [&>svg]:w-4">
+        {icon}
+      </span>
+      <div className="min-w-0 text-sm">
+        <span className="block font-condensed text-xs font-semibold uppercase tracking-[0.16em] text-white/45">{label}</span>
+        <span className="mt-0.5 block leading-relaxed text-white/80">{children}</span>
+      </div>
+    </div>
   );
 }

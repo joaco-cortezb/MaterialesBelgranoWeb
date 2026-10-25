@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { IMAGE_SLOT_KEYS } from "./config/image-slots.ts";
+import { BANNER_KEYS, HERO_PAGES, IMAGE_SLOT_KEYS } from "./config/image-slots.ts";
 import { safeExternalUrl, youtubeVideoId } from "./lib/safe-url.ts";
 import { normalizeWhatsappPhone } from "./lib/whatsapp-url.ts";
 
@@ -65,7 +65,14 @@ export const whatsappNumberSchema = z.object({
   active: checkbox,
 });
 
+const imageUrl = z
+  .string()
+  .trim()
+  .max(500)
+  .refine((value) => value === "" || value.startsWith("https://") || value.startsWith("/"), "URL de imagen inválida");
+
 export const heroSlideSchema = z.object({
+  page: z.enum(HERO_PAGES).default("inicio"),
   url: z
     .string()
     .trim()
@@ -80,6 +87,32 @@ export const heroSlideSchema = z.object({
     .optional()
     .default("50% 50%")
     .refine((value) => /^\d{1,3}% \d{1,3}%$/.test(value), "Encuadre inválido"),
+});
+
+export const heroTextSchema = z.object({
+  title: z.string().trim().max(120).optional().default(""),
+  text: z.string().trim().max(240).optional().default(""),
+});
+
+/** Link de un banner: vacío, una ruta interna ("/marcas") o una URL https. */
+const bannerLink = z
+  .string()
+  .trim()
+  .max(500)
+  .optional()
+  .default("")
+  .refine(
+    (value) => value === "" || (value.startsWith("/") && !value.startsWith("//")) || Boolean(safeExternalUrl(value)),
+    "Link inválido: usá una dirección que empiece con https:// o una ruta como /marcas",
+  );
+
+export const bannerSchema = z.object({
+  key: z.enum(BANNER_KEYS),
+  title: z.string().trim().min(1, "El título es obligatorio").max(140),
+  text: z.string().trim().max(280).optional().default(""),
+  image: imageUrl.optional().default(""),
+  url: bannerLink,
+  active: checkbox,
 });
 
 export const homeVideoSchema = z.object({

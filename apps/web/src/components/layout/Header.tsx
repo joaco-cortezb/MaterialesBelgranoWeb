@@ -2,7 +2,6 @@ import { FaWhatsapp } from "react-icons/fa6";
 import { LuArrowUpRight, LuShoppingBag } from "react-icons/lu";
 import { NAV_LINKS, SITE } from "@mb/shared";
 import { Container } from "@/components/ui/Container";
-import { buttonClassName } from "@/components/ui/Button";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { Logo } from "@/components/layout/Logo";
 import { NavLinks } from "@/components/layout/NavLinks";
@@ -55,14 +54,17 @@ export function Header() {
           <nav aria-label="Secciones" className="hidden lg:block">
             <NavLinks links={RIGHT_LINKS} />
           </nav>
+          {/* Mismo formato que "Tienda online": píldora clara con el ícono en un círculo. */}
           <TrackedLink
             href={whatsappHref}
             event="whatsapp_click"
             params={{ source: "header" }}
             aria-label="Consultar por WhatsApp"
-            className={buttonClassName({ variant: "primary", size: "compact", className: "ml-auto h-11 w-11 !rounded-full !px-0 sm:w-auto sm:!px-5 lg:ml-0" })}
+            className="pressable ml-auto inline-flex h-10 items-center gap-2 rounded-full bg-ink-dark/[0.06] p-1.5 text-sm font-semibold text-ink-dark hover:bg-ink-dark hover:text-white sm:pr-4 lg:ml-0"
           >
-            <FaWhatsapp className="h-5 w-5" aria-hidden />
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-whatsapp text-white shadow-sm">
+              <FaWhatsapp className="h-4 w-4" aria-hidden />
+            </span>
             <span className="hidden sm:inline">WhatsApp</span>
           </TrackedLink>
         </div>

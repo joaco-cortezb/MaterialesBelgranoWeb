@@ -8,6 +8,8 @@ type NavLink = { href: string; label: string };
 
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
+  // Soluciones es una sección del inicio: se marca dentro de sus páginas.
+  if (href.startsWith("/#")) return pathname.startsWith("/soluciones/");
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 

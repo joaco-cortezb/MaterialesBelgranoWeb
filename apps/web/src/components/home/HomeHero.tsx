@@ -2,7 +2,6 @@ import { FaArrowRight, FaWhatsapp } from "react-icons/fa6";
 import { LuChevronDown } from "react-icons/lu";
 import { ROUTES, type HeroSlide } from "@mb/shared";
 import Link from "next/link";
-import { Eyebrow } from "@/components/ui/SectionHeading";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { HeroSlides } from "@/components/home/HeroSlides";
 import { whatsappGoHref } from "@/lib/whatsapp";
@@ -12,7 +11,7 @@ import { whatsappGoHref } from "@/lib/whatsapp";
  * y el título centrado, con una flecha que baja a la sección siguiente.
  * Ocupa la primera pantalla menos el header.
  */
-export function HomeHero({ slides, nextSectionId }: { slides: HeroSlide[]; nextSectionId?: string }) {
+export function HomeHero({ slides, title, text, nextSectionId }: { slides: HeroSlide[]; title: string; text?: string; nextSectionId?: string }) {
   return (
     <section className="relative isolate flex min-h-[calc(100svh-4rem)] max-h-[1000px] items-center justify-center overflow-hidden bg-ink-dark text-white sm:min-h-[calc(100svh-5rem)]">
       <HeroSlides slides={slides} />
@@ -24,15 +23,8 @@ export function HomeHero({ slides, nextSectionId }: { slides: HeroSlide[]; nextS
 
       <div className="relative z-10 mx-auto max-w-5xl px-5 py-16 text-center sm:px-6">
         <div className="animate-fade-up">
-          <Eyebrow light className="mb-4 sm:mb-5">
-            Electricidad + Iluminación · Mendoza
-          </Eyebrow>
-          <h1 className="text-balance text-[2rem] font-extrabold leading-[1.06] tracking-tight sm:text-5xl lg:text-[3.75rem]">
-            Materiales eléctricos e iluminación en Mendoza
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-pretty text-base font-light leading-relaxed text-white/85 sm:mt-5 sm:text-lg">
-            Stock, precio y entrega en 24 hs para instaladores, empresas y hogares.
-          </p>
+          <h1 className="text-balance text-[2rem] font-extrabold leading-[1.06] tracking-tight sm:text-5xl lg:text-[3.75rem]">{title}</h1>
+          {text && <p className="mx-auto mt-4 max-w-xl text-pretty text-base font-light leading-relaxed text-white/85 sm:mt-5 sm:text-lg">{text}</p>}
 
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:mt-10 sm:flex-row">
             <TrackedLink

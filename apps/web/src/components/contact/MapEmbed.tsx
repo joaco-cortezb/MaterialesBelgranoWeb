@@ -13,7 +13,7 @@ export function MapEmbed() {
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-line bg-surface-2 sm:aspect-[16/9] lg:aspect-auto lg:h-full lg:min-h-[420px]">
+    <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-line bg-surface-2 sm:aspect-[16/9] lg:aspect-[21/9]">
       {loaded ? (
         <iframe
           src={`https://www.google.com/maps?q=${MAPS_QUERY}&output=embed&hl=es`}

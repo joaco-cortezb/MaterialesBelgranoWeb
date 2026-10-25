@@ -66,7 +66,8 @@ export const ROUTES = {
   nosotros: "/nosotros",
   /** Los servicios viven como sección del inicio. */
   servicios: "/#servicios",
-  rubros: "/soluciones",
+  /** Las soluciones son una sección del inicio; cada una tiene su página. */
+  rubros: "/#soluciones",
   rubro: (slug: string) => `/soluciones/${slug}`,
   marcas: "/marcas",
   /** El contacto es la última sección de Nosotros. */

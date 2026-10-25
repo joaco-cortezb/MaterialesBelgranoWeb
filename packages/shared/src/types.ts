@@ -32,6 +32,15 @@ export type HeroSlide = {
   position: string;
 };
 
+/** Banner del inicio. `url` vacío = banner sin link. */
+export type Banner = {
+  key: string;
+  title: string;
+  text: string;
+  image: string;
+  url: string;
+};
+
 export type WhatsappAudience = "GENERAL" | "EMPRESAS";
 
 export type WhatsappNumber = {

@@ -57,7 +57,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   const storageOrigin = safeOrigin(env.SUPABASE_URL);
 
   return (
-    <html lang="es-AR" className={`${montserrat.variable} ${barlow.variable} h-full antialiased`}>
+    <html lang="es-AR" data-scroll-behavior="smooth" className={`${montserrat.variable} ${barlow.variable} h-full antialiased`}>
       <head>
         {storageOrigin && (
           <>

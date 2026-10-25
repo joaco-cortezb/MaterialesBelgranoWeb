@@ -3,7 +3,9 @@ import "server-only";
 import { unstable_cache } from "next/cache";
 import {
   findImageSlot,
-  HERO_FALLBACK_SLIDES,
+  BANNER_CONFIG,
+  DEFAULT_HOME_HERO_TITLE,
+  HERO_PAGE_CONFIG,
   IMAGE_SLOTS,
   PUBLIC_SETTING_KEYS,
   SETTING_KEYS,
@@ -14,6 +16,9 @@ import {
   type Brand,
   type Category,
   type Faq,
+  type Banner,
+  type BannerKey,
+  type HeroPage,
   type HeroSlide,
   type ImageSlot,
   type WhatsappNumber,
@@ -202,7 +207,7 @@ export async function getCategory(slug: string): Promise<Category | undefined> {
 
 /* ── Portada del inicio ──────────────────────────────────────────────────── */
 
-type HeroSlideRow = { id: string; url: string; alt: string; position: string | null };
+type HeroSlideRow = { id: string; page: string; url: string; alt: string; position: string | null };
 
 const getHeroSlideRows = unstable_cache(
   async (): Promise<HeroSlideRow[]> => {
@@ -210,26 +215,53 @@ const getHeroSlideRows = unstable_cache(
     if (!supabase) return [];
     const { data, error } = await supabase
       .from("HeroSlide")
-      .select("id, url, alt, position")
+      .select("id, page, url, alt, position")
       .eq("active", true)
       .order("order", { ascending: true });
     if (error) {
-      console.error("[cms] no se pudieron leer las fotos de la portada", error.message);
+      console.error("[cms] no se pudieron leer las fotos de portada", error.message);
       return [];
     }
     return data as HeroSlideRow[];
   },
-  ["cms-hero-slides"],
+  ["cms-hero-slides-v2"],
   { tags: ["images"], revalidate: FALLBACK_TTL_SECONDS },
 );
 
-/** Fotos activas del carrusel del inicio; si no hay ninguna, las del repo. */
-export async function getHeroSlides(): Promise<HeroSlide[]> {
-  const rows = (await getHeroSlideRows()).filter((row) => row.url);
+/** Fotos activas de la portada de una página; si no hay ninguna, las del repo. */
+export async function getHeroSlides(page: HeroPage = "inicio"): Promise<HeroSlide[]> {
+  const rows = (await getHeroSlideRows()).filter((row) => row.url && (row.page || "inicio") === page);
   if (rows.length) {
     return rows.map((row) => ({ id: row.id, url: row.url, alt: row.alt, position: row.position || "50% 50%" }));
   }
-  return HERO_FALLBACK_SLIDES.map((slide, index) => ({ id: `fallback-${index}`, url: slide.url, alt: slide.alt, position: "50% 50%" }));
+  return HERO_PAGE_CONFIG[page].fallback.map((slide, index) => ({ id: `fallback-${index}`, url: slide.url, alt: slide.alt, position: "50% 50%" }));
+}
+
+/* ── Banners del inicio ──────────────────────────────────────────────────── */
+
+type BannerRow = { key: string; title: string; text: string; image: string; url: string; active: boolean };
+
+const getBannerRows = unstable_cache(
+  async (): Promise<BannerRow[]> => {
+    const supabase = getSupabaseClient();
+    if (!supabase) return [];
+    const { data, error } = await supabase.from("Banner").select("key, title, text, image, url, active");
+    if (error) {
+      console.error("[cms] no se pudieron leer los banners", error.message);
+      return [];
+    }
+    return data as BannerRow[];
+  },
+  ["cms-banners"],
+  { tags: ["images"], revalidate: FALLBACK_TTL_SECONDS },
+);
+
+/** Banner de un lugar: el del panel, el por defecto si no hay fila, o `null` si está apagado. */
+export async function getBanner(key: BannerKey): Promise<Banner | null> {
+  const row = (await getBannerRows()).find((item) => item.key === key);
+  if (row && !row.active) return null;
+  if (row) return { key, title: row.title, text: row.text, image: row.image, url: row.url };
+  return { key, ...BANNER_CONFIG[key].defaults };
 }
 
 /* ── WhatsApp ────────────────────────────────────────────────────────────── */
@@ -311,11 +343,21 @@ export async function getHomeVideoId(): Promise<string | null> {
 const DEFAULT_ABOUT: AboutContent = {
   headline: "Casi 10 años creciendo con la atención como diferencial",
   body: [
-    "Materiales Belgrano nació del aporte de sus tres socios fundadores y actuales propietarios, Federico, Tomás y Pablo, con una idea simple: que comprar materiales eléctricos sea rápido, claro y con alguien del otro lado que sepa lo que vende.",
-    "Invertimos en un salón de ventas moderno y cómodo, en un depósito ordenado con stock permanente y en la capacitación de un equipo joven, con un promedio de edad que no supera los 30 años. Crecimos gracias al boca en boca de instaladores, empresas y vecinos de Mendoza.",
-    "Hoy estamos entre las principales casas del rubro en la provincia, y seguimos apostando a lo mismo: precios competitivos, entrega rápida y atención personalizada.",
+    "Nacimos de la idea de tres socios, Federico, Tomás y Pablo: que comprar materiales eléctricos sea rápido, claro y con alguien del otro lado que sepa lo que vende.",
+    "Hoy somos una de las principales casas del rubro en Mendoza, con un salón moderno, depósito propio y un equipo joven que crece con cada recomendación.",
   ],
 };
+
+/** Textos de la portada del inicio (título obligatorio, bajada opcional). */
+export async function getHomeHeroText(): Promise<{ title: string; text: string }> {
+  const settings = await getSettings();
+  const title = settings[SETTING_KEYS.homeHeroTitle];
+  const text = settings[SETTING_KEYS.homeHeroText];
+  return {
+    title: typeof title === "string" && title.trim() ? title.trim() : DEFAULT_HOME_HERO_TITLE,
+    text: typeof text === "string" ? text.trim() : "",
+  };
+}
 
 export async function getAboutContent(): Promise<AboutContent> {
   const settings = await getSettings();
