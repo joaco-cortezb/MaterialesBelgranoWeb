@@ -108,7 +108,7 @@ function Slide({ category, active }: { category: Category; active: boolean }) {
           className="absolute inset-0 transition-transform duration-700 ease-[var(--ease-out-strong)] group-hover:scale-[1.04]"
         />
       ) : (
-        <BrandPlaceholder icon={<RubroIcon slug={category.slug} />} className="items-start pt-[28%]" />
+        <BrandPlaceholder icon={<RubroIcon slug={category.slug} />} className="items-start pt-[14%] sm:pt-[22%]" />
       )}
       <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink-dark via-ink-dark/45 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-6 pb-7 text-center sm:px-8 sm:pb-9">
