@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, ErrorBox, Input, Label, Spinner } from "@/components/ui";
-import { createClient } from "@/lib/supabase/client";
+import { Button, ErrorBox, Hint, Input, Label, Spinner } from "@/components/ui";
+import { updatePassword } from "./actions";
 
 export function ResetForm() {
   const router = useRouter();
@@ -15,23 +15,23 @@ export function ResetForm() {
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
-    if (password.length < 10) {
-      setError("La contraseña tiene que tener al menos 10 caracteres.");
-      return;
-    }
-    if (password !== confirm) {
-      setError("Las contraseñas no coinciden.");
-      return;
-    }
     setLoading(true);
-    const { error: updateError } = await createClient().auth.updateUser({ password });
-    if (updateError) {
-      setError("No se pudo guardar la contraseña. Pedí un enlace nuevo.");
+    try {
+      const formData = new FormData();
+      formData.set("password", password);
+      formData.set("confirm", confirm);
+      const result = await updatePassword(formData);
+      if (!result.ok) {
+        setError(result.error);
+        setLoading(false);
+        return;
+      }
+      router.replace("/panel");
+      router.refresh();
+    } catch {
+      setError("Ocurrió un error. Intentá de nuevo.");
       setLoading(false);
-      return;
     }
-    router.replace("/panel");
-    router.refresh();
   }
 
   return (
@@ -39,6 +39,7 @@ export function ResetForm() {
       <div>
         <Label htmlFor="password">Contraseña nueva</Label>
         <Input id="password" type="password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={10} autoFocus />
+        <Hint>Mínimo 10 caracteres. No puede ser una contraseña que haya aparecido en filtraciones públicas.</Hint>
       </div>
       <div>
         <Label htmlFor="confirm">Repetir contraseña</Label>
