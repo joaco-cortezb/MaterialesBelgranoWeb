@@ -103,9 +103,9 @@ export const HERO_PAGE_CONFIG: Record<
 };
 
 /**
- * Banners del inicio. Cada uno vive en un lugar fijo (`key`); el contenido
- * (título, texto, foto, link) se edita en el panel. Sin fila cargada, la web
- * usa `defaults`.
+ * Banners del inicio: sólo imagen (el diseño, con su texto, va en la foto) y
+ * todos del mismo tamaño. Si tienen link, todo el banner es clickeable. Se
+ * editan en el panel; sin fila cargada, la web usa `defaults`.
  */
 export const BANNER_KEYS = ["inicio.soluciones", "inicio.final"] as const;
 export type BannerKey = (typeof BANNER_KEYS)[number];
@@ -114,29 +114,30 @@ export function isBannerKey(value: string): value is BannerKey {
   return (BANNER_KEYS as readonly string[]).includes(value);
 }
 
+/** Medida única de todos los banners (la web los muestra con esta proporción). */
+export const BANNER_SIZE: readonly [number, number] = [2400, 1000];
+
 export const BANNER_CONFIG: Record<
   BannerKey,
-  { label: string; hint: string; recommended: readonly [number, number]; defaults: { title: string; text: string; image: string; url: string } }
+  { label: string; hint: string; defaults: { title: string; text: string; image: string; url: string } }
 > = {
   "inicio.soluciones": {
     label: "Banner después de Soluciones",
     hint: "Se muestra en el inicio, debajo del carrusel de soluciones.",
-    recommended: [2000, 800],
     defaults: {
-      title: "¿Preferís comprar online? Entrá a Distribuidora 370.",
-      text: "Una selección de productos con compra directa y envío a todo el país.",
-      image: "/images/salon-exhibicion-materiales-belgrano.webp",
+      title: "Comprá online en Distribuidora 370, la tienda online del grupo, con envíos a todo el país",
+      text: "",
+      image: "/images/banners/tienda-online.webp",
       url: "https://www.distribuidora370.ar",
     },
   },
   "inicio.final": {
     label: "Banner final",
     hint: "Se muestra al final del inicio, antes del pie de página.",
-    recommended: [2000, 800],
     defaults: {
-      title: "¿Tenés una obra o un proyecto? Pasanos el listado.",
-      text: "Te cotizamos completo en minutos por WhatsApp.",
-      image: "",
+      title: "¿Tenés una obra? Pasanos el listado y te cotizamos todo junto por WhatsApp",
+      text: "",
+      image: "/images/banners/cotizacion-whatsapp.webp",
       url: "/go/whatsapp/inicio",
     },
   },

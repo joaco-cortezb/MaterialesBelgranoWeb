@@ -9,7 +9,7 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
     <div className="relative grid min-h-svh place-items-center bg-sidebar px-4 pb-10 pt-32 sm:py-32">
       <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(124,185,40,0.25),transparent_60%)]" />
       <Image
-        src="/brand/logo-materiales-belgrano-h-blanco.png"
+        src="/brand/logo-materiales-belgrano-h-footer.png"
         alt="Materiales Belgrano"
         width={1640}
         height={739}

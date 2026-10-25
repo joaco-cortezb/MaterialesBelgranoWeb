@@ -22,7 +22,11 @@ export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];
 export const PUBLIC_SETTING_KEYS: readonly SettingKey[] = Object.values(SETTING_KEYS);
 
 /** Título de la portada del inicio si el panel no cargó uno. */
-export const DEFAULT_HOME_HERO_TITLE = "Todo para tu instalación, en un solo lugar";
+export const DEFAULT_HOME_HERO_TITLE = "Todo lo que tu obra necesita, en un solo lugar";
+
+/** Bajada de la portada del inicio si el panel nunca guardó una (guardarla vacía la oculta). */
+export const DEFAULT_HOME_HERO_TEXT =
+  "Materiales eléctricos, iluminación, herramientas, cámaras y productos smart, con asesoramiento real y entrega rápida.";
 
 /** Orígenes fijos. Las soluciones suman `rubro_<slug>` (se crean en el panel). */
 export const WHATSAPP_SOURCES = ["header", "inicio", "nosotros", "servicios", "marcas", "contacto", "404"] as const;

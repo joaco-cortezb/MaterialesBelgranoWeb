@@ -14,7 +14,9 @@ import { RubroIcon } from "@/components/rubros/RubroIcon";
  * Carrusel circular de soluciones: al llegar al final sigue con las del
  * principio (`loop`). Avanza solo cada pocos segundos, se pausa con el mouse
  * encima o al interactuar, y la card del centro queda en primer plano.
- * Con `prefers-reduced-motion` no hay autoplay.
+ * Con `prefers-reduced-motion` no hay autoplay. Las cards toman el alto que
+ * queda en la pantalla para que la sección entera (título, controles y
+ * carrusel) se vea sin scrollear.
  */
 export function CategoriesCarousel({ categories }: { categories: Category[] }) {
   const [reducedMotion] = useState(
@@ -42,23 +44,8 @@ export function CategoriesCarousel({ categories }: { categories: Category[] }) {
 
   return (
     <div className="relative" aria-roledescription="carrusel" aria-label="Soluciones">
-      <div ref={emblaRef} className="overflow-hidden py-4">
-        <div className="-ml-4 flex touch-pan-y sm:-ml-6">
-          {categories.map((category, index) => (
-            <div
-              key={category.slug}
-              role="group"
-              aria-roledescription="diapositiva"
-              aria-label={`${index + 1} de ${categories.length}: ${category.name}`}
-              className="min-w-0 shrink-0 grow-0 basis-[82%] pl-4 sm:basis-1/2 sm:pl-6 lg:basis-1/3"
-            >
-              <Slide category={category} active={index === selected} />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-6 flex items-center justify-center gap-5">
+      {/* Controles arriba y al centro: siempre a la vista junto con las cards. */}
+      <div className="flex items-center justify-center gap-5">
         <ArrowButton label="Anterior" onClick={() => emblaApi?.scrollPrev()}>
           <FaArrowLeft className="h-4 w-4" aria-hidden />
         </ArrowButton>
@@ -85,6 +72,22 @@ export function CategoriesCarousel({ categories }: { categories: Category[] }) {
           <FaArrowRight className="h-4 w-4" aria-hidden />
         </ArrowButton>
       </div>
+      <div ref={emblaRef} className="mt-2 overflow-hidden py-4">
+        <div className="-ml-4 flex touch-pan-y sm:-ml-6">
+          {categories.map((category, index) => (
+            <div
+              key={category.slug}
+              role="group"
+              aria-roledescription="diapositiva"
+              aria-label={`${index + 1} de ${categories.length}: ${category.name}`}
+              className="min-w-0 shrink-0 grow-0 basis-[82%] pl-4 sm:basis-1/2 sm:pl-6 lg:basis-1/3"
+            >
+              <Slide category={category} active={index === selected} />
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 }
@@ -94,7 +97,7 @@ function Slide({ category, active }: { category: Category; active: boolean }) {
     <Link
       href={ROUTES.rubro(category.slug)}
       className={cn(
-        "group relative block aspect-[4/5] overflow-hidden rounded-3xl bg-ink-dark text-white shadow-[0_24px_50px_-28px_rgba(36,38,31,0.55)]",
+        "group relative block h-[clamp(300px,calc(100svh-25rem),560px)] overflow-hidden rounded-3xl bg-ink-dark text-white shadow-[0_24px_50px_-28px_rgba(36,38,31,0.55)]",
         "transition-[transform,opacity] duration-500 ease-[var(--ease-out-strong)] motion-reduce:transition-none",
         active ? "scale-100 opacity-100" : "scale-[0.94] opacity-70",
       )}

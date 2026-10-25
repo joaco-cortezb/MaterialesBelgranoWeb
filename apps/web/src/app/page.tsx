@@ -3,7 +3,6 @@ import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa6";
 import { ROUTES, SERVICIOS, SITE } from "@mb/shared";
 import { Container } from "@/components/ui/Container";
-import { Eyebrow, SectionHeading } from "@/components/ui/SectionHeading";
 import { LogoMarquee } from "@/components/brands/LogoMarquee";
 import { CategoriesCarousel } from "@/components/rubros/CategoriesCarousel";
 import { ServicioIcon } from "@/components/servicios/ServicioIcon";
@@ -38,58 +37,59 @@ export default async function HomePage() {
       {videoId && (
         <section id="conocenos" aria-labelledby="video-title" className="scroll-mt-16 bg-ink-dark py-14 text-white sm:scroll-mt-20 sm:py-20">
           <Container>
-            <div className="text-center">
-              <Eyebrow light>Conocenos</Eyebrow>
-              <h2 id="video-title" className="mt-2 text-lg font-semibold text-white/85 sm:text-xl">
-                Así es {SITE.name} por dentro
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="font-condensed text-base font-semibold uppercase tracking-[0.2em] text-brand-300 sm:text-lg">Por dentro</p>
+              <h2 id="video-title" className="mt-2 text-balance text-2xl font-extrabold tracking-tight sm:text-4xl">
+                Un salón pensado para que elegir sea fácil
               </h2>
             </div>
-            <div className="relative mx-auto mt-7 aspect-video max-w-5xl overflow-hidden rounded-2xl bg-black shadow-[0_30px_80px_-30px_rgba(124,185,40,0.45)] ring-1 ring-white/10 sm:mt-9">
+            <div className="relative mx-auto mt-8 aspect-video max-w-5xl overflow-hidden rounded-2xl bg-black shadow-[0_30px_80px_-30px_rgba(124,185,40,0.45)] ring-1 ring-white/10 sm:mt-10">
               <YouTubeAutoplay videoId={videoId} title={`Video institucional de ${SITE.name}`} />
             </div>
           </Container>
         </section>
       )}
 
-      {/* Soluciones */}
-      <section id="soluciones" aria-labelledby="soluciones-title" className="scroll-mt-16 overflow-hidden bg-surface py-16 sm:scroll-mt-20 sm:py-24">
+      {/* Soluciones: título, controles y carrusel entran en una pantalla. */}
+      <section
+        id="soluciones"
+        aria-labelledby="soluciones-title"
+        className="flex scroll-mt-16 flex-col justify-center overflow-hidden bg-surface py-10 sm:min-h-[calc(100svh-5rem)] sm:scroll-mt-20 sm:py-12"
+      >
         <Container>
-          <SectionHeading
-            eyebrow="Soluciones"
-            title="Todo lo que lleva una instalación."
-            text="Cinco líneas con stock permanente y gente que sabe lo que vende. Elegí la tuya y mirá con qué trabajamos."
-            align="center"
-          />
-          <h2 id="soluciones-title" className="sr-only">
-            Soluciones
-          </h2>
-          <div className="mt-10 sm:mt-12">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 id="soluciones-title" className="text-balance text-4xl font-extrabold tracking-tight text-ink-dark sm:text-5xl">
+              Soluciones
+            </h2>
+            <p className="mt-3 text-pretty text-base text-ink-soft sm:text-lg">Todo lo que lleva una instalación, con stock permanente y gente que sabe lo que vende.</p>
+          </div>
+          <div className="mt-6">
             <CategoriesCarousel categories={categories} />
           </div>
         </Container>
       </section>
 
-      {bannerSoluciones && <HomeBanner banner={bannerSoluciones} />}
+      {bannerSoluciones && <HomeBanner banner={bannerSoluciones} className="bg-surface" />}
 
-      {/* Marcas: franja verde de marca. */}
-      <section aria-labelledby="marcas-title" className="bg-brand-500 py-16 text-ink-dark sm:py-24">
+      {/* Marcas: degradé de negro a verde de marca. */}
+      <section aria-labelledby="marcas-title" className="bg-gradient-to-br from-ink-dark via-[#2c3a19] to-brand-700 py-16 text-white sm:py-24">
         <Container>
           <div className="mx-auto max-w-2xl text-center">
-            <p className="font-condensed text-sm font-semibold uppercase tracking-[0.18em] text-ink-dark/70">Marcas</p>
-            <h2 id="marcas-title" className="mt-3 text-balance text-3xl font-extrabold tracking-tight sm:text-4xl">
+            <p className="font-condensed text-base font-semibold uppercase tracking-[0.2em] text-brand-300 sm:text-lg">Marcas</p>
+            <h2 id="marcas-title" className="mt-2 text-balance text-3xl font-extrabold tracking-tight sm:text-5xl">
               Trabajamos con los que saben.
             </h2>
-            <p className="mt-4 text-pretty text-base leading-relaxed text-ink-dark/75 sm:text-lg">
+            <p className="mt-4 text-pretty text-base leading-relaxed text-white/75 sm:text-lg">
               Fabricantes líderes del mercado eléctrico, con respaldo ante fallas y devoluciones. Tocá un logo para ver su catálogo.
             </p>
           </div>
         </Container>
-        <LogoMarquee brands={brands} source="inicio" className="mt-10 sm:mt-12" />
+        <LogoMarquee brands={brands} source="inicio" className="mt-10 sm:mt-14" />
         <Container>
-          <div className="mt-10 text-center">
+          <div className="mt-10 text-center sm:mt-12">
             <Link
               href={ROUTES.marcas}
-              className="pressable group inline-flex min-h-12 items-center gap-2 rounded-full bg-ink-dark px-7 font-semibold text-white hover:bg-white hover:text-ink-dark"
+              className="pressable group inline-flex min-h-12 items-center gap-2 rounded-full bg-brand-500 px-7 font-semibold text-ink-dark hover:bg-white"
             >
               Ver catálogos <FaArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
             </Link>
@@ -97,23 +97,29 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* Por qué elegirnos */}
+      {/* Por qué elegirnos: seis cards iguales en una grilla simétrica. */}
       <section id="servicios" aria-labelledby="servicios-title" className="scroll-mt-20 py-16 sm:py-24">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
-            <Eyebrow>Por qué elegirnos</Eyebrow>
-            <h2 id="servicios-title" className="mt-3 text-balance text-3xl font-extrabold tracking-tight text-ink-dark sm:text-5xl">
+            <p className="font-condensed text-base font-semibold uppercase tracking-[0.2em] text-brand-700 sm:text-lg">Por qué elegirnos</p>
+            <h2 id="servicios-title" className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-ink-dark sm:text-5xl">
               Mismas marcas que todos. <span className="text-brand-600">Otra forma de atenderte.</span>
             </h2>
           </div>
-          <ul className="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-x-6 gap-y-10 sm:mt-16 lg:grid-cols-3 lg:gap-x-12">
+          <ul className="mx-auto mt-12 grid max-w-6xl gap-4 sm:mt-14 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
             {SERVICIOS.map((servicio) => (
-              <li key={servicio.slug} id={servicio.slug} className="flex flex-col items-center text-center">
-                <span className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-500 text-ink-dark shadow-[0_12px_28px_-12px_rgba(124,185,40,0.9)] sm:h-20 sm:w-20">
-                  <ServicioIcon icon={servicio.icon} className="h-7 w-7 sm:h-8 sm:w-8" />
+              <li
+                key={servicio.slug}
+                id={servicio.slug}
+                className="card-hover flex h-full flex-col items-center rounded-3xl border border-line bg-surface px-6 py-8 text-center sm:px-8 sm:py-10"
+              >
+                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-500 text-ink-dark">
+                  <ServicioIcon icon={servicio.icon} className="h-7 w-7" />
                 </span>
-                <h3 className="mt-4 text-balance text-base font-bold leading-snug tracking-tight text-ink-dark sm:mt-5 sm:text-lg">{servicio.title}</h3>
-                <p className="mt-1.5 hidden max-w-xs text-pretty text-sm leading-relaxed text-ink-soft sm:block">{servicio.short}</p>
+                <h3 className="mt-5 flex min-h-[3.25rem] items-center text-balance text-lg font-bold leading-snug tracking-tight text-ink-dark">
+                  {servicio.title}
+                </h3>
+                <p className="mt-2 max-w-xs text-pretty text-[15px] leading-relaxed text-ink-soft">{servicio.short}</p>
               </li>
             ))}
           </ul>

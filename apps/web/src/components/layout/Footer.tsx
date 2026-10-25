@@ -18,13 +18,20 @@ export function Footer() {
   return (
     <footer className="bg-ink-dark text-white">
       <Container className="py-10 sm:py-12">
-        <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-          <Link href={ROUTES.home} aria-label={`${SITE.name}: ir al inicio`} className="shrink-0 self-start transition-transform duration-300 hover:scale-[1.04] lg:self-center">
-            {/* Logo oficial de la marca (versión en círculo verde, pensada para fondos de color). */}
-            <Image src="/brand/logo-materiales-belgrano-circulo.png" alt={SITE.name} width={400} height={400} sizes="112px" className="h-24 w-24 sm:h-28 sm:w-28" />
+        <div className="grid gap-10 lg:grid-cols-[auto_1fr] lg:items-center lg:gap-20">
+          <Link href={ROUTES.home} aria-label={`${SITE.name}: ir al inicio`} className="shrink-0 justify-self-center transition-transform duration-300 hover:scale-[1.03] lg:justify-self-start">
+            {/* Mismo logo que el menú, con "BELGRANO" en blanco para el fondo oscuro. */}
+            <Image
+              src="/brand/logo-materiales-belgrano-h-footer.png"
+              alt={SITE.name}
+              width={1640}
+              height={739}
+              sizes="320px"
+              className="h-28 w-auto sm:h-36"
+            />
           </Link>
 
-          <address className="grid gap-x-10 gap-y-4 not-italic sm:grid-cols-2">
+          <address className="grid gap-x-10 gap-y-6 not-italic sm:grid-cols-2 lg:gap-x-14">
             <FooterItem icon={<FaLocationDot />} label="Dirección">
               {SITE.address.singleLine}
             </FooterItem>

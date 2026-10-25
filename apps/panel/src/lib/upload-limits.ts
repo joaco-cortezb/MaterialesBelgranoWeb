@@ -35,7 +35,7 @@ export const MAX_FUNCTION_UPLOAD_MB = 4;
 export const FUNCTION_UPLOAD_LIMIT_BYTES = MAX_FUNCTION_UPLOAD_MB * 1024 * 1024;
 
 /** Peso máximo del archivo original que acepta el campo (se achica en el cliente si hace falta). */
-export const CLIENT_MAX_MB = 20;
+export const CLIENT_MAX_MB = 40;
 
 /**
  * Extensiones aceptadas. Sin SVG a propósito: es XML que puede llevar

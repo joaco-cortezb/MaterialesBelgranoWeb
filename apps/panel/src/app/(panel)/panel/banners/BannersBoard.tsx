@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { BANNER_CONFIG, type BannerKey } from "@mb/shared";
+import { BANNER_CONFIG, BANNER_SIZE, type BannerKey } from "@mb/shared";
 import { Badge, Button, Card, Hint, Input, Label, PageHeader, Spinner, Switch, Textarea } from "@/components/ui";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
@@ -14,7 +14,7 @@ export function BannersBoard({ banners }: { banners: BannerDTO[] }) {
     <div>
       <PageHeader
         title="Banners"
-        subtitle="Los banners del inicio. No llevan botones: si les cargás un link, todo el banner se vuelve clickeable."
+        subtitle={`Los banners del inicio son sólo una imagen (con el texto ya incluido en el diseño), todos de ${BANNER_SIZE[0]} × ${BANNER_SIZE[1]} px. Si les cargás un link, todo el banner es clickeable.`}
       />
       <div className="grid gap-5 lg:grid-cols-2">
         {banners.map((banner) => (
@@ -28,20 +28,19 @@ export function BannersBoard({ banners }: { banners: BannerDTO[] }) {
 function BannerCard({ banner }: { banner: BannerDTO }) {
   const config = BANNER_CONFIG[banner.key];
   const [title, setTitle] = useState(banner.title);
-  const [text, setText] = useState(banner.text);
   const [image, setImage] = useState(banner.image);
   const [url, setUrl] = useState(banner.url);
   const [active, setActive] = useState(banner.active);
   const [pending, startTransition] = useTransition();
   const toast = useToast();
   const dirty =
-    !banner.saved || title !== banner.title || text !== banner.text || image !== banner.image || url !== banner.url || active !== banner.active;
+    !banner.saved || title !== banner.title || image !== banner.image || url !== banner.url || active !== banner.active;
 
   function save() {
     const formData = new FormData();
     formData.set("key", banner.key);
     formData.set("title", title);
-    formData.set("text", text);
+    formData.set("text", "");
     formData.set("image", image);
     formData.set("url", url);
     formData.set("active", active ? "on" : "");
@@ -71,20 +70,17 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
           onChange={setImage}
           folder="slots"
           label="Foto del banner"
-          recommended={config.recommended}
-          previewClassName="aspect-[5/2] w-full"
+          recommended={BANNER_SIZE}
+          objectFit="cover"
+          previewClassName="aspect-[12/5] w-full"
         />
-        <Hint>Opcional. Sin foto, el banner va con fondo oscuro.</Hint>
       </div>
 
       <div className="mt-4 grid gap-4">
         <div>
-          <Label htmlFor={`title-${banner.key}`}>Título</Label>
-          <Input id={`title-${banner.key}`} value={title} onChange={(event) => setTitle(event.target.value)} maxLength={140} />
-        </div>
-        <div>
-          <Label htmlFor={`text-${banner.key}`}>Texto (opcional)</Label>
-          <Textarea id={`text-${banner.key}`} value={text} onChange={(event) => setText(event.target.value)} maxLength={280} rows={2} />
+          <Label htmlFor={`title-${banner.key}`}>Qué dice el banner</Label>
+          <Textarea id={`title-${banner.key}`} value={title} onChange={(event) => setTitle(event.target.value)} maxLength={200} rows={2} />
+          <Hint>El texto que aparece en la imagen. No se muestra encima: lo leen Google y los lectores de pantalla.</Hint>
         </div>
         <div>
           <Label htmlFor={`url-${banner.key}`}>Link (opcional)</Label>
@@ -101,7 +97,7 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
       </div>
 
       <div className="mt-4 flex justify-end">
-        <Button onClick={save} disabled={pending || !dirty || !title.trim()}>
+        <Button onClick={save} disabled={pending || !dirty || !title.trim() || !image}>
           {pending ? (
             <>
               <Spinner /> Guardando…

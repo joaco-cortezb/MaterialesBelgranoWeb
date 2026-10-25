@@ -108,9 +108,10 @@ const bannerLink = z
 
 export const bannerSchema = z.object({
   key: z.enum(BANNER_KEYS),
-  title: z.string().trim().min(1, "El título es obligatorio").max(140),
+  // `title` es la descripción de la imagen (texto alternativo): el banner no lleva texto encima.
+  title: z.string().trim().min(1, "Describí qué dice o muestra el banner").max(200),
   text: z.string().trim().max(280).optional().default(""),
-  image: imageUrl.optional().default(""),
+  image: imageUrl.refine((value) => value !== "", "Subí la imagen del banner"),
   url: bannerLink,
   active: checkbox,
 });

@@ -4,6 +4,7 @@ import { ROUTES, type HeroSlide } from "@mb/shared";
 import Link from "next/link";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { HeroSlides } from "@/components/home/HeroSlides";
+import { Eyebrow } from "@/components/ui/SectionHeading";
 import { whatsappGoHref } from "@/lib/whatsapp";
 
 /**
@@ -23,6 +24,9 @@ export function HomeHero({ slides, title, text, nextSectionId }: { slides: HeroS
 
       <div className="relative z-10 mx-auto max-w-5xl px-5 py-16 text-center sm:px-6">
         <div className="animate-fade-up">
+          <Eyebrow light className="mb-4 sm:mb-5">
+            Materiales Belgrano
+          </Eyebrow>
           <h1 className="text-balance text-[2rem] font-extrabold leading-[1.06] tracking-tight sm:text-5xl lg:text-[3.75rem]">{title}</h1>
           {text && <p className="mx-auto mt-4 max-w-xl text-pretty text-base font-light leading-relaxed text-white/85 sm:mt-5 sm:text-lg">{text}</p>}
 

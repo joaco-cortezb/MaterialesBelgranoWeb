@@ -45,15 +45,15 @@ function MarqueeRow({ brands, source, reverse }: { brands: Brand[]; source: stri
                 external
                 tabIndex={copy === 1 || index >= brands.length ? -1 : undefined}
                 aria-label={`${brand.name}: abrir catálogo en una pestaña nueva`}
-                className="group/logo flex h-20 w-40 items-center justify-center rounded-2xl border border-line bg-surface px-6 transition-[border-color,box-shadow] duration-200 hover:border-brand-300 hover:shadow-[0_10px_24px_-16px_rgba(36,38,31,0.35)] sm:h-24 sm:w-52 sm:px-8"
+                className="group/logo flex h-24 w-48 items-center justify-center rounded-2xl border border-line bg-surface px-6 transition-[border-color,box-shadow] duration-200 hover:border-brand-300 hover:shadow-[0_10px_24px_-16px_rgba(36,38,31,0.35)] sm:h-32 sm:w-64 sm:px-9"
               >
                 <Image
                   src={brand.logo}
                   alt={copy === 1 ? "" : `Logo de ${brand.name}`}
                   width={240}
                   height={120}
-                  sizes="208px"
-                  className="h-9 w-full object-contain opacity-75 grayscale transition-[filter,opacity] duration-300 group-hover/logo:opacity-100 group-hover/logo:grayscale-0 sm:h-10"
+                  sizes="256px"
+                  className="h-11 w-full object-contain opacity-75 grayscale transition-[filter,opacity] duration-300 group-hover/logo:opacity-100 group-hover/logo:grayscale-0 sm:h-14"
                 />
               </TrackedLink>
             </li>

@@ -11,7 +11,7 @@ export async function optimizeUploadFile(file: File, folder: UploadFolder): Prom
   const { data } = await validateUploadContent(file);
 
   try {
-    const image = sharp(data, { animated: false, limitInputPixels: 50_000_000, failOn: "error" });
+    const image = sharp(data, { animated: false, limitInputPixels: 120_000_000, failOn: "error" });
     const metadata = await image.metadata();
     if (!metadata.width || !metadata.height || metadata.width > 12_000 || metadata.height > 12_000) {
       throw new InvalidUploadError("La imagen tiene medidas inválidas.");

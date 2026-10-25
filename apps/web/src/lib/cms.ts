@@ -4,6 +4,7 @@ import { unstable_cache } from "next/cache";
 import {
   findImageSlot,
   BANNER_CONFIG,
+  DEFAULT_HOME_HERO_TEXT,
   DEFAULT_HOME_HERO_TITLE,
   HERO_PAGE_CONFIG,
   IMAGE_SLOTS,
@@ -256,10 +257,10 @@ const getBannerRows = unstable_cache(
   { tags: ["images"], revalidate: FALLBACK_TTL_SECONDS },
 );
 
-/** Banner de un lugar: el del panel, el por defecto si no hay fila, o `null` si está apagado. */
+/** Banner de un lugar: el del panel, el por defecto si no hay fila, o `null` si está apagado o sin imagen. */
 export async function getBanner(key: BannerKey): Promise<Banner | null> {
   const row = (await getBannerRows()).find((item) => item.key === key);
-  if (row && !row.active) return null;
+  if (row && (!row.active || !row.image)) return null;
   if (row) return { key, title: row.title, text: row.text, image: row.image, url: row.url };
   return { key, ...BANNER_CONFIG[key].defaults };
 }
@@ -355,7 +356,7 @@ export async function getHomeHeroText(): Promise<{ title: string; text: string }
   const text = settings[SETTING_KEYS.homeHeroText];
   return {
     title: typeof title === "string" && title.trim() ? title.trim() : DEFAULT_HOME_HERO_TITLE,
-    text: typeof text === "string" ? text.trim() : "",
+    text: typeof text === "string" ? text.trim() : DEFAULT_HOME_HERO_TEXT,
   };
 }
 
