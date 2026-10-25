@@ -23,7 +23,7 @@ export function NavLinks({
   const pathname = usePathname();
 
   return (
-    <ul className={cn("flex", orientation === "horizontal" ? "items-center gap-2 xl:gap-4" : "flex-col gap-1")}>
+    <ul className={cn("flex", orientation === "horizontal" ? "items-center gap-3 xl:gap-7" : "flex-col gap-1")}>
       {links.map((link) => {
         const active = isActive(pathname, link.href);
         return (

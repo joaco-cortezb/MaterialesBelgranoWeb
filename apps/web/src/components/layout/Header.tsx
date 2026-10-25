@@ -23,8 +23,8 @@ export function Header() {
   const whatsappHref = whatsappGoHref("header");
 
   return (
-    <header className="sticky top-0 z-40 border-b border-ink/10 bg-surface/55 backdrop-blur-xl backdrop-saturate-150">
-      <Container className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-5 sm:h-20 lg:gap-8">
+    <header className="sticky top-0 z-40 bg-surface/55 backdrop-blur-xl backdrop-saturate-150">
+      <Container className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-5 sm:h-20 lg:gap-10 xl:gap-14">
         <div className="flex items-center justify-between gap-4 lg:justify-end xl:justify-between">
           <MobileMenu links={NAV_LINKS} whatsappHref={whatsappHref} />
           {/* Wrapper aparte: `hidden` y el `inline-flex` del botón se pisarían. */}
