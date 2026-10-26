@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { DEVICE_SIZES, IMAGE_QUALITIES, IMAGE_SIZES } from "./src/lib/image-sizes";
 
 const storageHost = (() => {
   try {
@@ -40,11 +41,12 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
-    // Los defaults de Next arrancan en 640 px: en teléfonos servían cards al
-    // doble de su ancho real.
-    deviceSizes: [320, 420, 480, 640, 750, 828, 1080, 1200, 1920, 2048, 2560],
+    // Pocos anchos: más visitas reusan la misma versión ya procesada (ver
+    // src/lib/image-sizes.ts y el precalentado en src/lib/image-warmup.ts).
+    deviceSizes: DEVICE_SIZES,
+    imageSizes: IMAGE_SIZES,
     formats: ["image/webp"],
-    qualities: [60, 65, 70, 75, 85, 90],
+    qualities: IMAGE_QUALITIES,
     minimumCacheTTL: 60 * 60 * 24 * 30,
     dangerouslyAllowSVG: false,
     contentDispositionType: "attachment",

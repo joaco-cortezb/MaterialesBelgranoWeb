@@ -4,6 +4,7 @@ import { SITE } from "@mb/shared";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { SiteImagePrefetch } from "@/components/layout/SiteImagePrefetch";
 import { GoogleTagManager } from "@/components/analytics/GoogleTagManager";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { storeSchema, websiteSchema } from "@/lib/structured-data";
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           {children}
         </main>
         <Footer />
+        <SiteImagePrefetch />
         <GoogleTagManager />
       </body>
     </html>

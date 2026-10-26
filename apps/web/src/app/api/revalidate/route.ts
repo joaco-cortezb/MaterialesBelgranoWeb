@@ -1,5 +1,7 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { after } from "next/server";
+import { warmImageCache } from "@/lib/image-warmup";
 import { CMS_TAGS, ROUTES, type CmsTag } from "@mb/shared";
 import { env, revalidateConfigured } from "@/lib/env";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
@@ -9,6 +11,9 @@ function isCmsTag(value: unknown): value is CmsTag {
 }
 
 /** Todas las páginas de solución (ruta dinámica). */
+/** El precalentado de imágenes corre después de responder y puede tardar unos segundos. */
+export const maxDuration = 60;
+
 const RUBRO_PATHS = ["/soluciones/[slug]"];
 
 /** Qué páginas muestran cada tipo de contenido. */
@@ -59,6 +64,13 @@ export async function POST(request: Request) {
   for (const path of TAG_PATHS[body.tag]) {
     if (path.includes("[")) revalidatePath(path, "page");
     else revalidatePath(path);
+  }
+
+  // Con imágenes nuevas, se procesan ya en segundo plano: así el primer
+  // visitante no espera al optimizador.
+  if (body.tag === "images" || body.tag === "brands" || body.tag === "categories") {
+    const origin = new URL(request.url).origin;
+    after(() => warmImageCache(origin));
   }
 
   return Response.json({ ok: true, tag: body.tag, paths: TAG_PATHS[body.tag] });
