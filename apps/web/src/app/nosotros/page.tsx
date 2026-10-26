@@ -54,7 +54,7 @@ export default async function NosotrosPage() {
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
-          <dl className="mt-12 grid grid-cols-3 gap-4 border-t border-line pt-10">
+          <dl className="mt-12 grid grid-cols-3 gap-4 border-y border-line py-10">
             {FACTS.map((fact) => (
               <div key={fact.label}>
                 <dt className="sr-only">{fact.label}</dt>

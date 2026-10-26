@@ -54,7 +54,7 @@ export default async function HomePage() {
       <section
         id="soluciones"
         aria-labelledby="soluciones-title"
-        className="flex scroll-mt-16 flex-col justify-center overflow-hidden bg-surface py-10 sm:min-h-[calc(100svh-5rem)] sm:scroll-mt-20 sm:py-12"
+        className="flex scroll-mt-16 flex-col justify-center overflow-hidden bg-surface py-10 sm:min-h-[calc(100svh-5rem)] sm:scroll-mt-20 sm:py-8"
       >
         <Container>
           <div className="mx-auto max-w-2xl text-center">
@@ -63,7 +63,7 @@ export default async function HomePage() {
             </h2>
             <p className="mt-3 text-pretty text-base text-ink-soft sm:text-lg">Todo lo que lleva una instalación, con stock permanente y gente que sabe lo que vende.</p>
           </div>
-          <div className="mt-6">
+          <div className="mt-5">
             <CategoriesCarousel categories={categories} />
           </div>
         </Container>

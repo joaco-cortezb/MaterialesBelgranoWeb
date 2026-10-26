@@ -80,7 +80,7 @@ export function CategoriesCarousel({ categories }: { categories: Category[] }) {
               role="group"
               aria-roledescription="diapositiva"
               aria-label={`${index + 1} de ${categories.length}: ${category.name}`}
-              className="min-w-0 shrink-0 grow-0 basis-[82%] pl-4 sm:basis-1/2 sm:pl-6 lg:basis-1/3"
+              className="min-w-0 shrink-0 grow-0 basis-[78%] pl-4 sm:basis-[44%] sm:pl-6 lg:basis-[30%]"
             >
               <Slide category={category} active={index === selected} />
             </div>
@@ -97,7 +97,7 @@ function Slide({ category, active }: { category: Category; active: boolean }) {
     <Link
       href={ROUTES.rubro(category.slug)}
       className={cn(
-        "group relative block h-[clamp(300px,calc(100svh-25rem),560px)] overflow-hidden rounded-3xl bg-ink-dark text-white shadow-[0_18px_36px_-22px_rgba(36,38,31,0.5)]",
+        "group relative block h-[clamp(380px,calc(100svh-23rem),600px)] overflow-hidden rounded-3xl bg-ink-dark text-white shadow-[0_18px_36px_-22px_rgba(36,38,31,0.5)]",
         "transition-[transform,opacity] duration-500 ease-[var(--ease-out-strong)] motion-reduce:transition-none",
         active ? "scale-100 opacity-100" : "scale-[0.94] opacity-70",
       )}
