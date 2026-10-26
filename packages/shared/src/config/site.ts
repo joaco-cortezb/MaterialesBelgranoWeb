@@ -72,6 +72,8 @@ export const ROUTES = {
   marcas: "/marcas",
   /** El contacto es la última sección de Nosotros. */
   contacto: "/nosotros#contacto",
+  /** Política de privacidad y cookies (enlazada desde el footer). */
+  privacidad: "/privacidad",
 } as const;
 
 export const NAV_LINKS = [

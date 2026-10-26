@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FaClock, FaEnvelope, FaFacebook, FaInstagram, FaLocationDot, FaPhone, FaYoutube } from "react-icons/fa6";
+import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa6";
 import { NAV_LINKS, ROUTES, SITE } from "@mb/shared";
 import { Container } from "@/components/ui/Container";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
+import { MAPS_LINK } from "@/components/contact/MapEmbed";
 
 const SOCIAL = [
   { href: SITE.social.instagram, label: "Instagram", Icon: FaInstagram },
@@ -13,12 +14,12 @@ const SOCIAL = [
 
 const BUCLY_URL = "https://bucly.tech/?utm_source=materialesbelgrano.com&utm_medium=footer&utm_campaign=desarrollado-por";
 
-/** Footer oscuro: logo oficial, datos de contacto con íconos, menú y crédito. */
+/** Footer oscuro: logo, tres columnas de datos (sin íconos), menú, redes y legales. */
 export function Footer() {
   return (
     <footer className="bg-ink-dark text-white">
       <Container className="py-10 sm:py-12">
-        <div className="grid gap-10 lg:grid-cols-[auto_1fr] lg:items-center lg:gap-20">
+        <div className="grid gap-10 lg:grid-cols-[auto_1fr] lg:items-start lg:gap-20">
           <Link href={ROUTES.home} aria-label={`${SITE.name}: ir al inicio`} className="shrink-0 justify-self-center transition-transform duration-300 hover:scale-[1.03] lg:justify-self-start">
             {/* Mismo logo que el menú, con "BELGRANO" en blanco para el fondo oscuro. */}
             <Image
@@ -31,32 +32,40 @@ export function Footer() {
             />
           </Link>
 
-          <address className="grid gap-x-10 gap-y-6 not-italic sm:grid-cols-2 lg:gap-x-14">
-            <FooterItem icon={<FaLocationDot />} label="Dirección">
-              {SITE.address.singleLine}
-            </FooterItem>
-            <FooterItem icon={<FaClock />} label="Horarios">
+          <address className="grid gap-x-12 gap-y-8 text-center not-italic sm:grid-cols-[1fr_1fr_auto] sm:text-left lg:gap-x-16">
+            <FooterColumn label="Visitanos">
+              <span className="block">
+                {SITE.address.street}
+                <br />
+                {SITE.address.locality}, {SITE.address.region}
+              </span>
+              <a href={MAPS_LINK} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-brand-400 underline-offset-4 transition-colors hover:text-brand-300 hover:underline">
+                Cómo llegar ↗
+              </a>
+            </FooterColumn>
+            <FooterColumn label="Horarios">
               {SITE.hours.map((slot) => (
                 <span key={slot.days} className="block">
-                  {slot.days} {slot.opens}–{slot.closes} hs
+                  <span className="text-white/55">{slot.days}</span>
+                  <span className="block tabular-nums">
+                    {slot.opens} a {slot.closes} hs
+                  </span>
                 </span>
               ))}
-            </FooterItem>
-            <FooterItem icon={<FaPhone />} label="Teléfono">
-              <a href={`tel:${SITE.phone.e164}`} className="inline-flex min-h-11 items-center hover:text-white">
+            </FooterColumn>
+            <FooterColumn label="Contacto">
+              <a href={`tel:${SITE.phone.e164}`} className="underline-offset-4 transition-colors hover:text-white hover:underline block w-fit tabular-nums max-sm:mx-auto">
                 {SITE.phone.display}
               </a>
-            </FooterItem>
-            <FooterItem icon={<FaEnvelope />} label="Email">
-              <a href={`mailto:${SITE.email}`} className="inline-flex min-h-11 items-center break-all hover:text-white">
+              <a href={`mailto:${SITE.email}`} className="underline-offset-4 transition-colors hover:text-white hover:underline block w-fit break-all sm:break-normal max-sm:mx-auto">
                 {SITE.email}
               </a>
-            </FooterItem>
+            </FooterColumn>
           </address>
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-4 border-t border-white/10 pt-6">
-          <nav aria-label="Pie de página" className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm font-semibold">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 sm:justify-between gap-y-4 border-t border-white/10 pt-6">
+          <nav aria-label="Pie de página" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-sm font-semibold sm:justify-start">
             {NAV_LINKS.map((link) => (
               <Link key={link.href} href={link.href} className="inline-flex min-h-11 items-center text-white/70 hover:text-white">
                 {link.label}
@@ -89,11 +98,17 @@ export function Footer() {
           </ul>
         </div>
 
-        <div className="mt-4 flex flex-col gap-2 text-[13px] text-white/60 sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            © {new Date().getFullYear()} {SITE.legalName} · {SITE.name}
+        <div className="mt-4 flex flex-col items-center gap-2 text-center text-[13px] text-white/60 sm:flex-row sm:text-left sm:items-center sm:justify-between">
+          <p className="flex flex-wrap items-center justify-center gap-x-2 sm:justify-start">
+            <span>
+              © {new Date().getFullYear()} {SITE.legalName} · {SITE.name}
+            </span>
+            <span aria-hidden className="max-sm:hidden">·</span>
+            <Link href={ROUTES.privacidad} className="underline-offset-4 transition-colors hover:text-white hover:underline inline-flex min-h-11 items-center">
+              Privacidad y cookies
+            </Link>
           </p>
-          <a href={BUCLY_URL} target="_blank" rel="noopener noreferrer" className="bucly-credit inline-flex min-h-11 items-center self-start font-semibold sm:self-auto">
+          <a href={BUCLY_URL} target="_blank" rel="noopener noreferrer" className="bucly-credit inline-flex min-h-11 items-center font-semibold">
             <span className="bucly-shimmer border-b border-transparent transition-colors duration-200 hover:border-brand-400">Desarrollado por Bucly</span>
           </a>
         </div>
@@ -102,16 +117,11 @@ export function Footer() {
   );
 }
 
-function FooterItem({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
+function FooterColumn({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-3">
-      <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-500/15 text-brand-400 ring-1 ring-brand-500/30 [&>svg]:h-4 [&>svg]:w-4">
-        {icon}
-      </span>
-      <div className="min-w-0 text-sm">
-        <span className="block font-condensed text-xs font-semibold uppercase tracking-[0.16em] text-white/60">{label}</span>
-        <span className="mt-0.5 block leading-relaxed text-white/80">{children}</span>
-      </div>
+    <div className="min-w-0">
+      <h2 className="font-condensed text-[13px] font-semibold uppercase tracking-[0.18em] text-brand-400">{label}</h2>
+      <div className="mt-3 space-y-2 text-[15px] leading-relaxed text-white/85">{children}</div>
     </div>
   );
 }
