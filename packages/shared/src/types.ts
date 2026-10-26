@@ -27,6 +27,8 @@ export type ImageSlot = {
 export type HeroSlide = {
   id: string;
   url: string;
+  /** Foto para celular; vacía = se usa `url`. */
+  urlMobile: string;
   alt: string;
   /** `object-position` ("x% y%"). */
   position: string;

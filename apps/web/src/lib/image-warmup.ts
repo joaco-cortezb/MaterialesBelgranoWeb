@@ -20,7 +20,10 @@ async function collectImages(): Promise<WarmItem[]> {
   ]);
 
   const items: WarmItem[] = [];
-  for (const slide of heroes.flat()) items.push({ url: slide.url, widths: DEVICE_SIZES, quality: 75 });
+  for (const slide of heroes.flat()) {
+    items.push({ url: slide.url, widths: DEVICE_SIZES, quality: 75 });
+    if (slide.urlMobile) items.push({ url: slide.urlMobile, widths: DEVICE_SIZES.slice(0, 3), quality: 75 });
+  }
   for (const banner of banners) {
     if (!banner) continue;
     items.push({ url: banner.image, widths: DEVICE_SIZES, quality: 85 });

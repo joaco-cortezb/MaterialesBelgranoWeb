@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { HeroSlide } from "@mb/shared";
 import { cn } from "@mb/shared";
-import { Media } from "@/components/ui/Media";
+import { ResponsiveMedia } from "@/components/ui/ResponsiveMedia";
 
 const INTERVAL_MS = 6500;
 
@@ -61,8 +61,9 @@ export function HeroSlides({ slides }: { slides: HeroSlide[] }) {
             )}
             data-active={index === active}
           >
-            <Media
+            <ResponsiveMedia
               src={slide.url}
+              srcMobile={slide.urlMobile}
               alt={slide.alt}
               position={slide.position}
               priority={index === 0}
@@ -76,7 +77,7 @@ export function HeroSlides({ slides }: { slides: HeroSlide[] }) {
 
       {many && (
         <div
-          className="absolute bottom-5 right-4 z-20 flex gap-1 sm:bottom-7 sm:right-8"
+          className="absolute inset-x-0 bottom-1 z-20 flex justify-center gap-1 sm:inset-x-auto sm:bottom-7 sm:right-8"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >

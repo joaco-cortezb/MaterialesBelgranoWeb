@@ -18,7 +18,7 @@ export default async function PortadaPage({ searchParams }: { searchParams: Prom
     const [rows, settings] = await Promise.all([
       prisma.heroSlide.findMany({
         orderBy: [{ order: "asc" }, { createdAt: "asc" }],
-        select: { id: true, page: true, url: true, alt: true, position: true, active: true },
+        select: { id: true, page: true, url: true, urlMobile: true, alt: true, position: true, active: true },
       }),
       prisma.setting.findMany({ where: { key: { in: [SETTING_KEYS.homeHeroTitle, SETTING_KEYS.homeHeroText] } } }),
     ]);

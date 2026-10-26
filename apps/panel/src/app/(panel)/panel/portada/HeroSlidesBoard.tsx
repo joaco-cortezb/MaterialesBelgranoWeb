@@ -11,9 +11,9 @@ import { useToast } from "@/components/ui/Toast";
 import type { ActionResult } from "@/lib/actions";
 import { deleteHeroSlide, reorderHeroSlide, saveHeroSlide, saveHomeHeroText, toggleHeroSlideActive } from "./actions";
 
-export type HeroSlideDTO = { id: string; url: string; alt: string; position: string; active: boolean };
+export type HeroSlideDTO = { id: string; url: string; urlMobile: string; alt: string; position: string; active: boolean };
 
-const NEW_SLIDE: HeroSlideDTO = { id: "", url: "", alt: "", position: "50% 50%", active: true };
+const NEW_SLIDE: HeroSlideDTO = { id: "", url: "", urlMobile: "", alt: "", position: "50% 50%", active: true };
 
 type HeroTextValue = { title: string; text: string; defaultTitle: string };
 
@@ -140,8 +140,10 @@ export function HeroSlidesBoard({
 }
 
 /**
- * Una foto de la portada: sólo la imagen. Se guarda sola al subirla; quitarla
- * (con confirmación) la elimina de la portada.
+ * Una foto de la portada: la versión de computadora y, opcional, una para
+ * celular (otra proporción). Se guarda sola al subir cualquiera de las dos.
+ * Quitar la de computadora (con confirmación) elimina la foto de la portada;
+ * quitar la de celular hace que en el celular se use la de computadora.
  */
 function SlideCard({
   slide,
@@ -163,19 +165,30 @@ function SlideCard({
   onRemove?: () => void;
 }) {
   const [url, setUrl] = useState(slide.url);
+  const [urlMobile, setUrlMobile] = useState(slide.urlMobile);
   const [pending, startTransition] = useTransition();
   const toast = useToast();
+  const config = HERO_PAGE_CONFIG[page];
+  const [dw, dh] = config.recommended;
+  const [mw, mh] = config.recommendedMobile;
+  // Columnas proporcionales a las dos medidas: las dos vistas previas quedan del mismo alto.
+  const columns = `${((dw / dh) / (mw / mh)).toFixed(3)}fr 1fr`;
 
-  function save(nextUrl: string) {
-    if (!nextUrl) {
-      onRemove?.();
+  function save(next: { url: string; urlMobile: string }) {
+    if (!next.url) {
+      // Sin la de computadora no hay foto: si ya existía, se elimina.
+      if (slide.id) onRemove?.();
+      else setUrlMobile(next.urlMobile);
       return;
     }
-    setUrl(nextUrl);
+    const previous = { url, urlMobile };
+    setUrl(next.url);
+    setUrlMobile(next.urlMobile);
     const formData = new FormData();
     formData.set("page", page);
-    formData.set("url", nextUrl);
-    formData.set("alt", slide.alt || `Portada de ${HERO_PAGE_CONFIG[page].label} - Materiales Belgrano`);
+    formData.set("url", next.url);
+    formData.set("urlMobile", next.urlMobile);
+    formData.set("alt", slide.alt || `Portada de ${config.label} - Materiales Belgrano`);
     formData.set("position", slide.position || "50% 50%");
     startTransition(async () => {
       const result = await saveHeroSlide(slide.id, formData);
@@ -183,7 +196,8 @@ function SlideCard({
         toast.success(result.message ?? "Guardado.");
         onSaved?.();
       } else {
-        setUrl(slide.url);
+        setUrl(previous.url);
+        setUrlMobile(previous.urlMobile);
         toast.error(result.error);
       }
     });
@@ -192,7 +206,10 @@ function SlideCard({
   return (
     <Card className="flex h-full flex-col p-5">
       <div className="flex min-h-10 flex-wrap items-center justify-between gap-3">
-        <h2 className="font-bold text-ink">{isNew ? "Nueva foto" : `Foto ${(index ?? 0) + 1}`}</h2>
+        <h2 className="flex items-center gap-2 font-bold text-ink">
+          {isNew ? "Nueva foto" : `Foto ${(index ?? 0) + 1}`}
+          {pending && <Spinner className="text-brand-700" />}
+        </h2>
         {toolbar}
         {isNew && (
           <Button variant="ghost" size="sm" onClick={onCancel} disabled={pending}>
@@ -200,14 +217,31 @@ function SlideCard({
           </Button>
         )}
       </div>
-      <div className="relative mt-4">
-        <ImageUploadField value={url} onChange={save} folder="slots" label="Foto de portada" recommended={HERO_PAGE_CONFIG[page].recommended} />
-        {pending && (
-          <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-xl bg-surface/70 text-sm font-semibold text-ink">
-            <Spinner /> Guardando…
-          </div>
-        )}
+      <div className="mt-4 grid gap-4" style={{ gridTemplateColumns: columns }}>
+        <div className="min-w-0">
+          <Label>Computadora</Label>
+          <ImageUploadField
+            value={url}
+            onChange={(next) => save({ url: next, urlMobile })}
+            folder="slots"
+            label="Foto de portada para computadora"
+            recommended={config.recommended}
+            compactHint
+          />
+        </div>
+        <div className="min-w-0">
+          <Label>Celular</Label>
+          <ImageUploadField
+            value={urlMobile}
+            onChange={(next) => save({ url, urlMobile: next })}
+            folder="slots"
+            label="Foto de portada para celular"
+            recommended={config.recommendedMobile}
+            compactHint
+          />
+        </div>
       </div>
+      <Hint>{isNew && !url ? "Subí primero la de computadora." : "La de celular es opcional: si no hay, en el celular se ve la de computadora recortada al centro."}</Hint>
     </Card>
   );
 }

@@ -36,7 +36,7 @@ export async function saveHeroSlide(id: string, formData: FormData): Promise<Act
   try {
     if (id) {
       // La página de una foto no cambia al editarla.
-      await prisma.heroSlide.update({ where: { id }, data: { url: data.url, alt: data.alt, position: data.position } });
+      await prisma.heroSlide.update({ where: { id }, data: { url: data.url, urlMobile: data.urlMobile, alt: data.alt, position: data.position } });
     } else {
       const count = await prisma.heroSlide.count({ where: { page: data.page } });
       if (count >= HERO_MAX_SLIDES) return fail(`Cada portada admite hasta ${HERO_MAX_SLIDES} fotos.`);

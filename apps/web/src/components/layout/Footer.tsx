@@ -5,6 +5,7 @@ import { NAV_LINKS, ROUTES, SITE } from "@mb/shared";
 import { Container } from "@/components/ui/Container";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { MAPS_LINK } from "@/components/contact/MapEmbed";
+import { FooterColumn } from "@/components/layout/FooterColumn";
 
 const SOCIAL = [
   { href: SITE.social.instagram, label: "Instagram", Icon: FaInstagram },
@@ -14,7 +15,7 @@ const SOCIAL = [
 
 const BUCLY_URL = "https://bucly.tech/?utm_source=materialesbelgrano.com&utm_medium=footer&utm_campaign=desarrollado-por";
 
-/** Footer oscuro: logo, tres columnas de datos (sin íconos), menú, redes y legales. */
+/** Footer oscuro: logo, tres columnas de datos (acordeones en celular), menú, redes y legales. */
 export function Footer() {
   return (
     <footer className="bg-ink-dark text-white">
@@ -32,7 +33,7 @@ export function Footer() {
             />
           </Link>
 
-          <address className="grid gap-x-12 gap-y-8 text-center not-italic sm:grid-cols-[1fr_1fr_auto] sm:text-left lg:gap-x-16">
+          <address className="grid border-t border-white/10 text-left not-italic sm:grid-cols-[1fr_1fr_auto] sm:gap-x-12 sm:gap-y-8 sm:border-0 lg:gap-x-16">
             <FooterColumn label="Visitanos">
               <span className="block">
                 {SITE.address.street}
@@ -54,10 +55,10 @@ export function Footer() {
               ))}
             </FooterColumn>
             <FooterColumn label="Contacto">
-              <a href={`tel:${SITE.phone.e164}`} className="underline-offset-4 transition-colors hover:text-white hover:underline block w-fit tabular-nums max-sm:mx-auto">
+              <a href={`tel:${SITE.phone.e164}`} className="underline-offset-4 transition-colors hover:text-white hover:underline block w-fit tabular-nums">
                 {SITE.phone.display}
               </a>
-              <a href={`mailto:${SITE.email}`} className="underline-offset-4 transition-colors hover:text-white hover:underline block w-fit break-all sm:break-normal max-sm:mx-auto">
+              <a href={`mailto:${SITE.email}`} className="underline-offset-4 transition-colors hover:text-white hover:underline block w-fit break-all sm:break-normal">
                 {SITE.email}
               </a>
             </FooterColumn>
@@ -114,14 +115,5 @@ export function Footer() {
         </div>
       </Container>
     </footer>
-  );
-}
-
-function FooterColumn({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="min-w-0">
-      <h2 className="font-condensed text-[13px] font-semibold uppercase tracking-[0.18em] text-brand-400">{label}</h2>
-      <div className="mt-3 space-y-2 text-[15px] leading-relaxed text-white/85">{children}</div>
-    </div>
   );
 }

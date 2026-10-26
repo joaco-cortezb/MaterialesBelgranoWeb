@@ -55,7 +55,7 @@ export function HomeHero({ slides, title, text, nextSectionId }: { slides: HeroS
         <a
           href={`#${nextSectionId}`}
           aria-label="Bajar a la sección siguiente"
-          className="hero-scroll absolute bottom-5 left-1/2 z-20 flex h-12 w-12 -translate-x-1/2 items-center justify-center rounded-full border border-white/40 text-white backdrop-blur-sm transition-colors duration-300 hover:border-white hover:bg-white hover:text-ink-dark sm:bottom-7"
+          className={`hero-scroll absolute ${slides.length > 1 ? "bottom-14" : "bottom-5"} left-1/2 z-20 flex h-12 w-12 -translate-x-1/2 items-center justify-center rounded-full border border-white/40 text-white backdrop-blur-sm transition-colors duration-300 hover:border-white hover:bg-white hover:text-ink-dark sm:bottom-7`}
         >
           <LuChevronDown className="h-5 w-5" aria-hidden />
         </a>

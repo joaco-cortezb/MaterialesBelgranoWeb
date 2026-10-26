@@ -14,7 +14,8 @@ type NavLink = { href: string; label: string };
 /**
  * Menú hamburguesa accesible: `aria-expanded`/`aria-controls`, panel con
  * `role="dialog"`, cierra con Escape y al navegar, bloquea el scroll del body
- * y respeta `safe-area-inset-bottom`.
+ * y respeta `safe-area-inset-bottom`. Se despliega como una cortina de arriba
+ * hacia abajo y los ítems entran escalonados (`mobile-menu` en globals.css).
  */
 export function MobileMenu({ links, whatsappHref }: { links: readonly NavLink[]; whatsappHref: string }) {
   const [open, setOpen] = useState(false);
@@ -77,15 +78,18 @@ export function MobileMenu({ links, whatsappHref }: { links: readonly NavLink[];
             aria-modal="true"
             aria-label="Menú de navegación"
             inert={!open}
+            data-open={open || undefined}
             className={cn(
-              "fixed inset-x-0 bottom-0 top-[65px] z-50 flex flex-col overflow-y-auto overscroll-contain bg-surface px-4 pt-4 transition-[opacity,transform] duration-200 ease-[var(--ease-out-strong)] lg:hidden",
-              open ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0",
+              "mobile-menu fixed inset-x-0 bottom-0 top-[65px] z-50 flex flex-col overflow-y-auto overscroll-contain bg-surface px-4 pt-4 lg:hidden",
+              !open && "pointer-events-none",
             )}
             style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 1.5rem)" }}
           >
-            <NavLinks links={links} orientation="vertical" onNavigate={() => setOpen(false)} />
+            <div className="mobile-menu-item" style={{ "--i": 0 } as React.CSSProperties}>
+              <NavLinks links={links} orientation="vertical" onNavigate={() => setOpen(false)} />
+            </div>
 
-            <div className="mt-6 space-y-3 border-t border-line pt-6">
+            <div className="mobile-menu-item mt-6 space-y-3 border-t border-line pt-6" style={{ "--i": 1 } as React.CSSProperties}>
               <TrackedLink
                 href={whatsappHref}
                 event="whatsapp_click"
@@ -106,7 +110,7 @@ export function MobileMenu({ links, whatsappHref }: { links: readonly NavLink[];
               </TrackedLink>
             </div>
 
-            <p className="mt-auto pt-8 text-center text-sm text-ink-soft">
+            <p className="mobile-menu-item mt-auto pt-8 text-center text-sm text-ink-soft" style={{ "--i": 2 } as React.CSSProperties}>
               {SITE.address.singleLine}
             </p>
           </div>,

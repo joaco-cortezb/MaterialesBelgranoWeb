@@ -77,24 +77,34 @@ export const HERO_MAX_SLIDES = 8;
 
 export const HERO_PAGE_CONFIG: Record<
   HeroPage,
-  { label: string; hint: string; recommended: readonly [number, number]; fallback: readonly { url: string; alt: string }[] }
+  {
+    label: string;
+    hint: string;
+    recommended: readonly [number, number];
+    /** Medida de la foto para celular (opcional). */
+    recommendedMobile: readonly [number, number];
+    fallback: readonly { url: string; alt: string }[];
+  }
 > = {
   inicio: {
     label: "Inicio",
     hint: "Fotos grandes detrás del título: ocupan toda la primera pantalla. Usá fotos horizontales con lo importante al centro (en celular se ve sólo la parte central).",
     recommended: [2560, 1440],
+    recommendedMobile: [1080, 1920],
     fallback: [],
   },
   marcas: {
     label: "Marcas",
     hint: "Banner al inicio de la página Marcas (la mitad de alto que el del inicio). Foto horizontal con lo importante al centro.",
     recommended: [2560, 800],
+    recommendedMobile: [1200, 1000],
     fallback: [],
   },
   nosotros: {
     label: "Nosotros",
     hint: "Banner al inicio de la página Nosotros (la mitad de alto que el del inicio). Foto horizontal con lo importante al centro.",
     recommended: [2560, 800],
+    recommendedMobile: [1200, 1000],
     fallback: [],
   },
 };

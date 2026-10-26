@@ -2,6 +2,7 @@ import { BANNER_KEYS } from "@mb/shared";
 import { getBanner, getCategories, getHeroSlides, getImageSlots } from "@/lib/cms";
 import { ImagePrefetcher, type PrefetchImage } from "@/components/layout/ImagePrefetcher";
 import { BANNER_SIZES } from "@/components/sections/HomeBanner";
+import { MOBILE_MEDIA } from "@/components/ui/ResponsiveMedia";
 
 /**
  * Lista de imágenes importantes de todas las secciones (con los mismos
@@ -19,7 +20,15 @@ export async function SiteImagePrefetch() {
   ]);
 
   const images: PrefetchImage[] = [];
-  for (const slide of [inicio[0], marcas[0], nosotros[0]]) if (slide) images.push({ src: slide.url, sizes: "100vw", quality: 75 });
+  for (const slide of [inicio[0], marcas[0], nosotros[0]]) {
+    if (!slide) continue;
+    if (slide.urlMobile) {
+      images.push({ src: slide.url, sizes: "100vw", quality: 75, media: "(min-width: 640px)" });
+      images.push({ src: slide.urlMobile, sizes: "100vw", quality: 75, media: MOBILE_MEDIA });
+    } else {
+      images.push({ src: slide.url, sizes: "100vw", quality: 75 });
+    }
+  }
   for (const banner of banners) {
     if (!banner) continue;
     images.push({ src: banner.image, sizes: BANNER_SIZES.desktop, quality: 85, media: "(min-width: 640px)" });

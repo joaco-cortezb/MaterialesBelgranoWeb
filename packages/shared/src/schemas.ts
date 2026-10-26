@@ -85,6 +85,7 @@ export const whatsappNumberSchema = z.object({
 export const heroSlideSchema = z.object({
   page: z.enum(HERO_PAGES).default("inicio"),
   url: imageUrl.refine((value) => value !== "", "Subí una imagen"),
+  urlMobile: imageUrl.optional().default(""),
   alt: z.string().trim().min(1, "El texto alternativo es obligatorio").max(200),
   position: z
     .string()

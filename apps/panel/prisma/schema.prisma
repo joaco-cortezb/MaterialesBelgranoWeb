@@ -62,6 +62,7 @@ model HeroSlide {
   id        String   @id @default(cuid())
   page      String   @default("inicio")
   url       String
+  urlMobile String   @default("") // foto para celular; vacía = se usa `url`
   alt       String
   position  String   @default("50% 50%")
   order     Int      @default(0)

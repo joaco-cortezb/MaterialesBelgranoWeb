@@ -211,7 +211,7 @@ export async function getCategory(slug: string): Promise<Category | undefined> {
 
 /* ── Portada del inicio ──────────────────────────────────────────────────── */
 
-type HeroSlideRow = { id: string; page: string; url: string; alt: string; position: string | null };
+type HeroSlideRow = { id: string; page: string; url: string; urlMobile?: string | null; alt: string; position: string | null };
 
 const getHeroSlideRows = unstable_cache(
   async (): Promise<HeroSlideRow[]> => {
@@ -219,7 +219,9 @@ const getHeroSlideRows = unstable_cache(
     if (!supabase) return [];
     const { data, error } = await supabase
       .from("HeroSlide")
-      .select("id, page, url, alt, position")
+      // `*` y no la lista de columnas: si la web se publica antes que la
+      // migración de `urlMobile`, la consulta no falla.
+      .select("*")
       .eq("active", true)
       .order("order", { ascending: true });
     if (error) {
@@ -228,17 +230,17 @@ const getHeroSlideRows = unstable_cache(
     }
     return data as HeroSlideRow[];
   },
-  ["cms-hero-slides-v2"],
+  ["cms-hero-slides-v3"],
   { tags: ["images"], revalidate: FALLBACK_TTL_SECONDS },
 );
 
-/** Fotos activas de la portada de una página; si no hay ninguna, las del repo. */
+/** Fotos activas de la portada de una página (vacío = la portada va con fondo oscuro). */
 export async function getHeroSlides(page: HeroPage = "inicio"): Promise<HeroSlide[]> {
   const rows = (await getHeroSlideRows()).filter((row) => row.url && (row.page || "inicio") === page);
   if (rows.length) {
-    return rows.map((row) => ({ id: row.id, url: row.url, alt: row.alt, position: row.position || "50% 50%" }));
+    return rows.map((row) => ({ id: row.id, url: row.url, urlMobile: row.urlMobile ?? "", alt: row.alt, position: row.position || "50% 50%" }));
   }
-  return HERO_PAGE_CONFIG[page].fallback.map((slide, index) => ({ id: `fallback-${index}`, url: slide.url, alt: slide.alt, position: "50% 50%" }));
+  return HERO_PAGE_CONFIG[page].fallback.map((slide, index) => ({ id: `fallback-${index}`, url: slide.url, urlMobile: "", alt: slide.alt, position: "50% 50%" }));
 }
 
 /* ── Banners del inicio ──────────────────────────────────────────────────── */
