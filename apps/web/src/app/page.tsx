@@ -97,29 +97,29 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* Por qué elegirnos: seis cards iguales en una grilla simétrica. */}
-      <section id="servicios" aria-labelledby="servicios-title" className="scroll-mt-20 py-16 sm:py-24">
+      {/* Por qué elegirnos: seis cards iguales, compactas, en una pantalla. */}
+      <section id="servicios" aria-labelledby="servicios-title" className="scroll-mt-20 py-14 sm:py-16">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             <p className="font-condensed text-base font-semibold uppercase tracking-[0.2em] text-brand-700 sm:text-lg">Por qué elegirnos</p>
-            <h2 id="servicios-title" className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-ink-dark sm:text-5xl">
+            <h2 id="servicios-title" className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-ink-dark sm:text-4xl">
               Mismas marcas que todos. <span className="text-brand-600">Otra forma de atenderte.</span>
             </h2>
           </div>
-          <ul className="mx-auto mt-12 grid max-w-6xl gap-4 sm:mt-14 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+          <ul className="mx-auto mt-8 grid max-w-6xl gap-3 sm:mt-10 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             {SERVICIOS.map((servicio) => (
               <li
                 key={servicio.slug}
                 id={servicio.slug}
-                className="card-hover flex h-full flex-col items-center rounded-3xl border border-line bg-surface px-6 py-8 text-center sm:px-8 sm:py-10"
+                className="card-hover flex h-full items-start gap-4 rounded-2xl border border-line bg-surface p-5"
               >
-                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-500 text-ink-dark">
-                  <ServicioIcon icon={servicio.icon} className="h-7 w-7" />
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-500 text-ink-dark">
+                  <ServicioIcon icon={servicio.icon} className="h-6 w-6" />
                 </span>
-                <h3 className="mt-5 flex min-h-[3.25rem] items-center text-balance text-lg font-bold leading-snug tracking-tight text-ink-dark">
-                  {servicio.title}
-                </h3>
-                <p className="mt-2 max-w-xs text-pretty text-[15px] leading-relaxed text-ink-soft">{servicio.short}</p>
+                <div className="min-w-0">
+                  <h3 className="text-balance text-base font-bold leading-snug tracking-tight text-ink-dark">{servicio.title}</h3>
+                  <p className="mt-1 text-pretty text-sm leading-relaxed text-ink-soft">{servicio.short}</p>
+                </div>
               </li>
             ))}
           </ul>

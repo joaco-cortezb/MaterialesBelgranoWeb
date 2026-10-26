@@ -38,6 +38,8 @@ export type Banner = {
   title: string;
   text: string;
   image: string;
+  /** Imagen para celular; vacía = se usa `image`. */
+  imageMobile: string;
   url: string;
 };
 

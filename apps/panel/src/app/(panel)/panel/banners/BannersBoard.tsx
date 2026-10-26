@@ -1,20 +1,29 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { BANNER_CONFIG, BANNER_SIZE, type BannerKey } from "@mb/shared";
+import { BANNER_CONFIG, BANNER_MOBILE_SIZE, BANNER_SIZE, type BannerKey } from "@mb/shared";
 import { Badge, Button, Card, Hint, Input, Label, PageHeader, Spinner, Switch, Textarea } from "@/components/ui";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
 import { saveBanner } from "./actions";
 
-export type BannerDTO = { key: BannerKey; title: string; text: string; image: string; url: string; active: boolean; saved: boolean };
+export type BannerDTO = {
+  key: BannerKey;
+  title: string;
+  text: string;
+  image: string;
+  imageMobile: string;
+  url: string;
+  active: boolean;
+  saved: boolean;
+};
 
 export function BannersBoard({ banners }: { banners: BannerDTO[] }) {
   return (
     <div>
       <PageHeader
         title="Banners"
-        subtitle={`Los banners del inicio son sólo una imagen (con el texto ya incluido en el diseño), todos de ${BANNER_SIZE[0]} × ${BANNER_SIZE[1]} px. Si les cargás un link, todo el banner es clickeable.`}
+        subtitle={`Cada banner es sólo imagen (el texto va en el diseño): una de ${BANNER_SIZE[0]} × ${BANNER_SIZE[1]} px para computadora y otra de ${BANNER_MOBILE_SIZE[0]} × ${BANNER_MOBILE_SIZE[1]} px para celular. Si les cargás un link, todo el banner es clickeable.`}
       />
       <div className="grid gap-5 lg:grid-cols-2">
         {banners.map((banner) => (
@@ -29,12 +38,13 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
   const config = BANNER_CONFIG[banner.key];
   const [title, setTitle] = useState(banner.title);
   const [image, setImage] = useState(banner.image);
+  const [imageMobile, setImageMobile] = useState(banner.imageMobile);
   const [url, setUrl] = useState(banner.url);
   const [active, setActive] = useState(banner.active);
   const [pending, startTransition] = useTransition();
   const toast = useToast();
   const dirty =
-    !banner.saved || title !== banner.title || image !== banner.image || url !== banner.url || active !== banner.active;
+    !banner.saved || title !== banner.title || image !== banner.image || imageMobile !== banner.imageMobile || url !== banner.url || active !== banner.active;
 
   function save() {
     const formData = new FormData();
@@ -42,6 +52,7 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
     formData.set("title", title);
     formData.set("text", "");
     formData.set("image", image);
+    formData.set("imageMobile", imageMobile);
     formData.set("url", url);
     formData.set("active", active ? "on" : "");
     startTransition(async () => {
@@ -64,16 +75,29 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
         </div>
       </div>
 
-      <div className="mt-4">
-        <ImageUploadField
-          value={image}
-          onChange={setImage}
-          folder="slots"
-          label="Foto del banner"
-          recommended={BANNER_SIZE}
-          objectFit="cover"
-          previewClassName="aspect-[12/5] w-full"
-        />
+      <div className="mt-4 grid gap-4 sm:grid-cols-[2fr_1fr]">
+        <div>
+          <Label>Computadora</Label>
+          <ImageUploadField
+            value={image}
+            onChange={setImage}
+            folder="slots"
+            label="Banner para computadora"
+            recommended={BANNER_SIZE}
+            previewClassName="aspect-[4/1] w-full"
+          />
+        </div>
+        <div>
+          <Label>Celular</Label>
+          <ImageUploadField
+            value={imageMobile}
+            onChange={setImageMobile}
+            folder="slots"
+            label="Banner para celular"
+            recommended={BANNER_MOBILE_SIZE}
+            previewClassName="aspect-[4/3] w-full"
+          />
+        </div>
       </div>
 
       <div className="mt-4 grid gap-4">
@@ -97,7 +121,7 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
       </div>
 
       <div className="mt-4 flex justify-end">
-        <Button onClick={save} disabled={pending || !dirty || !title.trim() || !image}>
+        <Button onClick={save} disabled={pending || !dirty || !title.trim() || !image || !imageMobile}>
           {pending ? (
             <>
               <Spinner /> Guardando…

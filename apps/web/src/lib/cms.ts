@@ -240,20 +240,20 @@ export async function getHeroSlides(page: HeroPage = "inicio"): Promise<HeroSlid
 
 /* ── Banners del inicio ──────────────────────────────────────────────────── */
 
-type BannerRow = { key: string; title: string; text: string; image: string; url: string; active: boolean };
+type BannerRow = { key: string; title: string; text: string; image: string; imageMobile: string | null; url: string; active: boolean };
 
 const getBannerRows = unstable_cache(
   async (): Promise<BannerRow[]> => {
     const supabase = getSupabaseClient();
     if (!supabase) return [];
-    const { data, error } = await supabase.from("Banner").select("key, title, text, image, url, active");
+    const { data, error } = await supabase.from("Banner").select("key, title, text, image, imageMobile, url, active");
     if (error) {
       console.error("[cms] no se pudieron leer los banners", error.message);
       return [];
     }
     return data as BannerRow[];
   },
-  ["cms-banners"],
+  ["cms-banners-v2"],
   { tags: ["images"], revalidate: FALLBACK_TTL_SECONDS },
 );
 
@@ -261,7 +261,7 @@ const getBannerRows = unstable_cache(
 export async function getBanner(key: BannerKey): Promise<Banner | null> {
   const row = (await getBannerRows()).find((item) => item.key === key);
   if (row && (!row.active || !row.image)) return null;
-  if (row) return { key, title: row.title, text: row.text, image: row.image, url: row.url };
+  if (row) return { key, title: row.title, text: row.text, image: row.image, imageMobile: row.imageMobile || row.image, url: row.url };
   return { key, ...BANNER_CONFIG[key].defaults };
 }
 

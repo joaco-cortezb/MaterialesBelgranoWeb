@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ROUTES, SITE, cn } from "@mb/shared";
 
 /**
- * Logo (isotipo + wordmark, sin bajada) recortado del original en
+ * Logo (isotipo + wordmark, sin bajada) redibujado en alta resolución sobre el original, en
  * `public/brand/`. Al pasar el mouse crece apenas y se enciende un halo verde
  * detrás; en touch no hay hover, así que no pasa nada.
  */
@@ -19,7 +19,7 @@ export function Logo({
   size?: "md" | "lg";
   priority?: boolean;
 }) {
-  const src = variant === "light" ? "/brand/logo-materiales-belgrano-h-blanco.png" : "/brand/logo-materiales-belgrano-h.png";
+  const src = variant === "light" ? "/brand/logo-materiales-belgrano-h-footer.png" : "/brand/logo-materiales-belgrano-h.png";
   return (
     <Link href={ROUTES.home} aria-label={`${SITE.name}: ir al inicio`} className={cn("group relative inline-flex shrink-0 items-center", className)}>
       <span
@@ -29,8 +29,8 @@ export function Logo({
       <Image
         src={src}
         alt={SITE.name}
-        width={1640}
-        height={739}
+        width={3272}
+        height={1488}
         sizes={size === "lg" ? "220px" : "120px"}
         preload={priority}
         className={cn(

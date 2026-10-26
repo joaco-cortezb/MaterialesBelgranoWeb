@@ -27,7 +27,10 @@ export function TrackedLink({
   return (
     <a
       href={href}
-      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : { rel: "nofollow" })}
+      // Todo lo que pasa por acá (WhatsApp, catálogos, tienda, banners) abre en
+      // otra pestaña: la web queda abierta detrás.
+      target="_blank"
+      rel={external ? "noopener noreferrer" : "nofollow noopener"}
       {...rest}
       onClick={(clickEvent) => {
         trackEvent(event, params);

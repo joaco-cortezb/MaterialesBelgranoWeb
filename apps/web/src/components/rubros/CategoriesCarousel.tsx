@@ -72,7 +72,7 @@ export function CategoriesCarousel({ categories }: { categories: Category[] }) {
           <FaArrowRight className="h-4 w-4" aria-hidden />
         </ArrowButton>
       </div>
-      <div ref={emblaRef} className="mt-2 overflow-hidden py-4">
+      <div ref={emblaRef} className="-mb-10 mt-2 overflow-hidden pb-14 pt-4">
         <div className="-ml-4 flex touch-pan-y sm:-ml-6">
           {categories.map((category, index) => (
             <div
@@ -97,7 +97,7 @@ function Slide({ category, active }: { category: Category; active: boolean }) {
     <Link
       href={ROUTES.rubro(category.slug)}
       className={cn(
-        "group relative block h-[clamp(300px,calc(100svh-25rem),560px)] overflow-hidden rounded-3xl bg-ink-dark text-white shadow-[0_24px_50px_-28px_rgba(36,38,31,0.55)]",
+        "group relative block h-[clamp(300px,calc(100svh-25rem),560px)] overflow-hidden rounded-3xl bg-ink-dark text-white shadow-[0_18px_36px_-22px_rgba(36,38,31,0.5)]",
         "transition-[transform,opacity] duration-500 ease-[var(--ease-out-strong)] motion-reduce:transition-none",
         active ? "scale-100 opacity-100" : "scale-[0.94] opacity-70",
       )}

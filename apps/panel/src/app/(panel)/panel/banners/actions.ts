@@ -16,8 +16,8 @@ export async function saveBanner(formData: FormData): Promise<ActionResult> {
 
   const parsed = bannerSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return fail(firstIssue(parsed.error));
-  const { key, title, text, image, url, active } = parsed.data;
-  const data = { title, text, image, url, active: active === "on" };
+  const { key, title, text, image, imageMobile, url, active } = parsed.data;
+  const data = { title, text, image, imageMobile, url, active: active === "on" };
 
   try {
     await prisma.banner.upsert({ where: { key }, create: { key, ...data }, update: data });

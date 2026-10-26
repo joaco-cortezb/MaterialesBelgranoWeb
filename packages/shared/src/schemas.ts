@@ -111,7 +111,8 @@ export const bannerSchema = z.object({
   // `title` es la descripción de la imagen (texto alternativo): el banner no lleva texto encima.
   title: z.string().trim().min(1, "Describí qué dice o muestra el banner").max(200),
   text: z.string().trim().max(280).optional().default(""),
-  image: imageUrl.refine((value) => value !== "", "Subí la imagen del banner"),
+  image: imageUrl.refine((value) => value !== "", "Subí la imagen para computadora"),
+  imageMobile: imageUrl.refine((value) => value !== "", "Subí la imagen para celular"),
   url: bannerLink,
   active: checkbox,
 });

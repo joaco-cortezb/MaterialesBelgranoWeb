@@ -11,8 +11,8 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
       <Image
         src="/brand/logo-materiales-belgrano-h-footer.png"
         alt="Materiales Belgrano"
-        width={1640}
-        height={739}
+        width={3272}
+        height={1488}
         priority
         className="absolute left-1/2 top-8 h-auto w-[170px] -translate-x-1/2 sm:top-12 sm:w-[200px]"
       />

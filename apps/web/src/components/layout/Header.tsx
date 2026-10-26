@@ -6,6 +6,7 @@ import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { Logo } from "@/components/layout/Logo";
 import { NavLinks } from "@/components/layout/NavLinks";
 import { MobileMenu } from "@/components/layout/MobileMenu";
+import { AutoHideHeader } from "@/components/layout/AutoHideHeader";
 import { whatsappGoHref } from "@/lib/whatsapp";
 
 /** El menú se parte en dos mitades a los lados del logo. */
@@ -23,7 +24,7 @@ export function Header() {
   const whatsappHref = whatsappGoHref("header");
 
   return (
-    <header className="sticky top-0 z-40 border-b border-ink-dark/20 bg-surface/55 backdrop-blur-xl backdrop-saturate-150">
+    <AutoHideHeader className="border-b border-ink-dark/20 bg-surface/55 backdrop-blur-xl backdrop-saturate-150">
       <Container className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-5 sm:h-20 lg:gap-10 xl:gap-14">
         <div className="flex items-center justify-between gap-4 lg:justify-end xl:justify-between">
           <MobileMenu links={NAV_LINKS} whatsappHref={whatsappHref} />
@@ -69,6 +70,6 @@ export function Header() {
           </TrackedLink>
         </div>
       </Container>
-    </header>
+    </AutoHideHeader>
   );
 }

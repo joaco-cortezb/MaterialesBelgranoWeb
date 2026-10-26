@@ -24,8 +24,8 @@ export function Footer() {
             <Image
               src="/brand/logo-materiales-belgrano-h-footer.png"
               alt={SITE.name}
-              width={1640}
-              height={739}
+              width={3272}
+              height={1488}
               sizes="320px"
               className="h-28 w-auto sm:h-36"
             />

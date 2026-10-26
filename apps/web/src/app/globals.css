@@ -274,8 +274,15 @@ body {
 .marquee[data-reverse] .marquee-track {
   animation-direction: reverse;
 }
-.marquee:hover .marquee-track,
-.marquee:focus-within .marquee-track {
+/* Se pausa sólo con el mouse encima (no en touch, donde el hover queda
+   pegado) o al recorrerla con el teclado. Un clic no la frena: el link abre
+   en otra pestaña y la cinta sigue. */
+@media (hover: hover) and (pointer: fine) {
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+}
+.marquee:has(:focus-visible) .marquee-track {
   animation-play-state: paused;
 }
 /* Los bordes se desvanecen para que los logos entren y salgan suave. */

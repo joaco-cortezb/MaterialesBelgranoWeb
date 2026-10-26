@@ -103,8 +103,8 @@ export const HERO_PAGE_CONFIG: Record<
 };
 
 /**
- * Banners del inicio: sólo imagen (el diseño, con su texto, va en la foto) y
- * todos del mismo tamaño. Si tienen link, todo el banner es clickeable. Se
+ * Banners del inicio: sólo imagen (el diseño, con su texto, va en la foto),
+ * una apaisada para computadora y otra para celular, todos del mismo tamaño. Si tienen link, todo el banner es clickeable. Se
  * editan en el panel; sin fila cargada, la web usa `defaults`.
  */
 export const BANNER_KEYS = ["inicio.soluciones", "inicio.final"] as const;
@@ -114,12 +114,13 @@ export function isBannerKey(value: string): value is BannerKey {
   return (BANNER_KEYS as readonly string[]).includes(value);
 }
 
-/** Medida única de todos los banners (la web los muestra con esta proporción). */
-export const BANNER_SIZE: readonly [number, number] = [2400, 1000];
+/** Medidas únicas de los banners (la web los muestra con estas proporciones). */
+export const BANNER_SIZE: readonly [number, number] = [2400, 600];
+export const BANNER_MOBILE_SIZE: readonly [number, number] = [1200, 900];
 
 export const BANNER_CONFIG: Record<
   BannerKey,
-  { label: string; hint: string; defaults: { title: string; text: string; image: string; url: string } }
+  { label: string; hint: string; defaults: { title: string; text: string; image: string; imageMobile: string; url: string } }
 > = {
   "inicio.soluciones": {
     label: "Banner después de Soluciones",
@@ -128,6 +129,7 @@ export const BANNER_CONFIG: Record<
       title: "Comprá online en Distribuidora 370, la tienda online del grupo, con envíos a todo el país",
       text: "",
       image: "/images/banners/tienda-online.webp",
+      imageMobile: "/images/banners/tienda-online-mobile.webp",
       url: "https://www.distribuidora370.ar",
     },
   },
@@ -138,6 +140,7 @@ export const BANNER_CONFIG: Record<
       title: "¿Tenés una obra? Pasanos el listado y te cotizamos todo junto por WhatsApp",
       text: "",
       image: "/images/banners/cotizacion-whatsapp.webp",
+      imageMobile: "/images/banners/cotizacion-whatsapp-mobile.webp",
       url: "/go/whatsapp/inicio",
     },
   },

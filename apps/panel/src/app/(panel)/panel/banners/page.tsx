@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function BannersPage() {
   await requireSectionView("inicio");
 
-  let rows: { key: string; title: string; text: string; image: string; url: string; active: boolean }[] = [];
+  let rows: { key: string; title: string; text: string; image: string; imageMobile: string; url: string; active: boolean }[] = [];
   try {
     rows = await prisma.banner.findMany();
   } catch (error) {
@@ -19,7 +19,7 @@ export default async function BannersPage() {
   const banners: BannerDTO[] = BANNER_KEYS.map((key) => {
     const row = rows.find((item) => item.key === key);
     return row
-      ? { key, title: row.title, text: row.text, image: row.image, url: row.url, active: row.active, saved: true }
+      ? { key, title: row.title, text: row.text, image: row.image, imageMobile: row.imageMobile, url: row.url, active: row.active, saved: true }
       : { key, ...BANNER_CONFIG[key].defaults, active: true, saved: false };
   });
 

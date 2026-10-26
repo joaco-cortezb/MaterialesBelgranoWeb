@@ -101,10 +101,11 @@ model Banner {
   key       String   @id
   title     String
   text      String   @default("")
-  image     String   @default("")
-  url       String   @default("")
-  active    Boolean  @default(true)
-  updatedAt DateTime @updatedAt
+  image       String   @default("") // computadora (BANNER_SIZE)
+  imageMobile String   @default("") // celular (BANNER_MOBILE_SIZE)
+  url         String   @default("")
+  active      Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
 }
 
 model WhatsappNumber {
