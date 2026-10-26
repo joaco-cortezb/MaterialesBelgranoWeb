@@ -47,6 +47,6 @@ export async function saveWhatsappSlot(audience: WhatsappAudience, formData: For
   }
 
   await revalidateWeb("whatsapp");
-  revalidatePath("/panel/whatsapp");
+  revalidatePath("/panel/nosotros");
   return ok(audience === "GENERAL" ? "Número de ventas guardado." : "Número de mayoristas guardado.");
 }

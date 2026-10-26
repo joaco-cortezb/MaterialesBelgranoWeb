@@ -7,7 +7,7 @@ import { requireSection } from "@/lib/auth";
 import { revalidateWeb } from "@/lib/revalidate";
 import { assertConfigured, assertMutationAllowed, fail, firstIssue, ok, type ActionResult } from "@/lib/actions";
 
-const PATH = "/panel/imagenes";
+const PATH = "/panel/nosotros";
 
 async function guard(): Promise<ActionResult | null> {
   const configured = assertConfigured();

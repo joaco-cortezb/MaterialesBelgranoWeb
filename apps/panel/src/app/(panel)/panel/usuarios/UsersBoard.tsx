@@ -24,14 +24,15 @@ export type UserDTO = {
 const ROLE_LABEL: Record<Role, string> = { ADMIN: "Administrador", EDITOR: "Editor" };
 
 const ROLE_INFO: { role: Role; icon: typeof ShieldCheck; text: string }[] = [
-  { role: "ADMIN", icon: ShieldCheck, text: "Todo el panel, incluidos los números de WhatsApp y los usuarios." },
-  { role: "EDITOR", icon: UserPen, text: "Contenido de la web: soluciones, marcas, portadas, banners, imágenes, video y Nosotros." },
+  { role: "ADMIN", icon: ShieldCheck, text: "Todo el panel, incluidos los números de WhatsApp y el equipo." },
+  { role: "EDITOR", icon: UserPen, text: "El contenido de la web: soluciones, marcas, portadas, banners, video y Nosotros (menos WhatsApp)." },
 ];
 
 export function UsersBoard({ users, currentUserId }: { users: UserDTO[]; currentUserId: string }) {
   const [inviting, setInviting] = useState(false);
   const [removing, setRemoving] = useState<UserDTO | null>(null);
   const [changingRole, setChangingRole] = useState<{ user: UserDTO; role: Role } | null>(null);
+  const [resending, setResending] = useState<UserDTO | null>(null);
   const [pending, startTransition] = useTransition();
   const toast = useToast();
 
@@ -49,9 +50,9 @@ export function UsersBoard({ users, currentUserId }: { users: UserDTO[]; current
 
   return (
     <div>
-      <PageHeader title="Usuarios" subtitle="Quién puede entrar al panel. El acceso es sólo por invitación.">
+      <PageHeader title="Equipo" subtitle="Quién puede entrar al panel. El acceso es sólo por invitación.">
         <Button onClick={() => setInviting(true)}>
-          <Plus className="h-4 w-4" /> Invitar usuario
+          <Plus className="h-4 w-4" /> Invitar persona
         </Button>
       </PageHeader>
 
@@ -71,7 +72,7 @@ export function UsersBoard({ users, currentUserId }: { users: UserDTO[]; current
 
       {inviting && (
         <Card className="mb-6 p-5 sm:p-6">
-          <h2 className="text-lg font-bold text-ink">Invitar usuario</h2>
+          <h2 className="text-lg font-bold text-ink">Invitar a alguien al panel</h2>
           <form
             className="mt-5 grid gap-4 sm:grid-cols-2"
             onSubmit={(event) => {
@@ -125,9 +126,9 @@ export function UsersBoard({ users, currentUserId }: { users: UserDTO[]; current
         <Card className="overflow-hidden">
           <div className="hidden grid-cols-[minmax(0,1fr)_11rem_10rem_6rem] gap-4 border-b border-line bg-surface-2/60 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-ink-soft md:grid">
             <span>Persona</span>
-            <span>Rol</span>
-            <span>Último ingreso</span>
-            <span className="text-right">Acciones</span>
+            <span className="text-center">Rol</span>
+            <span className="text-center">Último ingreso</span>
+            <span className="text-center">Acciones</span>
           </div>
           <ul className="divide-y divide-line">
             {users.map((user) => {
@@ -147,28 +148,34 @@ export function UsersBoard({ users, currentUserId }: { users: UserDTO[]; current
                       <p className="truncate text-sm text-ink-soft">{user.email}</p>
                     </div>
                   </div>
-                  <Select
-                    aria-label={`Rol de ${user.email}`}
-                    value={user.role}
-                    disabled={pending || isMe}
-                    title={isMe ? "No podés cambiar tu propio rol" : undefined}
-                    onChange={(event) => setChangingRole({ user, role: event.target.value as Role })}
-                    className="col-span-2 row-start-2 md:col-span-1 md:row-start-auto"
-                  >
-                    {(Object.keys(ROLE_LABEL) as Role[]).map((role) => (
-                      <option key={role} value={role}>
-                        {ROLE_LABEL[role]}
-                      </option>
-                    ))}
-                  </Select>
-                  <span className="hidden text-sm text-ink-soft md:block">{user.lastSignInAt ? formatDateTime(user.lastSignInAt) : "Nunca"}</span>
-                  <div className="col-start-2 row-start-1 flex justify-end gap-1.5 md:col-start-auto md:row-start-auto">
+                  {isMe ? (
+                    // Tu propio rol no se puede cambiar: se muestra como texto, no como campo.
+                    <span className="col-span-2 row-start-2 text-sm font-semibold text-ink md:col-span-1 md:row-start-auto md:text-center">
+                      {ROLE_LABEL[user.role]}
+                    </span>
+                  ) : (
+                    <Select
+                      aria-label={`Rol de ${user.email}`}
+                      value={user.role}
+                      disabled={pending}
+                      onChange={(event) => setChangingRole({ user, role: event.target.value as Role })}
+                      className="col-span-2 row-start-2 md:col-span-1 md:row-start-auto"
+                    >
+                      {(Object.keys(ROLE_LABEL) as Role[]).map((role) => (
+                        <option key={role} value={role}>
+                          {ROLE_LABEL[role]}
+                        </option>
+                      ))}
+                    </Select>
+                  )}
+                  <span className="hidden text-center text-sm text-ink-soft md:block">{user.lastSignInAt ? formatDateTime(user.lastSignInAt) : "Nunca"}</span>
+                  <div className="col-start-2 row-start-1 flex justify-end gap-1.5 md:col-start-auto md:row-start-auto md:justify-center">
                     {user.pending ? (
-                      <Button size="sm" variant="secondary" disabled={pending} onClick={() => run(() => resendAccess(user.id))}>
+                      <Button size="sm" variant="secondary" disabled={pending} onClick={() => setResending(user)}>
                         <Mail className="h-4 w-4" /> Reenviar invitación
                       </Button>
                     ) : (
-                      <IconButton label="Enviar enlace para entrar o cambiar la contraseña" disabled={pending} onClick={() => run(() => resendAccess(user.id))}>
+                      <IconButton label="Enviar enlace para entrar o cambiar la contraseña" disabled={pending} onClick={() => setResending(user)}>
                         <Mail className="h-4 w-4" />
                       </IconButton>
                     )}
@@ -193,6 +200,22 @@ export function UsersBoard({ users, currentUserId }: { users: UserDTO[]; current
         loading={pending}
         onCancel={() => setChangingRole(null)}
         onConfirm={() => changingRole && run(() => updateUserRole(changingRole.user.id, changingRole.role), () => setChangingRole(null))}
+      />
+
+      <ConfirmDialog
+        open={resending !== null}
+        title={resending?.pending ? "¿Reenviar la invitación?" : "¿Enviar un enlace de acceso?"}
+        message={
+          resending
+            ? resending.pending
+              ? `Le llega a ${resending.email} un mail nuevo con el enlace para entrar al panel y elegir su contraseña.`
+              : `Le llega a ${resending.email} un mail con un enlace para entrar al panel y elegir una contraseña nueva. Sirve si se la olvidó. Su contraseña actual sigue funcionando hasta que la cambie.`
+            : undefined
+        }
+        confirmLabel="Enviar mail"
+        loading={pending}
+        onCancel={() => setResending(null)}
+        onConfirm={() => resending && run(() => resendAccess(resending.id), () => setResending(null))}
       />
 
       <ConfirmDialog

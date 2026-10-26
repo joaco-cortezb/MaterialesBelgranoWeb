@@ -1,19 +1,6 @@
-import { prisma } from "@/lib/prisma";
-import { requireSectionView } from "@/lib/auth";
-import { ImageSlotsBoard, type SlotValue } from "./ImageSlotsBoard";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default async function ImagenesPage() {
-  await requireSectionView("imagenes");
-
-  let values: Record<string, SlotValue> = {};
-  try {
-    const rows = await prisma.imageSlot.findMany({ select: { key: true, url: true, alt: true, position: true } });
-    values = Object.fromEntries(rows.map((row) => [row.key, { url: row.url, alt: row.alt, position: row.position ?? "50% 50%" }]));
-  } catch (error) {
-    console.error("No se pudieron leer las imágenes", error);
-  }
-
-  return <ImageSlotsBoard values={values} />;
+/** Las fotos del negocio ahora viven dentro de Nosotros (es donde se ven en la web). */
+export default function ImagenesPage() {
+  redirect("/panel/nosotros#fotos");
 }

@@ -2,6 +2,9 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { env, supabaseConfigured } from "@/lib/env";
 
+/** Una sesión dura 15 días desde que se inició: después hay que volver a entrar. */
+export const SESSION_MAX_AGE_MS = 15 * 24 * 60 * 60 * 1000;
+
 /** Rutas públicas (no requieren sesión). */
 const PUBLIC_PATHS = ["/login", "/reset", "/auth"];
 
@@ -33,10 +36,21 @@ export async function updateSession(request: NextRequest) {
   });
 
   const {
-    data: { user },
+    data: { user: currentUser },
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
+
+  // Sesión vencida (más de 15 días desde el último inicio de sesión): se
+  // cierra y se trata como si no hubiera sesión.
+  let user = currentUser;
+  let expired = false;
+  const signedInAt = user?.last_sign_in_at ? Date.parse(user.last_sign_in_at) : NaN;
+  if (user && Number.isFinite(signedInAt) && Date.now() - signedInAt > SESSION_MAX_AGE_MS) {
+    await supabase.auth.signOut({ scope: "local" });
+    user = null;
+    expired = true;
+  }
   const isPanelPath = pathname.startsWith("/panel") || pathname === "/";
   const isApi = pathname.startsWith("/api/");
 
@@ -44,8 +58,13 @@ export async function updateSession(request: NextRequest) {
     if (isApi) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     const url = request.nextUrl.clone();
     url.pathname = "/login";
+    url.search = "";
     if (pathname !== "/") url.searchParams.set("next", pathname);
-    return privatePanelResponse(NextResponse.redirect(url), true);
+    if (expired) url.searchParams.set("expired", "1");
+    const redirected = NextResponse.redirect(url);
+    // Las cookies borradas por el signOut tienen que viajar en la redirección.
+    for (const cookie of supabaseResponse.cookies.getAll()) redirected.cookies.set(cookie);
+    return privatePanelResponse(redirected, true);
   }
 
   if (user && pathname === "/login") {

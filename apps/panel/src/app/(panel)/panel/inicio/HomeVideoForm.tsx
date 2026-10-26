@@ -3,7 +3,15 @@
 import { useState, useTransition } from "react";
 import { CheckCircle2, CircleAlert, PlayCircle } from "lucide-react";
 import { youtubeVideoId } from "@mb/shared";
-import { Badge, Button, Card, Hint, Input, Label, PageHeader, Spinner } from "@/components/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  Input,
+  Label,
+  PageHeader,
+  Spinner,
+} from "@/components/ui";
 import { useToast } from "@/components/ui/Toast";
 import { saveHomeVideo } from "./actions";
 
@@ -31,11 +39,13 @@ export function HomeVideoForm({ initialUrl }: { initialUrl: string }) {
         title="Video del inicio"
         subtitle="Un video de YouTube que aparece en el inicio, debajo de la portada. Arranca solo y sin sonido cuando el visitante llega a esa parte."
       />
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
-        <Card className="flex flex-col gap-5 p-5 sm:p-6">
+      <div className="mx-auto grid max-w-4xl gap-5">
+        <Card className="flex flex-col gap-4 p-5 sm:p-6">
           <div className="flex items-center justify-between gap-3">
             <h2 className="font-bold text-ink">Link del video</h2>
-            <Badge tone={savedId ? "green" : "gray"}>{savedId ? "Publicado" : "Sin video"}</Badge>
+            <Badge tone={savedId ? "green" : "gray"}>
+              {savedId ? "Publicado" : "Sin video"}
+            </Badge>
           </div>
           <div>
             <Label htmlFor="videoUrl">Link de YouTube</Label>
@@ -48,10 +58,13 @@ export function HomeVideoForm({ initialUrl }: { initialUrl: string }) {
               placeholder="https://www.youtube.com/watch?v=…"
               aria-invalid={invalid}
             />
-            <p className={`mt-1.5 flex items-center gap-1.5 text-xs ${invalid ? "text-[var(--color-danger)]" : videoId ? "text-[var(--color-success)]" : "text-ink-soft"}`}>
+            <p
+              className={`mt-1.5 flex items-center gap-1.5 text-xs ${invalid ? "text-[var(--color-danger)]" : videoId ? "text-[var(--color-success)]" : "text-ink-soft"}`}
+            >
               {invalid ? (
                 <>
-                  <CircleAlert className="h-3.5 w-3.5" /> Ese link no es de un video de YouTube.
+                  <CircleAlert className="h-3.5 w-3.5" /> Ese link no es de un
+                  video de YouTube.
                 </>
               ) : videoId ? (
                 <>
@@ -62,22 +75,33 @@ export function HomeVideoForm({ initialUrl }: { initialUrl: string }) {
               )}
             </p>
           </div>
-          <Hint>El video tiene que ser público o “no listado” en YouTube; si es privado, no se puede ver en la web.</Hint>
-          <div className="mt-auto flex flex-wrap justify-end gap-2">
-            {savedId && (
-              <Button variant="ghost" onClick={() => save("")} disabled={pending}>
-                Quitar video
-              </Button>
-            )}
-            <Button onClick={() => save(url)} disabled={pending || url === initialUrl || invalid || !videoId}>
-              {pending ? (
-                <>
-                  <Spinner /> Guardando…
-                </>
-              ) : (
-                "Publicar video"
+          <div className="flex flex-col gap-3 border-t border-line pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs leading-relaxed text-ink-soft">
+              El video tiene que ser público o “no listado” en YouTube.
+            </p>
+            <div className="flex flex-wrap justify-end gap-2">
+              {savedId && (
+                <Button
+                  variant="ghost"
+                  onClick={() => save("")}
+                  disabled={pending}
+                >
+                  Quitar video
+                </Button>
               )}
-            </Button>
+              <Button
+                onClick={() => save(url)}
+                disabled={pending || url === initialUrl || invalid || !videoId}
+              >
+                {pending ? (
+                  <>
+                    <Spinner /> Guardando…
+                  </>
+                ) : (
+                  "Publicar video"
+                )}
+              </Button>
+            </div>
           </div>
         </Card>
 
@@ -96,7 +120,11 @@ export function HomeVideoForm({ initialUrl }: { initialUrl: string }) {
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center text-white/70">
                 <PlayCircle className="h-10 w-10" />
-                <p className="text-sm">{invalid ? "Revisá el link." : "Pegá un link para ver el video acá."}</p>
+                <p className="text-sm">
+                  {invalid
+                    ? "Revisá el link."
+                    : "Pegá un link para ver el video acá."}
+                </p>
               </div>
             )}
           </div>

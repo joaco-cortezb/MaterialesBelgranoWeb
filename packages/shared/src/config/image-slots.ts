@@ -64,7 +64,7 @@ export const IMAGE_SLOT_GROUP_LABELS: Record<ImageSlotGroup, string> = {
  * Portadas: un carrusel de fotos por página, administrado en el panel (tabla
  * `HeroSlide`, columna `page`). El inicio ocupa la primera pantalla; marcas y
  * nosotros usan una versión tipo banner (la mitad de alto). Si una página no
- * tiene fotos activas, la web muestra las de `fallback`.
+ * tiene fotos activas, la portada se ve con fondo oscuro (sin foto).
  */
 export const HERO_PAGES = ["inicio", "marcas", "nosotros"] as const;
 export type HeroPage = (typeof HERO_PAGES)[number];
@@ -83,19 +83,19 @@ export const HERO_PAGE_CONFIG: Record<
     label: "Inicio",
     hint: "Fotos grandes detrás del título: ocupan toda la primera pantalla. Usá fotos horizontales con lo importante al centro (en celular se ve sólo la parte central).",
     recommended: [2560, 1440],
-    fallback: [{ url: "/images/salon-materiales-belgrano-mendoza.webp", alt: "Salón de ventas de Materiales Belgrano en Godoy Cruz, Mendoza" }],
+    fallback: [],
   },
   marcas: {
     label: "Marcas",
     hint: "Banner al inicio de la página Marcas (la mitad de alto que el del inicio). Foto horizontal con lo importante al centro.",
     recommended: [2560, 800],
-    fallback: [{ url: "/images/salon-exhibicion-materiales-belgrano.webp", alt: "Exhibición de productos en el salón de Materiales Belgrano" }],
+    fallback: [],
   },
   nosotros: {
     label: "Nosotros",
     hint: "Banner al inicio de la página Nosotros (la mitad de alto que el del inicio). Foto horizontal con lo importante al centro.",
     recommended: [2560, 800],
-    fallback: [{ url: "/images/salon-materiales-belgrano-mendoza.webp", alt: "Equipo de Materiales Belgrano en el salón de ventas" }],
+    fallback: [],
   },
 };
 
@@ -104,7 +104,7 @@ export const HERO_PAGE_CONFIG: Record<
  * una apaisada para computadora y otra para celular, todos del mismo tamaño. Si tienen link, todo el banner es clickeable. Se
  * editan en el panel; sin fila cargada, la web usa `defaults`.
  */
-export const BANNER_KEYS = ["inicio.soluciones", "inicio.final"] as const;
+export const BANNER_KEYS = ["inicio.soluciones", "inicio.final", "marcas"] as const;
 export type BannerKey = (typeof BANNER_KEYS)[number];
 
 export function isBannerKey(value: string): value is BannerKey {
@@ -120,8 +120,8 @@ export const BANNER_CONFIG: Record<
   { label: string; hint: string; defaults: { title: string; text: string; image: string; imageMobile: string; url: string } }
 > = {
   "inicio.soluciones": {
-    label: "Banner después de Soluciones",
-    hint: "Se muestra en el inicio, debajo del carrusel de soluciones.",
+    label: "Banner inicio 1",
+    hint: "En el inicio, debajo del carrusel de soluciones.",
     defaults: {
       title: "Comprá online en Distribuidora 370, la tienda online del grupo, con envíos a todo el país",
       text: "",
@@ -131,14 +131,25 @@ export const BANNER_CONFIG: Record<
     },
   },
   "inicio.final": {
-    label: "Banner final",
-    hint: "Se muestra al final del inicio, antes del pie de página.",
+    label: "Banner inicio 2",
+    hint: "Al final del inicio, antes del pie de página.",
     defaults: {
       title: "¿Tenés una obra? Pasanos el listado y te cotizamos todo junto por WhatsApp",
       text: "",
       image: "/images/banners/cotizacion-whatsapp.webp",
       imageMobile: "/images/banners/cotizacion-whatsapp-mobile.webp",
       url: "/go/whatsapp/inicio",
+    },
+  },
+  marcas: {
+    label: "Banner marcas",
+    hint: "En la página Marcas, debajo de los logos.",
+    defaults: {
+      title: "¿No encontrás el producto? Mandanos el código o una foto y te lo cotizamos por WhatsApp",
+      text: "",
+      image: "/images/banners/marcas.webp",
+      imageMobile: "/images/banners/marcas-mobile.webp",
+      url: "/go/whatsapp/marcas",
     },
   },
 };

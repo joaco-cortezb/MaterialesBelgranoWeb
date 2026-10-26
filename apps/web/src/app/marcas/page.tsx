@@ -3,10 +3,10 @@ import { ROUTES, SITE } from "@mb/shared";
 import { Container } from "@/components/ui/Container";
 import { BrandsExplorer } from "@/components/brands/BrandsExplorer";
 import { PageBanner } from "@/components/sections/PageBanner";
-import { WhatsappCta } from "@/components/sections/WhatsappCta";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/structured-data";
-import { getBrands, getCategories, getHeroSlides } from "@/lib/cms";
+import { getBanner, getBrands, getCategories, getHeroSlides } from "@/lib/cms";
+import { HomeBanner } from "@/components/sections/HomeBanner";
 
 export const metadata: Metadata = {
   title: "Marcas",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 export default async function MarcasPage() {
-  const [brands, categories, slides] = await Promise.all([getBrands(), getCategories(), getHeroSlides("marcas")]);
+  const [brands, categories, slides, banner] = await Promise.all([getBrands(), getCategories(), getHeroSlides("marcas"), getBanner("marcas")]);
   const groups = categories
     .map((rubro) => ({ slug: rubro.slug, name: rubro.name, brands: brands.filter((brand) => brand.rubroSlug === rubro.slug) }))
     .filter((group) => group.brands.length > 0);
@@ -38,7 +38,8 @@ export default async function MarcasPage() {
           <BrandsExplorer groups={groups} />
         </Container>
       </section>
-      <WhatsappCta source="marcas" title="¿Encontraste el producto en el catálogo?" text="Mandanos el código o una captura por WhatsApp y te confirmamos stock y precio." />
+      {/* El banner ya es la llamada a WhatsApp de esta página. */}
+      {banner && <HomeBanner banner={banner} className="pt-0 sm:pt-0" />}
     </>
   );
 }

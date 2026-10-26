@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { BANNER_CONFIG, BANNER_MOBILE_SIZE, BANNER_SIZE, type BannerKey } from "@mb/shared";
-import { Badge, Button, Card, Hint, Input, Label, PageHeader, Switch, Textarea } from "@/components/ui";
+import { Button, Card, Hint, Input, Label, PageHeader, Switch } from "@/components/ui";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
 import { saveBanner } from "./actions";
@@ -70,39 +70,27 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
           <p className="mt-0.5 text-xs text-ink-soft">{config.hint}</p>
         </div>
         <div className="flex items-center gap-2">
-          {!banner.saved && <Badge>Por defecto</Badge>}
           <Switch checked={active} onChange={setActive} label="Mostrar en la web" text={active ? "Visible" : "Oculto"} />
         </div>
       </div>
 
-      <div className="mt-5 grid items-start gap-5 md:grid-cols-[minmax(0,1fr)_220px]">
+      {/* 3fr + 1fr con 4:1 y 4:3 dan exactamente el mismo alto: quedan alineadas. */}
+      <div className="mt-5 grid gap-5 sm:grid-cols-[3fr_1fr]">
         <div>
           <Label>Computadora</Label>
-          <ImageUploadField
-            value={image}
-            onChange={setImage}
-            folder="slots"
-            label="Banner para computadora"
-            recommended={BANNER_SIZE}
-          />
+          <ImageUploadField value={image} onChange={setImage} folder="slots" label="Banner para computadora" recommended={BANNER_SIZE} compactHint />
         </div>
-        <div className="max-w-[260px] md:max-w-none">
+        <div className="max-w-[280px] sm:max-w-none">
           <Label>Celular</Label>
-          <ImageUploadField
-            value={imageMobile}
-            onChange={setImageMobile}
-            folder="slots"
-            label="Banner para celular"
-            recommended={BANNER_MOBILE_SIZE}
-          />
+          <ImageUploadField value={imageMobile} onChange={setImageMobile} folder="slots" label="Banner para celular" recommended={BANNER_MOBILE_SIZE} compactHint />
         </div>
       </div>
 
-      <div className="mt-5 grid gap-4 md:grid-cols-2">
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor={`title-${banner.key}`}>Qué dice el banner</Label>
-          <Textarea id={`title-${banner.key}`} value={title} onChange={(event) => setTitle(event.target.value)} maxLength={200} rows={2} />
-          <Hint>El texto que aparece en la imagen. No se muestra encima: lo leen Google y los lectores de pantalla.</Hint>
+          <Input id={`title-${banner.key}`} value={title} onChange={(event) => setTitle(event.target.value)} maxLength={200} />
+          <Hint>Lo leen Google y los lectores de pantalla.</Hint>
         </div>
         <div>
           <Label htmlFor={`url-${banner.key}`}>Link (opcional)</Label>
@@ -114,7 +102,7 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
             placeholder="https://… o /marcas"
             maxLength={500}
           />
-          <Hint>Una página de esta web (/marcas, /nosotros) o una dirección completa. Vacío = el banner no es clickeable.</Hint>
+          <Hint>Una página de la web (/marcas) o una dirección completa.</Hint>
         </div>
       </div>
 

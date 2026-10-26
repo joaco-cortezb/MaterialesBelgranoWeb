@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { splitParagraphs } from "@mb/shared";
-import { Badge, Button, Card, Hint, Input, Label, PageHeader, Spinner, Textarea } from "@/components/ui";
+import { Badge, Button, Card, Hint, Input, Label, Spinner, Textarea } from "@/components/ui";
 import { useToast } from "@/components/ui/Toast";
 import { saveAbout } from "./actions";
 
@@ -27,7 +27,6 @@ export function AboutForm({ initialHeadline, initialBody, saved }: { initialHead
 
   return (
     <div>
-      <PageHeader title="Nosotros" subtitle="El título del banner y el texto de “Nuestra historia” en la página Nosotros. Lo que ves acá es exactamente lo que muestra la web." />
       <div className="grid gap-5 lg:grid-cols-2">
         <Card className="flex flex-col gap-5 p-5 sm:p-6">
           <div className="flex items-center justify-between gap-3">

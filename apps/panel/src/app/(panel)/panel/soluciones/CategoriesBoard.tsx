@@ -119,8 +119,8 @@ export function CategoriesBoard({ categories, webUrl }: { categories: CategoryDT
                   </div>
                   <p className="mt-0.5 truncate text-xs text-ink-soft">{category.summary}</p>
                   {webUrl && (
-                    <a href={`${webUrl}/soluciones/${category.slug}`} target="_blank" rel="noopener noreferrer" className="mt-0.5 inline-flex max-w-full items-center gap-1 truncate text-xs text-ink-soft hover:text-ink">
-                      <ExternalLink className="h-3 w-3 shrink-0" /> <span className="truncate">/soluciones/{category.slug}</span>
+                    <a href={`${webUrl}/soluciones/${category.slug}`} target="_blank" rel="noopener noreferrer" title={`${webUrl}/soluciones/${category.slug}`} className="mt-1 inline-flex min-h-6 max-w-full items-center gap-1 truncate text-xs font-semibold text-brand-700 hover:text-brand-800">
+                      <ExternalLink className="h-3 w-3 shrink-0" /> <span className="truncate">Ver página en la web</span>
                     </a>
                   )}
                 </div>

@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { HERO_MAX_SLIDES, HERO_PAGE_CONFIG, HERO_PAGES, type HeroPage } from "@mb/shared";
-import { Button, Card, Hint, IconButton, Input, Label, PageHeader, Select, Spinner, Switch, Textarea } from "@/components/ui";
+import { Button, Card, Hint, IconButton, Input, Label, PageHeader, Spinner, Switch, Textarea } from "@/components/ui";
+import { Tabs } from "@/components/ui/Tabs";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
@@ -11,16 +12,6 @@ import type { ActionResult } from "@/lib/actions";
 import { deleteHeroSlide, reorderHeroSlide, saveHeroSlide, saveHomeHeroText, toggleHeroSlideActive } from "./actions";
 
 export type HeroSlideDTO = { id: string; url: string; alt: string; position: string; active: boolean };
-
-const POSITIONS = [
-  { value: "50% 50%", label: "Centro" },
-  { value: "50% 0%", label: "Arriba" },
-  { value: "50% 100%", label: "Abajo" },
-  { value: "0% 50%", label: "Izquierda" },
-  { value: "100% 50%", label: "Derecha" },
-  { value: "50% 25%", label: "Centro-arriba" },
-  { value: "50% 75%", label: "Centro-abajo" },
-];
 
 const NEW_SLIDE: HeroSlideDTO = { id: "", url: "", alt: "", position: "50% 50%", active: true };
 
@@ -68,29 +59,22 @@ export function HeroSlidesBoard({
         </Button>
       </PageHeader>
 
-      <div role="tablist" aria-label="Página de la web" className="mb-6 flex gap-1 overflow-x-auto rounded-xl bg-surface-2 p-1">
-        {HERO_PAGES.map((item) => (
-          <button
-            key={item}
-            role="tab"
-            aria-selected={page === item}
-            onClick={() => {
-              setPage(item);
-              setAdding(false);
-            }}
-            className={`min-h-10 shrink-0 rounded-lg px-4 text-sm font-semibold transition-colors ${page === item ? "bg-surface text-ink shadow-sm" : "text-ink-soft hover:text-ink"}`}
-          >
-            {HERO_PAGE_CONFIG[item].label}
-          </button>
-        ))}
-      </div>
-      <p className="mb-5 text-sm text-ink-soft">{config.hint}</p>
+      <Tabs
+        label="Página de la web"
+        items={HERO_PAGES.map((item) => ({ value: item, label: HERO_PAGE_CONFIG[item].label }))}
+        value={page}
+        onChange={(item) => {
+          setPage(item);
+          setAdding(false);
+        }}
+      />
+      <p className="mx-auto mb-5 max-w-3xl text-center text-sm text-ink-soft">{config.hint}</p>
 
       {page === "inicio" && <HeroTextCard value={heroText} />}
 
       {visibleCount === 0 && (
         <Card className="mb-5 px-5 py-4 text-sm text-ink-soft">
-          No hay fotos visibles: la web muestra {config.fallback.length === 1 ? "una foto" : `${config.fallback.length} fotos`} por defecto del salón.
+          No hay fotos visibles: la portada de {config.label} se ve con fondo oscuro, sin foto.
         </Card>
       )}
       {full && <p className="mb-5 text-sm text-ink-soft">Llegaste al máximo de {HERO_MAX_SLIDES} fotos. Eliminá una para agregar otra.</p>}
@@ -114,6 +98,8 @@ export function HeroSlidesBoard({
               slide={slide}
               page={page}
               index={index}
+              // "Quitar" ya pidió confirmación en el campo de imagen.
+              onRemove={() => run(() => deleteHeroSlide(slide.id))}
               toolbar={
                 <div className="flex items-center gap-2">
                   <Switch
@@ -153,6 +139,10 @@ export function HeroSlidesBoard({
   );
 }
 
+/**
+ * Una foto de la portada: sólo la imagen. Se guarda sola al subirla; quitarla
+ * (con confirmación) la elimina de la portada.
+ */
 function SlideCard({
   slide,
   page,
@@ -161,6 +151,7 @@ function SlideCard({
   toolbar,
   onCancel,
   onSaved,
+  onRemove,
 }: {
   slide: HeroSlideDTO;
   page: HeroPage;
@@ -169,27 +160,30 @@ function SlideCard({
   toolbar?: React.ReactNode;
   onCancel?: () => void;
   onSaved?: () => void;
+  onRemove?: () => void;
 }) {
   const [url, setUrl] = useState(slide.url);
-  const [alt, setAlt] = useState(slide.alt);
-  const [position, setPosition] = useState(slide.position);
   const [pending, startTransition] = useTransition();
   const toast = useToast();
-  const dirty = url !== slide.url || alt !== slide.alt || position !== slide.position;
-  const fieldId = slide.id || "new";
 
-  function save() {
+  function save(nextUrl: string) {
+    if (!nextUrl) {
+      onRemove?.();
+      return;
+    }
+    setUrl(nextUrl);
     const formData = new FormData();
     formData.set("page", page);
-    formData.set("url", url);
-    formData.set("alt", alt);
-    formData.set("position", position);
+    formData.set("url", nextUrl);
+    formData.set("alt", slide.alt || `Portada de ${HERO_PAGE_CONFIG[page].label} - Materiales Belgrano`);
+    formData.set("position", slide.position || "50% 50%");
     startTransition(async () => {
       const result = await saveHeroSlide(slide.id, formData);
       if (result.ok) {
         toast.success(result.message ?? "Guardado.");
         onSaved?.();
       } else {
+        setUrl(slide.url);
         toast.error(result.error);
       }
     });
@@ -197,50 +191,22 @@ function SlideCard({
 
   return (
     <Card className="flex h-full flex-col p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex min-h-10 flex-wrap items-center justify-between gap-3">
         <h2 className="font-bold text-ink">{isNew ? "Nueva foto" : `Foto ${(index ?? 0) + 1}`}</h2>
         {toolbar}
-      </div>
-
-      <div className="mt-4">
-        <ImageUploadField
-          value={url}
-          onChange={setUrl}
-          folder="slots"
-          label="Foto de portada"
-          recommended={HERO_PAGE_CONFIG[page].recommended}
-          position={position}
-        />
-      </div>
-
-      <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_160px]">
-        <div>
-          <Label htmlFor={`alt-${fieldId}`}>Descripción (texto alternativo)</Label>
-          <Input id={`alt-${fieldId}`} value={alt} onChange={(event) => setAlt(event.target.value)} maxLength={200} placeholder="Ej.: Salón de ventas con luminarias encendidas" />
-          <Hint>Qué se ve en la foto. Lo leen Google y los lectores de pantalla.</Hint>
-        </div>
-        <div>
-          <Label htmlFor={`pos-${fieldId}`}>Encuadre</Label>
-          <Select id={`pos-${fieldId}`} value={position} onChange={(event) => setPosition(event.target.value)}>
-            {POSITIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
-          <Hint>Qué parte se prioriza en pantallas angostas.</Hint>
-        </div>
-      </div>
-
-      <div className="mt-auto flex justify-end gap-2 pt-4">
         {isNew && (
-          <Button variant="ghost" onClick={onCancel} disabled={pending}>
+          <Button variant="ghost" size="sm" onClick={onCancel} disabled={pending}>
             Cancelar
           </Button>
         )}
-        <Button onClick={save} loading={pending} loadingText="Guardando…" disabled={!dirty || !url || !alt.trim()}>
-          {isNew ? "Agregar a la portada" : "Guardar"}
-        </Button>
+      </div>
+      <div className="relative mt-4">
+        <ImageUploadField value={url} onChange={save} folder="slots" label="Foto de portada" recommended={HERO_PAGE_CONFIG[page].recommended} />
+        {pending && (
+          <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-xl bg-surface/70 text-sm font-semibold text-ink">
+            <Spinner /> Guardando…
+          </div>
+        )}
       </div>
     </Card>
   );

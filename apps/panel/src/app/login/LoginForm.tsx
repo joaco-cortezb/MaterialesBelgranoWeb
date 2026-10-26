@@ -28,6 +28,7 @@ export function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(() => {
     if (readHashParams()?.get("error_description")) return URL_ERRORS.auth;
+    if (params.get("expired") === "1") return "Por seguridad, la sesión se cierra cada 15 días. Volvé a ingresar.";
     const code = params.get("error");
     return code ? (URL_ERRORS[code] ?? null) : null;
   });

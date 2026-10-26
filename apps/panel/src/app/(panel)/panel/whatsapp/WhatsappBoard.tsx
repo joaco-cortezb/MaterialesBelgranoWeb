@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { MessageCircle, MousePointerClick } from "lucide-react";
+import { MousePointerClick } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa6";
 import { formatWhatsappPhone, normalizeWhatsappPhone, type WhatsappAudience } from "@mb/shared";
-import { Badge, Button, Card, Hint, Input, Label, PageHeader, Spinner, Switch, Textarea } from "@/components/ui";
+import { Badge, Button, Card, Hint, Input, Label, Spinner, Switch, Textarea } from "@/components/ui";
 import { useToast } from "@/components/ui/Toast";
 import { saveWhatsappSlot } from "./actions";
 
@@ -29,15 +30,13 @@ const SLOT_INFO: Record<WhatsappAudience, { title: string; where: string }> = {
   },
 };
 
-export function WhatsappBoard({ slots, canManage }: { slots: Record<WhatsappAudience, WhatsappSlotDTO>; canManage: boolean }) {
+/** Los dos números de WhatsApp de la web (va dentro de la sección Nosotros). */
+export function WhatsappSlots({ slots, canManage }: { slots: Record<WhatsappAudience, WhatsappSlotDTO>; canManage: boolean }) {
   return (
-    <div>
-      <PageHeader title="WhatsApp" subtitle="Los dos números de la web: uno para ventas y otro para mayoristas." />
-      <div className="grid gap-5 lg:grid-cols-2">
-        {(["GENERAL", "EMPRESAS"] as const).map((audience) => (
-          <SlotCard key={audience} audience={audience} slot={slots[audience]} canManage={canManage} />
-        ))}
-      </div>
+    <div className="grid gap-5 lg:grid-cols-2">
+      {(["GENERAL", "EMPRESAS"] as const).map((audience) => (
+        <SlotCard key={audience} audience={audience} slot={slots[audience]} canManage={canManage} />
+      ))}
     </div>
   );
 }
@@ -74,7 +73,7 @@ function SlotCard({ audience, slot, canManage }: { audience: WhatsappAudience; s
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#25d366] text-white">
-            <MessageCircle className="h-5 w-5" />
+            <FaWhatsapp className="h-6 w-6" />
           </span>
           <div>
             <h2 className="text-lg font-bold text-ink">{info.title}</h2>
@@ -82,7 +81,9 @@ function SlotCard({ audience, slot, canManage }: { audience: WhatsappAudience; s
           </div>
         </div>
         {isVentas ? (
-          <Badge tone="green">Siempre visible</Badge>
+          <span className="shrink-0 whitespace-nowrap">
+            <Badge tone="green">Siempre visible</Badge>
+          </span>
         ) : (
           <Switch checked={active} onChange={setActive} disabled={!canManage || pending} label={active ? "Visible en la web" : "Oculto en la web"} />
         )}
@@ -118,10 +119,10 @@ function SlotCard({ audience, slot, canManage }: { audience: WhatsappAudience; s
           onChange={(event) => setMessage(event.target.value)}
           maxLength={300}
           rows={3}
-          placeholder="Hola, vengo de la web y quiero hacer una consulta."
+          placeholder={audience === "GENERAL" ? "¡Hola, Materiales Belgrano! Quiero hacer una consulta." : "¡Hola! Tengo una empresa / compro por mayor y quiero pedir una cotización."}
           disabled={!canManage}
         />
-        <Hint>Lo que aparece escrito al abrir el chat.</Hint>
+        <Hint>Lo que aparece escrito al abrir el chat. La web le agrega desde qué página se escribió.</Hint>
       </div>
 
       <div className="mt-5 flex items-center justify-between gap-3 border-t border-line pt-4">

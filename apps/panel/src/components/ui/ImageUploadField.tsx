@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { ImageUp, Trash2 } from "lucide-react";
 import { Spinner } from "@/components/ui";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/utils";
 import { downscaleImageForUpload, isHeic } from "@/lib/image-downscale";
@@ -34,6 +35,7 @@ export function ImageUploadField({
   objectFit = "cover",
   position = "50% 50%",
   fallbackSrc,
+  compactHint = false,
 }: {
   value: string;
   onChange: (url: string) => void;
@@ -45,9 +47,12 @@ export function ImageUploadField({
   position?: string;
   /** Imagen que muestra la web cuando no hay nada cargado. */
   fallbackSrc?: string;
+  /** Sólo la medida recomendada debajo (para columnas angostas). */
+  compactHint?: boolean;
 }) {
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
   const accept = ACCEPTED_IMAGE_EXTENSIONS.map((extension) => `.${extension}`).join(",");
@@ -183,13 +188,32 @@ export function ImageUploadField({
       </div>
 
       <div className="flex items-start justify-between gap-3">
-        <p className="text-xs leading-relaxed text-ink-soft">{uploadHint(folder, recommended)}</p>
+        <p className="text-xs leading-relaxed text-ink-soft">
+          {compactHint && recommended ? `${recommended[0]} × ${recommended[1]} px` : uploadHint(folder, recommended)}
+        </p>
         {value && (
-          <button type="button" onClick={() => onChange("")} className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-[var(--color-danger)] hover:underline">
+          <button
+            type="button"
+            onClick={() => setConfirmRemove(true)}
+            className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-[var(--color-danger)] hover:underline"
+          >
             <Trash2 className="h-3.5 w-3.5" /> Quitar
           </button>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmRemove}
+        title="¿Quitar esta imagen?"
+        message="La imagen deja de verse en la web. Podés volver a subirla cuando quieras."
+        confirmLabel="Quitar"
+        danger
+        onCancel={() => setConfirmRemove(false)}
+        onConfirm={() => {
+          setConfirmRemove(false);
+          onChange("");
+        }}
+      />
     </div>
   );
 }

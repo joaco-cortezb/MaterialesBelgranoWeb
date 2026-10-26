@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ArrowRight, MessageCircle } from "lucide-react";
-import { IMAGE_SLOTS, whatsappSourceLabel } from "@mb/shared";
+import type { ReactNode } from "react";
+import { ArrowRight, LayoutGrid, MousePointerClick, Tags } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa6";
 import { prisma } from "@/lib/prisma";
 import { Card, PageHeader } from "@/components/ui";
 import { NAV_ITEMS } from "@/components/panel/nav";
@@ -14,27 +15,13 @@ const DAYS = 30;
 async function getStats() {
   const since = new Date();
   since.setDate(since.getDate() - DAYS);
-  const [brands, slots, numbers, clicksTotal, clicks30, bySource, categories] = await Promise.all([
+  const [brands, categories, clicksTotal, clicks30] = await Promise.all([
     prisma.brand.count({ where: { active: true } }),
-    // Sólo fotos subidas desde el panel (no las que apuntan a imágenes del repo).
-    prisma.imageSlot.count({ where: { key: { in: IMAGE_SLOTS.map((slot) => slot.key) }, url: { startsWith: "https://" } } }),
-    prisma.whatsappNumber.count({ where: { active: true } }),
+    prisma.category.count({ where: { active: true } }),
     prisma.whatsappClick.count(),
     prisma.whatsappClick.count({ where: { createdAt: { gte: since } } }),
-    prisma.whatsappClick.groupBy({ by: ["source"], where: { createdAt: { gte: since } }, _count: { _all: true } }),
-    prisma.category.findMany({ select: { slug: true, name: true } }),
   ]);
-  return {
-    categoryNames: Object.fromEntries(categories.map((category) => [category.slug, category.name])),
-    brands,
-    slots,
-    numbers,
-    clicksTotal,
-    clicks30,
-    bySource: bySource
-      .map((row) => ({ source: row.source, count: row._count._all }))
-      .sort((a, b) => b.count - a.count),
-  };
+  return { brands, categories, clicksTotal, clicks30 };
 }
 
 export default async function PanelHome() {
@@ -47,8 +34,6 @@ export default async function PanelHome() {
     console.error("No se pudieron leer las estadísticas", error);
   }
 
-  const maxCount = stats?.bySource[0]?.count ?? 0;
-
   return (
     <div>
       <PageHeader title="Inicio" subtitle="Resumen de la web y de las consultas que llegan por WhatsApp." />
@@ -59,35 +44,12 @@ export default async function PanelHome() {
         </Card>
       )}
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Tile label={`Clics a WhatsApp (${DAYS} días)`} value={stats?.clicks30 ?? "—"} />
-        <Tile label="Clics a WhatsApp (total)" value={stats?.clicksTotal ?? "—"} />
-        <Tile label="Marcas activas" value={stats?.brands ?? "—"} />
-        <Tile label="Imágenes cargadas" value={stats ? `${stats.slots} / ${IMAGE_SLOTS.length}` : "—"} />
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+        <Tile icon={<FaWhatsapp />} tone="whatsapp" value={stats?.clicks30 ?? "—"} label={`Consultas por WhatsApp (${DAYS} días)`} />
+        <Tile icon={<MousePointerClick />} value={stats?.clicksTotal ?? "—"} label="Consultas por WhatsApp (total)" />
+        <Tile icon={<Tags />} value={stats?.brands ?? "—"} label="Marcas visibles" />
+        <Tile icon={<LayoutGrid />} value={stats?.categories ?? "—"} label="Soluciones visibles" />
       </div>
-
-      <section className="mt-10">
-        <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-ink">
-          <MessageCircle className="h-5 w-5 text-brand-700" /> De dónde salen las consultas (últimos {DAYS} días)
-        </h2>
-        <Card className="divide-y divide-line">
-          {stats && stats.bySource.length > 0 ? (
-            stats.bySource.map((row) => (
-              <div key={row.source} className="flex items-center gap-4 px-5 py-3">
-                <span className="w-32 shrink-0 truncate text-sm font-semibold text-ink sm:w-64">
-                  {whatsappSourceLabel(row.source, stats.categoryNames)}
-                </span>
-                <span className="h-2 flex-1 overflow-hidden rounded-full bg-surface-2">
-                  <span className="block h-full rounded-full bg-brand" style={{ width: `${maxCount ? (row.count / maxCount) * 100 : 0}%` }} />
-                </span>
-                <span className="w-10 text-right text-sm font-bold tabular-nums text-ink">{row.count}</span>
-              </div>
-            ))
-          ) : (
-            <p className="px-5 py-8 text-center text-sm text-ink-soft">Todavía no hay clics registrados. Aparecen acá cuando alguien toca un botón de WhatsApp en la web.</p>
-          )}
-        </Card>
-      </section>
 
       <section className="mt-10">
         <h2 className="mb-4 text-lg font-bold text-ink">Qué podés administrar</h2>
@@ -115,11 +77,18 @@ export default async function PanelHome() {
   );
 }
 
-function Tile({ label, value }: { label: string; value: string | number }) {
+function Tile({ icon, value, label, tone = "brand" }: { icon: ReactNode; value: string | number; label: string; tone?: "brand" | "whatsapp" }) {
   return (
-    <Card className="flex h-full flex-col justify-between p-5">
-      <div className="text-3xl font-extrabold tracking-tight text-ink tabular-nums">{value}</div>
-      <div className="mt-1 line-clamp-2 min-h-8 text-xs font-semibold uppercase leading-4 tracking-[0.08em] text-ink-soft">{label}</div>
+    <Card className="flex h-full flex-col items-start gap-4 p-5">
+      <span
+        className={`flex h-11 w-11 items-center justify-center rounded-xl [&>svg]:h-5 [&>svg]:w-5 ${tone === "whatsapp" ? "bg-[#25d366] text-white" : "bg-brand-50 text-brand-800"}`}
+      >
+        {icon}
+      </span>
+      <div>
+        <div className="text-3xl font-extrabold leading-none tracking-tight text-ink tabular-nums">{value}</div>
+        <div className="mt-2 text-sm leading-snug text-ink-soft">{label}</div>
+      </div>
     </Card>
   );
 }
