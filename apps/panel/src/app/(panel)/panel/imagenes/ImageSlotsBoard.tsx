@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { IMAGE_SLOT_GROUP_LABELS, IMAGE_SLOTS, type ImageSlotDefinition, type ImageSlotGroup } from "@mb/shared";
-import { Badge, Button, Card, Hint, Input, Label, PageHeader, Select, Spinner } from "@/components/ui";
+import { Badge, Button, Card, Hint, Input, Label, PageHeader, Select } from "@/components/ui";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
 import { saveImageSlot } from "./actions";
@@ -30,19 +30,21 @@ export function ImageSlotsBoard({ values }: { values: Record<string, SlotValue> 
     <div>
       <PageHeader title="Imágenes" subtitle="Cada lugar de la web tiene su foto. Reemplazala acá; si la quitás, vuelve la imagen por defecto. Las fotos de las soluciones se cambian en Soluciones." />
 
-      <div role="tablist" aria-label="Sección de la web" className="mb-6 flex gap-1 overflow-x-auto rounded-xl bg-surface-2 p-1">
-        {GROUPS.map((item) => (
-          <button
-            key={item}
-            role="tab"
-            aria-selected={group === item}
-            onClick={() => setGroup(item)}
-            className={`min-h-10 shrink-0 rounded-lg px-4 text-sm font-semibold transition-colors ${group === item ? "bg-surface text-ink shadow-sm" : "text-ink-soft hover:text-ink"}`}
-          >
-            {IMAGE_SLOT_GROUP_LABELS[item]}
-          </button>
-        ))}
-      </div>
+      {GROUPS.length > 1 && (
+        <div role="tablist" aria-label="Sección de la web" className="mb-6 flex gap-1 overflow-x-auto rounded-xl bg-surface-2 p-1">
+          {GROUPS.map((item) => (
+            <button
+              key={item}
+              role="tab"
+              aria-selected={group === item}
+              onClick={() => setGroup(item)}
+              className={`min-h-10 shrink-0 rounded-lg px-4 text-sm font-semibold transition-colors ${group === item ? "bg-surface text-ink shadow-sm" : "text-ink-soft hover:text-ink"}`}
+            >
+              {IMAGE_SLOT_GROUP_LABELS[item]}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="grid gap-5 lg:grid-cols-2">
         {slots.map((slot) => (
@@ -61,7 +63,6 @@ function SlotCard({ slot, initial }: { slot: ImageSlotDefinition; initial?: Slot
   const toast = useToast();
 
   const dirty = url !== (initial?.url ?? "") || alt !== (initial?.alt ?? slot.fallbackAlt) || position !== (initial?.position ?? "50% 50%");
-  const [ratioW, ratioH] = slot.recommended;
 
   function save() {
     const formData = new FormData();
@@ -77,7 +78,7 @@ function SlotCard({ slot, initial }: { slot: ImageSlotDefinition; initial?: Slot
   }
 
   return (
-    <Card className="p-5">
+    <Card className="flex h-full flex-col p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="font-bold text-ink">{slot.label}</h2>
@@ -94,9 +95,8 @@ function SlotCard({ slot, initial }: { slot: ImageSlotDefinition; initial?: Slot
           label={slot.label}
           recommended={slot.recommended}
           position={position}
-          previewClassName="w-full"
+          fallbackSrc={slot.fallback || undefined}
         />
-        <style>{`.slot-${slot.key.replace(/\./g, "-")} { aspect-ratio: ${ratioW} / ${ratioH}; }`}</style>
       </div>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_160px]">
@@ -114,18 +114,13 @@ function SlotCard({ slot, initial }: { slot: ImageSlotDefinition; initial?: Slot
               </option>
             ))}
           </Select>
+          <Hint>Qué parte se prioriza al recortar.</Hint>
         </div>
       </div>
 
-      <div className="mt-4 flex justify-end">
-        <Button onClick={save} disabled={pending || !dirty}>
-          {pending ? (
-            <>
-              <Spinner /> Guardando…
-            </>
-          ) : (
-            "Guardar"
-          )}
+      <div className="mt-auto flex justify-end pt-4">
+        <Button onClick={save} loading={pending} loadingText="Guardando…" disabled={!dirty}>
+          Guardar
         </Button>
       </div>
     </Card>

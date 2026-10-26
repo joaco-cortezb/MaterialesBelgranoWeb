@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { requireSection } from "@/lib/auth";
 import { env, supabaseAdminConfigured } from "@/lib/env";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { assertConfigured, assertMutationAllowed, fail, firstIssue, ok, type ActionResult } from "@/lib/actions";
+import { assertConfigured, assertMutationAllowed, attempt, fail, firstIssue, ok, type ActionResult } from "@/lib/actions";
 
 const PATH = "/panel/usuarios";
 const CALLBACK_URL = `${env.PANEL_URL.replace(/\/$/, "")}/auth/callback`;
@@ -60,6 +60,12 @@ export async function inviteUser(formData: FormData): Promise<ActionResult> {
     const existing = await findAuthUserByEmail(email);
 
     if (existing) {
+      // Sólo se reactiva una cuenta que nació por invitación o que ya tuvo
+      // acceso: si alguien se registró solo con ese email, no se le da rol.
+      const hadProfile = await prisma.profile.findUnique({ where: { id: existing.id }, select: { id: true } });
+      if (!existing.invited_at && !hadProfile) {
+        return fail("Ese email ya tiene una cuenta que no se creó por invitación. Borrala en Supabase (Authentication) y volvé a invitar.");
+      }
       userId = existing.id;
       // Ya tenía cuenta (por ejemplo, se le quitó el acceso antes): se le
       // manda un enlace de recuperación para que vuelva a entrar.
@@ -108,7 +114,14 @@ export async function updateUserRole(id: string, role: Role): Promise<ActionResu
   const me = await requireSection("usuarios");
   if (me.id === id && role !== "ADMIN") return fail("No podés quitarte el rol de administrador a vos mismo.");
 
-  await prisma.profile.update({ where: { id }, data: { role } });
+  if (role === "EDITOR") {
+    const target = await prisma.profile.findUnique({ where: { id }, select: { role: true } });
+    if (target?.role === "ADMIN" && (await prisma.profile.count({ where: { role: "ADMIN" } })) <= 1) {
+      return fail("Tiene que quedar al menos un administrador.");
+    }
+  }
+  const failed = await attempt(() => prisma.profile.update({ where: { id }, data: { role } }), "No se pudo cambiar el rol.");
+  if (failed) return failed;
   revalidatePath(PATH);
   return ok("Rol actualizado.");
 }

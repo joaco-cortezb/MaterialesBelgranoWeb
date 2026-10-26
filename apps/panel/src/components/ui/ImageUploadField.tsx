@@ -5,7 +5,8 @@ import { ImageUp, Trash2 } from "lucide-react";
 import { Spinner } from "@/components/ui";
 import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/utils";
-import { downscaleImageForUpload } from "@/lib/image-downscale";
+import { downscaleImageForUpload, isHeic } from "@/lib/image-downscale";
+import { resolveMediaSrc } from "@/lib/media-src";
 import {
   ACCEPTED_IMAGE_EXTENSIONS,
   CLIENT_MAX_MB,
@@ -19,8 +20,9 @@ type UploadResponse = { ok: true; url: string } | { ok: false; error?: string };
 
 /**
  * Campo de imagen: arrastrar o tocar para elegir, sube a `/api/upload` y
- * devuelve la URL pública. Si el archivo no entra en una función de Vercel,
- * lo achica en el navegador antes.
+ * devuelve la URL pública. Si el archivo no entra en una función de Vercel (o
+ * es HEIC), lo prepara en el navegador antes. La vista previa usa la misma
+ * proporción que `recommended`, así se ve el encuadre real.
  */
 export function ImageUploadField({
   value,
@@ -31,6 +33,7 @@ export function ImageUploadField({
   previewClassName,
   objectFit = "cover",
   position = "50% 50%",
+  fallbackSrc,
 }: {
   value: string;
   onChange: (url: string) => void;
@@ -40,6 +43,8 @@ export function ImageUploadField({
   previewClassName?: string;
   objectFit?: "cover" | "contain";
   position?: string;
+  /** Imagen que muestra la web cuando no hay nada cargado. */
+  fallbackSrc?: string;
 }) {
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -49,7 +54,7 @@ export function ImageUploadField({
 
   async function handleFile(file: File) {
     if (!isAllowedUploadFile(file.name, file.type)) {
-      toast.error("Formato no permitido. Usá JPG, PNG o WEBP.");
+      toast.error("Formato no permitido. Usá JPG, PNG, WEBP o HEIC.");
       return;
     }
     if (file.size > CLIENT_MAX_MB * 1024 * 1024) {
@@ -60,10 +65,14 @@ export function ImageUploadField({
     setUploading(true);
     try {
       let upload = file;
-      if (upload.size > FUNCTION_UPLOAD_LIMIT_BYTES) {
+      if (upload.size > FUNCTION_UPLOAD_LIMIT_BYTES || isHeic(upload)) {
         const smaller = await downscaleImageForUpload(upload, folder);
         if (!smaller) {
-          toast.error(`No se pudo procesar "${file.name}". Guardala como JPG o PNG más liviana e intentá de nuevo.`);
+          toast.error(
+            isHeic(file)
+              ? "Las fotos HEIC del iPhone no se pueden leer en este navegador. Exportala como JPG o probá desde Safari."
+              : `No se pudo procesar "${file.name}". Guardala como JPG y probá de nuevo.`,
+          );
           return;
         }
         upload = smaller;
@@ -87,6 +96,11 @@ export function ImageUploadField({
       setUploading(false);
     }
   }
+
+  const shown = value || fallbackSrc || "";
+  const isFallback = !value && Boolean(fallbackSrc);
+  // Si `previewClassName` no fija una proporción, se usa la de la medida recomendada.
+  const aspectRatio = previewClassName?.includes("aspect-") || !recommended ? undefined : `${recommended[0]} / ${recommended[1]}`;
 
   return (
     <div className="space-y-2">
@@ -112,11 +126,13 @@ export function ImageUploadField({
           const file = event.dataTransfer.files?.[0];
           if (file && !uploading) void handleFile(file);
         }}
+        style={aspectRatio ? { aspectRatio } : undefined}
         className={cn(
-          "group relative cursor-pointer overflow-hidden rounded-xl transition-colors",
-          value ? "border border-line" : "border-2 border-dashed border-line hover:border-brand-400",
+          "group relative w-full cursor-pointer overflow-hidden rounded-xl transition-colors",
+          shown ? "border border-line" : "border-2 border-dashed border-line hover:border-brand-400",
+          objectFit === "contain" && "bg-surface-2",
           dragging && "border-brand-600 bg-brand-50",
-          previewClassName ?? "aspect-video w-full",
+          previewClassName ?? (aspectRatio ? undefined : "aspect-video"),
         )}
       >
         <input
@@ -132,25 +148,30 @@ export function ImageUploadField({
           }}
         />
 
-        {value ? (
+        {shown ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={value}
+              src={resolveMediaSrc(shown)}
               alt=""
-              className={cn("h-full w-full", objectFit === "contain" ? "object-contain p-4" : "object-cover")}
+              className={cn("absolute inset-0 h-full w-full", objectFit === "contain" ? "object-contain p-4" : "object-cover", isFallback && "opacity-60")}
               style={{ objectPosition: position }}
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-ink/0 text-white opacity-0 transition-opacity group-hover:bg-ink/50 group-hover:opacity-100 group-focus-visible:opacity-100">
-              <span className="inline-flex items-center gap-2 rounded-lg bg-ink/70 px-3 py-1.5 text-sm font-semibold">
-                <ImageUp className="h-4 w-4" /> Reemplazar
+            {isFallback && (
+              <span className="absolute left-2 top-2 rounded-full bg-ink/75 px-2.5 py-0.5 text-[11px] font-semibold text-white">Imagen por defecto</span>
+            )}
+            {/* En touch no hay hover: el botón queda siempre visible en pantallas chicas. */}
+            <div className="absolute inset-0 flex items-end justify-end p-2 text-white transition-[background-color] sm:items-center sm:justify-center sm:p-0 sm:group-hover:bg-ink/50">
+              <span className="inline-flex items-center gap-1.5 rounded-lg bg-ink/75 px-2.5 py-1 text-xs font-semibold sm:px-3 sm:py-1.5 sm:text-sm sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100 sm:group-focus-visible:opacity-100">
+                <ImageUp className="h-4 w-4" /> {isFallback ? "Subir" : "Reemplazar"}
               </span>
             </div>
           </>
         ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center text-ink-soft">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 p-4 text-center text-ink-soft">
             <ImageUp className="h-7 w-7" />
             <span className="text-sm font-semibold text-ink">Tocá o arrastrá una imagen</span>
+            {recommended && <span className="text-xs">{recommended[0]} × {recommended[1]} px</span>}
           </div>
         )}
 

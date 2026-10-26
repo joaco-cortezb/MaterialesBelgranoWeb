@@ -64,3 +64,21 @@ export function whatsappSourceLabel(source: string, categoryNames: Record<string
   if (slug) return `Solución: ${categoryNames[slug] ?? slug.replace(/-/g, " ")}`;
   return STATIC_SOURCE_LABELS[source as StaticWhatsappSource] ?? source;
 }
+
+/**
+ * Texto de Nosotros por defecto. Lo usan la web (si no hay nada guardado) y
+ * el panel (para precargar el formulario), así los dos muestran lo mismo.
+ */
+export const DEFAULT_ABOUT_HEADLINE = "Casi 10 años creciendo con la atención como diferencial";
+export const DEFAULT_ABOUT_BODY = [
+  "Nacimos de la idea de tres socios, Federico, Tomás y Pablo: que comprar materiales eléctricos sea rápido, claro y con alguien del otro lado que sepa lo que vende.",
+  "Hoy somos una de las principales casas del rubro en Mendoza, con un salón moderno, depósito propio y un equipo joven que crece con cada recomendación.",
+].join("\n\n");
+
+/** Párrafos de un texto del panel: cada salto de línea es un párrafo nuevo. */
+export function splitParagraphs(text: string): string[] {
+  return text
+    .split(/\r?\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+}

@@ -50,10 +50,9 @@ function MarqueeRow({ brands, source, reverse }: { brands: Brand[]; source: stri
                 <Image
                   src={brand.logo}
                   alt={copy === 1 ? "" : `Logo de ${brand.name}`}
-                  width={240}
-                  height={120}
-                  sizes="256px"
-                  className="h-11 w-full object-contain opacity-75 grayscale transition-[filter,opacity] duration-300 group-hover/logo:opacity-100 group-hover/logo:grayscale-0 sm:h-14"
+                  width={184}
+                  height={56}
+                  className="h-11 w-full object-contain opacity-75 grayscale transition-[filter,opacity] duration-300 group-hover/logo:opacity-100 group-hover/logo:grayscale-0 [@media(hover:none)]:opacity-100 [@media(hover:none)]:grayscale-0 sm:h-14"
                 />
               </TrackedLink>
             </li>

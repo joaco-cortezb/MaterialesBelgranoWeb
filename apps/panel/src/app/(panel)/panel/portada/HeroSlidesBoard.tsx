@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { HERO_MAX_SLIDES, HERO_PAGE_CONFIG, HERO_PAGES, type HeroPage } from "@mb/shared";
-import { Badge, Button, Card, Hint, IconButton, Input, Label, PageHeader, Select, Spinner, Switch, Textarea } from "@/components/ui";
+import { Button, Card, Hint, IconButton, Input, Label, PageHeader, Select, Spinner, Switch, Textarea } from "@/components/ui";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
@@ -95,20 +95,19 @@ export function HeroSlidesBoard({
       )}
       {full && <p className="mb-5 text-sm text-ink-soft">Llegaste al máximo de {HERO_MAX_SLIDES} fotos. Eliminá una para agregar otra.</p>}
 
-      {adding && (
-        <div className="mb-5">
-          <SlideCard
-            key={page}
-            slide={NEW_SLIDE}
-            page={page}
-            isNew
-            onCancel={() => setAdding(false)}
-            onSaved={() => setAdding(false)}
-          />
-        </div>
-      )}
-
       <ul className="grid gap-5 lg:grid-cols-2">
+        {adding && (
+          <li>
+            <SlideCard
+              key={page}
+              slide={NEW_SLIDE}
+              page={page}
+              isNew
+              onCancel={() => setAdding(false)}
+              onSaved={() => setAdding(false)}
+            />
+          </li>
+        )}
         {slides.map((slide, index) => (
           <li key={slide.id}>
             <SlideCard
@@ -120,7 +119,8 @@ export function HeroSlidesBoard({
                   <Switch
                     checked={slide.active}
                     disabled={pending}
-                    label={slide.active ? "Visible" : "Oculta"}
+                    label="Mostrar en la portada"
+                    text={slide.active ? "Visible" : "Oculta"}
                     onChange={(value) => run(() => toggleHeroSlideActive(slide.id, value))}
                   />
                   <IconButton label="Subir" disabled={pending || index === 0} onClick={() => run(() => reorderHeroSlide(slide.id, -1))}>
@@ -196,12 +196,9 @@ function SlideCard({
   }
 
   return (
-    <Card className="p-5">
+    <Card className="flex h-full flex-col p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <h2 className="font-bold text-ink">{isNew ? "Nueva foto" : `Foto ${(index ?? 0) + 1}`}</h2>
-          {!isNew && <Badge tone={slide.active ? "green" : "gray"}>{slide.active ? "Visible" : "Oculta"}</Badge>}
-        </div>
+        <h2 className="font-bold text-ink">{isNew ? "Nueva foto" : `Foto ${(index ?? 0) + 1}`}</h2>
         {toolbar}
       </div>
 
@@ -213,7 +210,6 @@ function SlideCard({
           label="Foto de portada"
           recommended={HERO_PAGE_CONFIG[page].recommended}
           position={position}
-          previewClassName="aspect-video w-full"
         />
       </div>
 
@@ -236,22 +232,14 @@ function SlideCard({
         </div>
       </div>
 
-      <div className="mt-4 flex justify-end gap-2">
+      <div className="mt-auto flex justify-end gap-2 pt-4">
         {isNew && (
           <Button variant="ghost" onClick={onCancel} disabled={pending}>
             Cancelar
           </Button>
         )}
-        <Button onClick={save} disabled={pending || !dirty || !url || !alt.trim()}>
-          {pending ? (
-            <>
-              <Spinner /> Guardando…
-            </>
-          ) : isNew ? (
-            "Agregar a la portada"
-          ) : (
-            "Guardar"
-          )}
+        <Button onClick={save} loading={pending} loadingText="Guardando…" disabled={!dirty || !url || !alt.trim()}>
+          {isNew ? "Agregar a la portada" : "Guardar"}
         </Button>
       </div>
     </Card>
@@ -283,12 +271,12 @@ function HeroTextCard({ value }: { value: HeroTextValue }) {
         <div>
           <Label htmlFor="hero-title">Título</Label>
           <Input id="hero-title" value={title} onChange={(event) => setTitle(event.target.value)} maxLength={120} placeholder={value.defaultTitle} />
-          <Hint>Si lo dejás vacío se muestra: “{value.defaultTitle}”.</Hint>
+          <Hint>Es el texto grande de la portada del inicio.</Hint>
         </div>
         <div>
           <Label htmlFor="hero-text">Bajada (opcional)</Label>
           <Textarea id="hero-text" value={text} onChange={(event) => setText(event.target.value)} maxLength={240} rows={2} />
-          <Hint>Una línea corta debajo del título. Vacío = sin bajada.</Hint>
+          <Hint>Una línea corta debajo del título. Si la borrás y guardás, la portada queda sin bajada.</Hint>
         </div>
       </div>
       <div className="mt-4 flex justify-end">

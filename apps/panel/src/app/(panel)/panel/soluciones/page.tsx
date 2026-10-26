@@ -1,3 +1,4 @@
+import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { requireSectionView } from "@/lib/auth";
 import { CategoriesBoard, type CategoryDTO } from "./CategoriesBoard";
@@ -35,5 +36,5 @@ export default async function SolucionesPage() {
     console.error("No se pudieron leer las soluciones", error);
   }
 
-  return <CategoriesBoard categories={categories} webUrl={process.env.PUBLIC_WEB_URL ?? ""} />;
+  return <CategoriesBoard categories={categories} webUrl={env.PUBLIC_WEB_URL} />;
 }

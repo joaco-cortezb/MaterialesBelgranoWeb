@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Barlow_Condensed, Montserrat } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
 import { SITE } from "@mb/shared";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
@@ -20,7 +19,7 @@ import { env } from "@/lib/env";
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -81,7 +80,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </main>
         <Footer />
         <GoogleTagManager />
-        <Analytics />
       </body>
     </html>
   );

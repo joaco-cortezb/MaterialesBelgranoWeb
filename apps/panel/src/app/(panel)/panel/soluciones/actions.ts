@@ -5,7 +5,7 @@ import { categorySchema } from "@mb/shared";
 import { prisma } from "@/lib/prisma";
 import { requireSection } from "@/lib/auth";
 import { revalidateWeb } from "@/lib/revalidate";
-import { assertConfigured, assertMutationAllowed, fail, firstIssue, ok, type ActionResult } from "@/lib/actions";
+import { assertConfigured, assertMutationAllowed, attempt, fail, firstIssue, moveInList, ok, type ActionResult } from "@/lib/actions";
 
 const PATH = "/panel/soluciones";
 
@@ -79,17 +79,23 @@ export async function deleteCategory(id: string): Promise<ActionResult> {
   if (blocked) return blocked;
   const current = await prisma.category.findUnique({ where: { id }, select: { slug: true } });
   if (!current) return ok();
-  await prisma.$transaction([
-    prisma.brand.updateMany({ where: { rubroSlug: current.slug }, data: { rubroSlug: null } }),
-    prisma.category.delete({ where: { id } }),
-  ]);
+  const failed = await attempt(
+    () =>
+      prisma.$transaction([
+        prisma.brand.updateMany({ where: { rubroSlug: current.slug }, data: { rubroSlug: null } }),
+        prisma.category.delete({ where: { id } }),
+      ]),
+    "No se pudo eliminar la solución.",
+  );
+  if (failed) return failed;
   return finish("Solución eliminada.", true);
 }
 
 export async function toggleCategoryActive(id: string, active: boolean): Promise<ActionResult> {
   const blocked = await guard();
   if (blocked) return blocked;
-  await prisma.category.update({ where: { id }, data: { active } });
+  const failed = await attempt(() => prisma.category.update({ where: { id }, data: { active } }), "No se pudo actualizar la solución.");
+  if (failed) return failed;
   return finish();
 }
 
@@ -97,14 +103,13 @@ export async function reorderCategory(id: string, dir: -1 | 1): Promise<ActionRe
   const blocked = await guard();
   if (blocked) return blocked;
 
-  const items = await prisma.category.findMany({ orderBy: { order: "asc" }, select: { id: true, order: true } });
-  const index = items.findIndex((item) => item.id === id);
-  const swap = index + dir;
-  if (index < 0 || swap < 0 || swap >= items.length) return ok();
-
-  await prisma.$transaction([
-    prisma.category.update({ where: { id: items[index].id }, data: { order: items[swap].order } }),
-    prisma.category.update({ where: { id: items[swap].id }, data: { order: items[index].order } }),
-  ]);
+  const items = await prisma.category.findMany({ orderBy: [{ order: "asc" }, { createdAt: "asc" }], select: { id: true } });
+  const ids = moveInList(items.map((item) => item.id), id, dir);
+  if (!ids) return ok();
+  const failed = await attempt(
+    () => prisma.$transaction(ids.map((categoryId, order) => prisma.category.update({ where: { id: categoryId }, data: { order } }))),
+    "No se pudo cambiar el orden.",
+  );
+  if (failed) return failed;
   return finish();
 }

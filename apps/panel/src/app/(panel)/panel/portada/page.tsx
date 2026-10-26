@@ -1,4 +1,4 @@
-import { DEFAULT_HOME_HERO_TITLE, isHeroPage, SETTING_KEYS, type HeroPage } from "@mb/shared";
+import { DEFAULT_HOME_HERO_TEXT, DEFAULT_HOME_HERO_TITLE, isHeroPage, SETTING_KEYS, type HeroPage } from "@mb/shared";
 import { prisma } from "@/lib/prisma";
 import { requireSectionView } from "@/lib/auth";
 import { HeroSlidesBoard, type HeroSlideDTO } from "./HeroSlidesBoard";
@@ -11,8 +11,9 @@ export default async function PortadaPage({ searchParams }: { searchParams: Prom
   const initialPage: HeroPage = pagina && isHeroPage(pagina) ? pagina : "inicio";
 
   let slides: (HeroSlideDTO & { page: string })[] = [];
-  let heroTitle = "";
-  let heroText = "";
+  let heroTitle = DEFAULT_HOME_HERO_TITLE;
+  // Sin nada guardado se precarga lo que hoy muestra la web.
+  let heroText = DEFAULT_HOME_HERO_TEXT;
   try {
     const [rows, settings] = await Promise.all([
       prisma.heroSlide.findMany({
@@ -24,7 +25,7 @@ export default async function PortadaPage({ searchParams }: { searchParams: Prom
     slides = rows;
     const title = settings.find((row) => row.key === SETTING_KEYS.homeHeroTitle)?.value;
     const text = settings.find((row) => row.key === SETTING_KEYS.homeHeroText)?.value;
-    if (typeof title === "string") heroTitle = title;
+    if (typeof title === "string" && title.trim()) heroTitle = title;
     if (typeof text === "string") heroText = text;
   } catch (error) {
     console.error("No se pudieron leer las portadas", error);

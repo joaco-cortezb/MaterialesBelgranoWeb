@@ -4,7 +4,7 @@ import { composeWhatsappMessage, isWhatsappSource, rubroSlugFromSource, whatsapp
 import { getCategory, getDefaultWhatsapp, getWhatsappNumbers } from "@/lib/cms";
 import { env } from "@/lib/env";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
-import { getSupabaseAdminClient } from "@/lib/supabase";
+import { getSupabaseClient } from "@/lib/supabase";
 import { WHATSAPP_FALLBACK_PATH, whatsappPageLabel } from "@/lib/whatsapp";
 
 const BOT_UA = /bot|crawl|spider|slurp|preview|facebookexternalhit|whatsapp|telegram|discord|curl|wget|headless/i;
@@ -44,17 +44,21 @@ async function recordClick(request: Request, source: string, numberId: string) {
   const limited = await rateLimit({ key: `wa:${ip}:${source}`, limit: 1, windowMs: 60_000 });
   if (!limited.ok) return;
 
-  const supabase = getSupabaseAdminClient();
+  // Con la anon key: la tabla sólo admite INSERT (ver policy en la migración).
+  const supabase = getSupabaseClient();
   if (!supabase) return;
 
   // Hash irreversible: sirve para deduplicar sin guardar la IP.
-  const visitorHash = createHash("sha256").update(`${ip}|${userAgent}|${env.SUPABASE_SERVICE_ROLE_KEY}`).digest("hex").slice(0, 32);
+  const salt = process.env.CLICK_HASH_SALT || env.REVALIDATE_SECRET;
+  // Sin sal el hash se podría revertir: mejor no registrar el clic.
+  if (!salt) return;
+  const visitorHash = createHash("sha256").update(`${ip}|${userAgent}|${salt}`).digest("hex").slice(0, 32);
   const { error } = await supabase.from("WhatsappClick").insert({
     id: crypto.randomUUID(),
     source,
     numberId: numberId === "fallback" ? null : numberId,
     visitorHash,
-    referrer: request.headers.get("referer"),
+    referrer: request.headers.get("referer")?.slice(0, 500) ?? null,
   });
   if (error) console.error("[go/whatsapp] no se pudo registrar el clic", { source, code: error.code });
 }

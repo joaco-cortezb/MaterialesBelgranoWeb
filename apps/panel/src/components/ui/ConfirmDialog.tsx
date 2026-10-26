@@ -58,8 +58,8 @@ export function ConfirmDialog({
           <Button variant="secondary" onClick={onCancel} disabled={loading}>
             {cancelLabel}
           </Button>
-          <Button variant={danger ? "danger" : "primary"} onClick={onConfirm} disabled={loading}>
-            {loading ? "Procesando…" : confirmLabel}
+          <Button variant={danger ? "danger" : "primary"} onClick={onConfirm} loading={loading} loadingText="Procesando…">
+            {confirmLabel}
           </Button>
         </div>
       </div>

@@ -149,3 +149,12 @@ model WhatsappClick {
   @@index([source, createdAt])
   @@index([createdAt])
 }
+
+/// Intento fallido de login (por IP y por email, hasheados). Lo usa el límite de intentos.
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  keyHash   String
+  createdAt DateTime @default(now())
+
+  @@index([keyHash, createdAt])
+}

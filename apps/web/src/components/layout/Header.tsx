@@ -49,7 +49,7 @@ export function Header() {
           </nav>
         </div>
 
-        <Logo priority />
+        <Logo />
 
         <div className="flex items-center justify-between gap-4">
           <nav aria-label="Secciones" className="hidden lg:block">
@@ -61,7 +61,7 @@ export function Header() {
             event="whatsapp_click"
             params={{ source: "header" }}
             aria-label="Consultar por WhatsApp"
-            className="pressable ml-auto inline-flex h-10 items-center gap-2 rounded-full bg-ink-dark/[0.06] p-1.5 text-sm font-semibold text-ink-dark hover:bg-ink-dark hover:text-white sm:pr-4 lg:ml-0"
+            className="pressable ml-auto inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-full bg-ink-dark/[0.06] p-1.5 text-sm font-semibold text-ink-dark hover:bg-ink-dark hover:text-white sm:pr-4 lg:ml-0"
           >
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-whatsapp text-white shadow-sm">
               <FaWhatsapp className="h-4 w-4" aria-hidden />

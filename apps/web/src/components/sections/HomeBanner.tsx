@@ -19,8 +19,8 @@ export function HomeBanner({ banner, className }: { banner: Banner; className?: 
         alt={banner.title}
         width={mobileWidth}
         height={mobileHeight}
-        sizes="100vw"
-        quality={75}
+        sizes="calc(100vw - 2rem)"
+        quality={85}
         className="block h-auto w-full sm:hidden"
       />
       <Image
@@ -28,8 +28,8 @@ export function HomeBanner({ banner, className }: { banner: Banner; className?: 
         alt={banner.title}
         width={width}
         height={height}
-        sizes="(min-width: 1280px) 1200px, 100vw"
-        quality={75}
+        sizes="(min-width: 1280px) 1200px, calc(100vw - 4rem)"
+        quality={85}
         className="hidden h-auto w-full sm:block"
       />
     </>

@@ -16,7 +16,6 @@ function isPlaceholder(value: string | undefined): boolean {
 export const env = {
   SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
   SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
-  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
   REVALIDATE_SECRET: process.env.REVALIDATE_SECRET ?? "",
   SITE_URL:
     process.env.NEXT_PUBLIC_SITE_URL ??
@@ -30,10 +29,6 @@ export function supabaseConfigured(): boolean {
     !isPlaceholder(env.SUPABASE_URL) &&
     !isPlaceholder(env.SUPABASE_ANON_KEY)
   );
-}
-
-export function supabaseAdminConfigured(): boolean {
-  return supabaseConfigured() && !isPlaceholder(env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
 export function revalidateConfigured(): boolean {

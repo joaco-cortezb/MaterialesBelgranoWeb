@@ -35,7 +35,7 @@ export default async function HomePage() {
 
       {/* Video: fondo oscuro para que el video sea lo que resalta. */}
       {videoId && (
-        <section id="conocenos" aria-labelledby="video-title" className="scroll-mt-16 bg-ink-dark py-14 text-white sm:scroll-mt-20 sm:py-20">
+        <section id="conocenos" aria-labelledby="video-title" className="bg-ink-dark py-14 text-white sm:py-20">
           <Container>
             <div className="mx-auto max-w-2xl text-center">
               <p className="font-condensed text-base font-semibold uppercase tracking-[0.2em] text-brand-300 sm:text-lg">Por dentro</p>
@@ -54,7 +54,7 @@ export default async function HomePage() {
       <section
         id="soluciones"
         aria-labelledby="soluciones-title"
-        className="flex scroll-mt-16 flex-col justify-center overflow-hidden bg-surface py-10 sm:min-h-[calc(100svh-5rem)] sm:scroll-mt-20 sm:py-8"
+        className="flex flex-col justify-center overflow-hidden bg-surface py-10 sm:min-h-[calc(100svh-5rem)] sm:py-8"
       >
         <Container>
           <div className="mx-auto max-w-2xl text-center">
@@ -98,7 +98,7 @@ export default async function HomePage() {
       </section>
 
       {/* Por qué elegirnos: seis cards iguales, compactas, en una pantalla. */}
-      <section id="servicios" aria-labelledby="servicios-title" className="scroll-mt-20 py-14 sm:py-16">
+      <section id="servicios" aria-labelledby="servicios-title" className="py-14 sm:py-16">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             <p className="font-condensed text-base font-semibold uppercase tracking-[0.2em] text-brand-700 sm:text-lg">Por qué elegirnos</p>

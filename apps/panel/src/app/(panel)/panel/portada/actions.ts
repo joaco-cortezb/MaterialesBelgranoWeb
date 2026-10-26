@@ -5,7 +5,7 @@ import { HERO_MAX_SLIDES, heroSlideSchema, heroTextSchema, isHeroPage, SETTING_K
 import { prisma } from "@/lib/prisma";
 import { requireSection } from "@/lib/auth";
 import { revalidateWeb } from "@/lib/revalidate";
-import { assertConfigured, assertMutationAllowed, fail, firstIssue, ok, type ActionResult } from "@/lib/actions";
+import { assertConfigured, assertMutationAllowed, attempt, fail, firstIssue, moveInList, ok, type ActionResult } from "@/lib/actions";
 
 const PATH = "/panel/portada";
 
@@ -53,7 +53,8 @@ export async function saveHeroSlide(id: string, formData: FormData): Promise<Act
 export async function deleteHeroSlide(id: string): Promise<ActionResult> {
   const blocked = await guard();
   if (blocked) return blocked;
-  await prisma.heroSlide.delete({ where: { id } }).catch(() => {});
+  const failed = await attempt(() => prisma.heroSlide.delete({ where: { id } }), "No se pudo eliminar la foto.");
+  if (failed) return failed;
   return finish("Foto eliminada.");
 }
 
@@ -75,14 +76,13 @@ export async function reorderHeroSlide(id: string, dir: -1 | 1): Promise<ActionR
   const slide = await prisma.heroSlide.findUnique({ where: { id }, select: { page: true } });
   if (!slide || !isHeroPage(slide.page)) return ok();
   const items = await prisma.heroSlide.findMany({ where: { page: slide.page }, orderBy: [{ order: "asc" }, { createdAt: "asc" }], select: { id: true } });
-  const index = items.findIndex((item) => item.id === id);
-  const swap = index + dir;
-  if (index < 0 || swap < 0 || swap >= items.length) return ok();
-
-  // Renumera todo: así dos fotos con el mismo `order` no quedan trabadas.
-  const ids = items.map((item) => item.id);
-  [ids[index], ids[swap]] = [ids[swap], ids[index]];
-  await prisma.$transaction(ids.map((slideId, order) => prisma.heroSlide.update({ where: { id: slideId }, data: { order } })));
+  const ids = moveInList(items.map((item) => item.id), id, dir);
+  if (!ids) return ok();
+  const failed = await attempt(
+    () => prisma.$transaction(ids.map((slideId, order) => prisma.heroSlide.update({ where: { id: slideId }, data: { order } }))),
+    "No se pudo cambiar el orden.",
+  );
+  if (failed) return failed;
   return finish();
 }
 

@@ -24,7 +24,7 @@ export function CategoriesCarousel({ categories }: { categories: Category[] }) {
   );
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, align: "center", skipSnaps: false, duration: 32 },
-    reducedMotion ? [] : [Autoplay({ delay: 4500, stopOnInteraction: false, stopOnMouseEnter: true })],
+    reducedMotion ? [] : [Autoplay({ delay: 4500, stopOnInteraction: true, stopOnMouseEnter: true })],
   );
   const [selected, setSelected] = useState(0);
 
@@ -57,7 +57,7 @@ export function CategoriesCarousel({ categories }: { categories: Category[] }) {
               onClick={() => emblaApi?.scrollTo(index)}
               aria-label={`Ir a ${category.name}`}
               aria-current={index === selected}
-              className="group flex h-11 items-center px-0.5"
+              className="group flex h-11 min-w-6 items-center justify-center px-2"
             >
               <span
                 className={cn(
@@ -107,7 +107,7 @@ function Slide({ category, active }: { category: Category; active: boolean }) {
           src={category.image}
           alt={category.imageAlt}
           position={category.imagePosition}
-          sizes="(min-width: 1024px) 34vw, (min-width: 640px) 50vw, 82vw"
+          sizes="(min-width: 1280px) 360px, (min-width: 1024px) 30vw, (min-width: 640px) 44vw, 78vw"
           className="absolute inset-0 transition-transform duration-700 ease-[var(--ease-out-strong)] group-hover:scale-[1.04]"
         />
       ) : (

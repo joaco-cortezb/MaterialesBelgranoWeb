@@ -15,7 +15,21 @@ const INTERVAL_MS = 6500;
 export function HeroSlides({ slides }: { slides: HeroSlide[] }) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  // Las fotos 2 en adelante se piden recién con la página cargada: así no
+  // compiten con la primera, que es la imagen más importante de la carga.
+  const [restReady, setRestReady] = useState(false);
   const many = slides.length > 1;
+
+  useEffect(() => {
+    if (!many) return;
+    const ready = () => setRestReady(true);
+    if (document.readyState === "complete") {
+      const timer = window.setTimeout(ready, 0);
+      return () => window.clearTimeout(timer);
+    }
+    window.addEventListener("load", ready, { once: true });
+    return () => window.removeEventListener("load", ready);
+  }, [many]);
 
   useEffect(() => {
     if (!many || paused) return;
@@ -37,7 +51,7 @@ export function HeroSlides({ slides }: { slides: HeroSlide[] }) {
   return (
     <>
       <div className="absolute inset-0 -z-20">
-        {slides.map((slide, index) => (
+        {slides.map((slide, index) => (index === 0 || restReady || index === active) && (
           <div
             key={slide.id}
             aria-hidden={index !== active}
@@ -53,7 +67,7 @@ export function HeroSlides({ slides }: { slides: HeroSlide[] }) {
               position={slide.position}
               priority={index === 0}
               sizes="100vw"
-              quality={70}
+              quality={75}
               className="absolute inset-0"
             />
           </div>
@@ -73,7 +87,7 @@ export function HeroSlides({ slides }: { slides: HeroSlide[] }) {
               onClick={() => setActive(index)}
               aria-label={`Ver foto ${index + 1} de ${slides.length}`}
               aria-current={index === active}
-              className="group flex h-11 items-center px-1"
+              className="group flex h-11 items-center px-2.5"
             >
               <span
                 className={cn(

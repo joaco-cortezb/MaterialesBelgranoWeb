@@ -24,7 +24,7 @@ export function PageHero({
           position={image.position}
           priority
           sizes="100vw"
-          quality={70}
+          quality={75}
           className="absolute inset-0 -z-10"
         />
       )}

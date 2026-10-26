@@ -4,6 +4,8 @@ import { IMAGE_SLOTS, whatsappSourceLabel } from "@mb/shared";
 import { prisma } from "@/lib/prisma";
 import { Card, PageHeader } from "@/components/ui";
 import { NAV_ITEMS } from "@/components/panel/nav";
+import { requireProfile } from "@/lib/auth";
+import { canViewSection } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +16,8 @@ async function getStats() {
   since.setDate(since.getDate() - DAYS);
   const [brands, slots, numbers, clicksTotal, clicks30, bySource, categories] = await Promise.all([
     prisma.brand.count({ where: { active: true } }),
-    prisma.imageSlot.count(),
+    // Sólo fotos subidas desde el panel (no las que apuntan a imágenes del repo).
+    prisma.imageSlot.count({ where: { key: { in: IMAGE_SLOTS.map((slot) => slot.key) }, url: { startsWith: "https://" } } }),
     prisma.whatsappNumber.count({ where: { active: true } }),
     prisma.whatsappClick.count(),
     prisma.whatsappClick.count({ where: { createdAt: { gte: since } } }),
@@ -35,6 +38,8 @@ async function getStats() {
 }
 
 export default async function PanelHome() {
+  const profile = await requireProfile();
+  const shortcuts = NAV_ITEMS.filter((item) => item.href !== "/panel" && (!item.section || canViewSection(profile.role, item.section)));
   let stats: Awaited<ReturnType<typeof getStats>> | null = null;
   try {
     stats = await getStats();
@@ -69,7 +74,7 @@ export default async function PanelHome() {
           {stats && stats.bySource.length > 0 ? (
             stats.bySource.map((row) => (
               <div key={row.source} className="flex items-center gap-4 px-5 py-3">
-                <span className="w-44 shrink-0 truncate text-sm font-semibold text-ink sm:w-64">
+                <span className="w-32 shrink-0 truncate text-sm font-semibold text-ink sm:w-64">
                   {whatsappSourceLabel(row.source, stats.categoryNames)}
                 </span>
                 <span className="h-2 flex-1 overflow-hidden rounded-full bg-surface-2">
@@ -87,11 +92,11 @@ export default async function PanelHome() {
       <section className="mt-10">
         <h2 className="mb-4 text-lg font-bold text-ink">Qué podés administrar</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {NAV_ITEMS.filter((item) => item.href !== "/panel").map((item) => {
+          {shortcuts.map((item) => {
             const Icon = item.icon;
             return (
               <Link key={item.href} href={item.href} className="group">
-                <Card className="flex items-center gap-4 p-5 transition-[transform,border-color] duration-200 group-hover:-translate-y-0.5 group-hover:border-brand-300">
+                <Card className="flex h-full items-center gap-4 p-5 transition-[transform,border-color] duration-200 group-hover:-translate-y-0.5 group-hover:border-brand-300">
                   <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-800 transition-colors group-hover:bg-brand group-hover:text-brand-ink">
                     <Icon className="h-6 w-6" />
                   </span>
@@ -112,9 +117,9 @@ export default async function PanelHome() {
 
 function Tile({ label, value }: { label: string; value: string | number }) {
   return (
-    <Card className="p-5">
+    <Card className="flex h-full flex-col justify-between p-5">
       <div className="text-3xl font-extrabold tracking-tight text-ink tabular-nums">{value}</div>
-      <div className="mt-1 text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">{label}</div>
+      <div className="mt-1 line-clamp-2 min-h-8 text-xs font-semibold uppercase leading-4 tracking-[0.08em] text-ink-soft">{label}</div>
     </Card>
   );
 }

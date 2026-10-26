@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
-import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, PageHeader, Select, Spinner, Switch } from "@/components/ui";
+import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, PageHeader, Select, Switch } from "@/components/ui";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
 import type { ActionResult } from "@/lib/actions";
+import { resolveMediaSrc } from "@/lib/media-src";
 import { deleteBrand, reorderBrand, saveBrand, toggleBrandActive } from "./actions";
 
 export type BrandDTO = {
@@ -65,40 +66,41 @@ export function BrandsBoard({ brands, categories }: { brands: BrandDTO[]; catego
         <ul className="space-y-3">
           {brands.map((brand, index) => (
             <li key={brand.id}>
-              <Card className="flex items-center gap-3 p-3 sm:gap-4 sm:p-4">
+              <Card className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 p-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:gap-4 sm:p-4">
                 <div className="flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-2">
                   {brand.logo ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={brand.logo} alt="" className="h-full w-full object-contain p-1.5" />
+                    <img src={resolveMediaSrc(brand.logo)} alt="" className="h-full w-full object-contain p-1.5" />
                   ) : (
                     <span className="px-1 text-center text-[11px] font-semibold text-ink-soft">Sin logo</span>
                   )}
                 </div>
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="truncate font-semibold text-ink">{brand.name}</span>
-                    <Badge tone={brand.active ? "green" : "gray"}>{brand.active ? "Visible" : "Oculta"}</Badge>
                     {brand.rubroSlug && <Badge>{categories.find((category) => category.slug === brand.rubroSlug)?.name ?? brand.rubroSlug}</Badge>}
                   </div>
                   <a href={brand.catalogUrl} target="_blank" rel="noopener noreferrer" className="mt-0.5 inline-flex max-w-full items-center gap-1 truncate text-xs text-ink-soft hover:text-ink">
                     <ExternalLink className="h-3 w-3 shrink-0" /> <span className="truncate">{brand.catalogUrl}</span>
                   </a>
                 </div>
-                <div className="hidden items-center gap-1 sm:flex">
-                  <IconButton label="Subir" disabled={pending || index === 0} onClick={() => run(() => reorderBrand(brand.id, -1))}>
-                    <ArrowUp className="h-4 w-4" />
-                  </IconButton>
-                  <IconButton label="Bajar" disabled={pending || index === brands.length - 1} onClick={() => run(() => reorderBrand(brand.id, 1))}>
-                    <ArrowDown className="h-4 w-4" />
-                  </IconButton>
+                <div className="col-span-2 flex items-center justify-between gap-1 border-t border-line pt-3 sm:col-span-1 sm:justify-end sm:gap-2 sm:border-0 sm:pt-0">
+                  <Switch checked={brand.active} label={`Mostrar ${brand.name}`} text={brand.active ? "Visible" : "Oculta"} disabled={pending} onChange={(value) => run(() => toggleBrandActive(brand.id, value))} />
+                  <div className="flex items-center gap-1">
+                    <IconButton label="Subir" disabled={pending || index === 0} onClick={() => run(() => reorderBrand(brand.id, -1))}>
+                      <ArrowUp className="h-4 w-4" />
+                    </IconButton>
+                    <IconButton label="Bajar" disabled={pending || index === brands.length - 1} onClick={() => run(() => reorderBrand(brand.id, 1))}>
+                      <ArrowDown className="h-4 w-4" />
+                    </IconButton>
+                    <IconButton label="Editar" onClick={() => setEditing(brand)}>
+                      <Pencil className="h-4 w-4" />
+                    </IconButton>
+                    <IconButton label="Eliminar" onClick={() => setDeleting(brand)} className="hover:text-[var(--color-danger)]">
+                      <Trash2 className="h-4 w-4" />
+                    </IconButton>
+                  </div>
                 </div>
-                <Switch checked={brand.active} label={`Mostrar ${brand.name}`} disabled={pending} onChange={(value) => run(() => toggleBrandActive(brand.id, value))} />
-                <IconButton label="Editar" onClick={() => setEditing(brand)}>
-                  <Pencil className="h-4 w-4" />
-                </IconButton>
-                <IconButton label="Eliminar" onClick={() => setDeleting(brand)} className="hover:text-[var(--color-danger)]">
-                  <Trash2 className="h-4 w-4" />
-                </IconButton>
               </Card>
             </li>
           ))}
@@ -133,9 +135,16 @@ function BrandForm({
   onSubmit: (formData: FormData) => void;
 }) {
   const [logo, setLogo] = useState(brand.logo);
+  const [active, setActive] = useState(brand.active);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // El formulario se abre arriba de la lista: se lleva a la vista al abrirlo.
+  useEffect(() => {
+    cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
 
   return (
-    <Card className="mb-6 p-5 sm:p-6">
+    <Card ref={cardRef} className="mb-6 scroll-mt-24 p-5 sm:p-6">
       <h2 className="text-lg font-bold text-ink">{brand.id ? `Editar ${brand.name}` : "Nueva marca"}</h2>
       <form
         className="mt-5 grid gap-5 sm:grid-cols-[220px_1fr]"
@@ -148,7 +157,8 @@ function BrandForm({
       >
         <div>
           <Label>Logo</Label>
-          <ImageUploadField value={logo} onChange={setLogo} folder="brands" label="logo" recommended={[800, 400]} objectFit="contain" previewClassName="aspect-[2/1] w-full" />
+          <ImageUploadField value={logo} onChange={setLogo} folder="brands" label="logo" recommended={[800, 267]} objectFit="contain" />
+          <Hint>800 px de ancho, fondo transparente (PNG o WEBP).</Hint>
         </div>
         <div className="space-y-4">
           <div>
@@ -172,18 +182,13 @@ function BrandForm({
             </Select>
             <Hint>La marca aparece también en la página de esa solución.</Hint>
           </div>
-          <label className="flex min-h-11 items-center gap-3 text-sm font-semibold text-ink">
-            <input type="checkbox" name="active" defaultChecked={brand.active} /> Visible en la web
-          </label>
+          <div className="flex min-h-11 items-center">
+            <input type="hidden" name="active" value={active ? "on" : ""} />
+            <Switch checked={active} onChange={setActive} label="Visible en la web" text="Visible en la web" />
+          </div>
           <div className="flex flex-wrap gap-2 pt-2">
-            <Button type="submit" disabled={pending}>
-              {pending ? (
-                <>
-                  <Spinner /> Guardando…
-                </>
-              ) : (
-                "Guardar"
-              )}
+            <Button type="submit" loading={pending} loadingText="Guardando…">
+              Guardar
             </Button>
             <Button type="button" variant="secondary" onClick={onCancel} disabled={pending}>
               Cancelar

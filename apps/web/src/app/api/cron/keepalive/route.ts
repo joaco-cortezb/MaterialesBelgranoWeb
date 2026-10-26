@@ -33,7 +33,7 @@ export async function GET(request: Request) {
   const { error } = await supabase.from("Brand").select("id").limit(1);
   if (error) {
     console.error("[keepalive] la base no respondió", error.message);
-    return Response.json({ ok: false, error: error.message }, { status: 502 });
+    return Response.json({ ok: false, error: "db error" }, { status: 502 });
   }
   return Response.json({ ok: true, at: new Date().toISOString() });
 }

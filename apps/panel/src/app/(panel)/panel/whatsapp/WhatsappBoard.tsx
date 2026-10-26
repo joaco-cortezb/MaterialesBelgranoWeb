@@ -1,160 +1,135 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from "lucide-react";
-import { formatWhatsappPhone, type WhatsappAudience } from "@mb/shared";
-import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, PageHeader, Select, Spinner, Switch, Textarea } from "@/components/ui";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { MessageCircle, MousePointerClick } from "lucide-react";
+import { formatWhatsappPhone, normalizeWhatsappPhone, type WhatsappAudience } from "@mb/shared";
+import { Badge, Button, Card, Hint, Input, Label, PageHeader, Spinner, Switch, Textarea } from "@/components/ui";
 import { useToast } from "@/components/ui/Toast";
-import type { ActionResult } from "@/lib/actions";
-import { deleteWhatsappNumber, reorderWhatsappNumber, saveWhatsappNumber, toggleWhatsappActive } from "./actions";
+import { saveWhatsappSlot } from "./actions";
 
-export type WhatsappDTO = {
+export type WhatsappSlotDTO = {
   id: string;
   label: string;
   phone: string;
   message: string;
-  audience: WhatsappAudience;
   active: boolean;
   clicks30: number;
+  /** Ya existe en la base (si no, se muestra lo que usa la web por defecto). */
+  saved: boolean;
 };
 
-const AUDIENCE_LABEL: Record<WhatsappAudience, string> = { GENERAL: "General", EMPRESAS: "Empresas" };
-const EMPTY: WhatsappDTO = { id: "", label: "", phone: "", message: "", audience: "GENERAL", active: true, clicks30: 0 };
+const SLOT_INFO: Record<WhatsappAudience, { title: string; where: string }> = {
+  GENERAL: {
+    title: "Ventas",
+    where: "Lo usan todos los botones de WhatsApp de la web y aparece primero en Contacto.",
+  },
+  EMPRESAS: {
+    title: "Mayoristas",
+    where: "Aparece en Contacto como “Mayoristas y empresas”. Si lo apagás, la web no lo muestra.",
+  },
+};
 
-export function WhatsappBoard({ numbers, canManage }: { numbers: WhatsappDTO[]; canManage: boolean }) {
-  const [editing, setEditing] = useState<WhatsappDTO | null>(null);
-  const [deleting, setDeleting] = useState<WhatsappDTO | null>(null);
-  const [pending, startTransition] = useTransition();
-  const toast = useToast();
-
-  function run(action: () => Promise<ActionResult>, onDone?: () => void) {
-    startTransition(async () => {
-      const result = await action();
-      if (result.ok) {
-        if (result.message) toast.success(result.message);
-        onDone?.();
-      } else {
-        toast.error(result.error);
-      }
-    });
-  }
-
+export function WhatsappBoard({ slots, canManage }: { slots: Record<WhatsappAudience, WhatsappSlotDTO>; canManage: boolean }) {
   return (
     <div>
-      <PageHeader title="WhatsApp" subtitle="Los botones de la web usan el primer número GENERAL activo. En Contacto se muestran todos los activos.">
-        {canManage && (
-          <Button onClick={() => setEditing({ ...EMPTY })}>
-            <Plus className="h-4 w-4" /> Nuevo número
-          </Button>
-        )}
-      </PageHeader>
-
-      {editing && (
-        <NumberForm
-          key={editing.id || "new"}
-          number={editing}
-          pending={pending}
-          onCancel={() => setEditing(null)}
-          onSubmit={(formData) => run(() => saveWhatsappNumber(editing.id, formData), () => setEditing(null))}
-        />
-      )}
-
-      {numbers.length === 0 ? (
-        <EmptyState title="No hay números cargados" hint="Mientras tanto la web usa el número de respaldo configurado en el código." />
-      ) : (
-        <ul className="space-y-3">
-          {numbers.map((number, index) => (
-            <li key={number.id}>
-              <Card className="flex items-center gap-3 p-4">
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold text-ink">{number.label}</span>
-                    <Badge tone={number.active ? "green" : "gray"}>{number.active ? "Activo" : "Inactivo"}</Badge>
-                    <Badge>{AUDIENCE_LABEL[number.audience]}</Badge>
-                  </div>
-                  <div className="mt-0.5 text-sm text-ink-soft">
-                    {formatWhatsappPhone(number.phone)} · {number.clicks30} clics en 30 días
-                  </div>
-                  {number.message && <p className="mt-1 truncate text-xs text-ink-soft">“{number.message}”</p>}
-                </div>
-                {canManage && (
-                  <>
-                    <div className="hidden items-center gap-1 sm:flex">
-                      <IconButton label="Subir" disabled={pending || index === 0} onClick={() => run(() => reorderWhatsappNumber(number.id, -1))}>
-                        <ArrowUp className="h-4 w-4" />
-                      </IconButton>
-                      <IconButton label="Bajar" disabled={pending || index === numbers.length - 1} onClick={() => run(() => reorderWhatsappNumber(number.id, 1))}>
-                        <ArrowDown className="h-4 w-4" />
-                      </IconButton>
-                    </div>
-                    <Switch checked={number.active} label={`Activar ${number.label}`} disabled={pending} onChange={(value) => run(() => toggleWhatsappActive(number.id, value))} />
-                    <IconButton label="Editar" onClick={() => setEditing(number)}>
-                      <Pencil className="h-4 w-4" />
-                    </IconButton>
-                    <IconButton label="Eliminar" onClick={() => setDeleting(number)} className="hover:text-[var(--color-danger)]">
-                      <Trash2 className="h-4 w-4" />
-                    </IconButton>
-                  </>
-                )}
-              </Card>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <ConfirmDialog
-        open={deleting !== null}
-        title={`¿Eliminar ${deleting?.label ?? "el número"}?`}
-        message="Los clics históricos se conservan sin número asociado."
-        confirmLabel="Eliminar"
-        danger
-        loading={pending}
-        onCancel={() => setDeleting(null)}
-        onConfirm={() => deleting && run(() => deleteWhatsappNumber(deleting.id), () => setDeleting(null))}
-      />
+      <PageHeader title="WhatsApp" subtitle="Los dos números de la web: uno para ventas y otro para mayoristas." />
+      <div className="grid gap-5 lg:grid-cols-2">
+        {(["GENERAL", "EMPRESAS"] as const).map((audience) => (
+          <SlotCard key={audience} audience={audience} slot={slots[audience]} canManage={canManage} />
+        ))}
+      </div>
     </div>
   );
 }
 
-function NumberForm({ number, pending, onCancel, onSubmit }: { number: WhatsappDTO; pending: boolean; onCancel: () => void; onSubmit: (formData: FormData) => void }) {
+function SlotCard({ audience, slot, canManage }: { audience: WhatsappAudience; slot: WhatsappSlotDTO; canManage: boolean }) {
+  const info = SLOT_INFO[audience];
+  const [label, setLabel] = useState(slot.label);
+  const [phone, setPhone] = useState(slot.phone);
+  const [message, setMessage] = useState(slot.message);
+  const [active, setActive] = useState(slot.active);
+  const [pending, startTransition] = useTransition();
+  const toast = useToast();
+
+  const dirty = !slot.saved || label !== slot.label || phone !== slot.phone || message !== slot.message || active !== slot.active;
+  const normalized = normalizeWhatsappPhone(phone);
+  const phoneValid = /^\d{10,15}$/.test(normalized);
+  const isVentas = audience === "GENERAL";
+
+  function save() {
+    const formData = new FormData();
+    formData.set("label", label);
+    formData.set("phone", phone);
+    formData.set("message", message);
+    formData.set("active", active ? "on" : "");
+    startTransition(async () => {
+      const result = await saveWhatsappSlot(audience, formData);
+      if (result.ok) toast.success(result.message ?? "Guardado.");
+      else toast.error(result.error);
+    });
+  }
+
   return (
-    <Card className="mb-6 p-5 sm:p-6">
-      <h2 className="text-lg font-bold text-ink">{number.id ? `Editar ${number.label}` : "Nuevo número"}</h2>
-      <form
-        className="mt-5 grid gap-4 sm:grid-cols-2"
-        onSubmit={(event) => {
-          event.preventDefault();
-          onSubmit(new FormData(event.currentTarget));
-        }}
-      >
+    <Card className="flex flex-col p-5 sm:p-6">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#25d366] text-white">
+            <MessageCircle className="h-5 w-5" />
+          </span>
+          <div>
+            <h2 className="text-lg font-bold text-ink">{info.title}</h2>
+            <p className="text-sm text-ink-soft">{info.where}</p>
+          </div>
+        </div>
+        {isVentas ? (
+          <Badge tone="green">Siempre visible</Badge>
+        ) : (
+          <Switch checked={active} onChange={setActive} disabled={!canManage || pending} label={active ? "Visible en la web" : "Oculto en la web"} />
+        )}
+      </div>
+
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <div>
-          <Label htmlFor="label">Etiqueta</Label>
-          <Input id="label" name="label" defaultValue={number.label} placeholder="Ventas" required maxLength={60} autoFocus />
-          <Hint>Se muestra en la página de contacto.</Hint>
+          <Label htmlFor={`label-${audience}`}>Nombre que se ve</Label>
+          <Input id={`label-${audience}`} value={label} onChange={(event) => setLabel(event.target.value)} maxLength={60} disabled={!canManage} />
         </div>
         <div>
-          <Label htmlFor="phone">Número</Label>
-          <Input id="phone" name="phone" inputMode="tel" defaultValue={number.phone} placeholder="54 9 261 533 0777" required />
-          <Hint>Con código de país y el 9 para celulares argentinos. Sin el 0 ni el 15.</Hint>
+          <Label htmlFor={`phone-${audience}`}>Número</Label>
+          <Input
+            id={`phone-${audience}`}
+            value={phone}
+            onChange={(event) => setPhone(event.target.value)}
+            inputMode="tel"
+            placeholder="54 9 261 533 0777"
+            disabled={!canManage}
+            aria-invalid={phone !== "" && !phoneValid}
+          />
         </div>
-        <div>
-          <Label htmlFor="audience">Público</Label>
-          <Select id="audience" name="audience" defaultValue={number.audience}>
-            <option value="GENERAL">General (botones de la web)</option>
-            <option value="EMPRESAS">Empresas (sólo en Contacto)</option>
-          </Select>
-        </div>
-        <label className="flex min-h-11 items-center gap-3 self-end text-sm font-semibold text-ink">
-          <input type="checkbox" name="active" defaultChecked={number.active} /> Activo
-        </label>
-        <div className="sm:col-span-2">
-          <Label htmlFor="message">Mensaje precargado</Label>
-          <Textarea id="message" name="message" defaultValue={number.message} maxLength={500} placeholder="Hola, vengo de la web de Materiales Belgrano y quiero hacer una consulta." />
-          <Hint>Lo que aparece escrito al abrir el chat. La web le agrega entre paréntesis desde qué página se hizo clic.</Hint>
-        </div>
-        <div className="flex flex-wrap gap-2 sm:col-span-2">
-          <Button type="submit" disabled={pending}>
+      </div>
+      <Hint>
+        {phone && phoneValid ? `Se va a ver como ${formatWhatsappPhone(normalized)}.` : "Con código de país y el 9: 54 9 261 533 0777 (sin 0 ni 15)."}
+      </Hint>
+
+      <div className="mt-4">
+        <Label htmlFor={`message-${audience}`}>Mensaje precargado</Label>
+        <Textarea
+          id={`message-${audience}`}
+          value={message}
+          onChange={(event) => setMessage(event.target.value)}
+          maxLength={300}
+          rows={3}
+          placeholder="Hola, vengo de la web y quiero hacer una consulta."
+          disabled={!canManage}
+        />
+        <Hint>Lo que aparece escrito al abrir el chat.</Hint>
+      </div>
+
+      <div className="mt-5 flex items-center justify-between gap-3 border-t border-line pt-4">
+        <span className="inline-flex items-center gap-2 text-sm text-ink-soft">
+          <MousePointerClick className="h-4 w-4" /> {slot.clicks30} clics en los últimos 30 días
+        </span>
+        {canManage && (
+          <Button onClick={save} disabled={pending || !dirty || !label.trim() || !phoneValid}>
             {pending ? (
               <>
                 <Spinner /> Guardando…
@@ -163,11 +138,8 @@ function NumberForm({ number, pending, onCancel, onSubmit }: { number: WhatsappD
               "Guardar"
             )}
           </Button>
-          <Button type="button" variant="secondary" onClick={onCancel} disabled={pending}>
-            Cancelar
-          </Button>
-        </div>
-      </form>
+        )}
+      </div>
     </Card>
   );
 }

@@ -81,23 +81,20 @@ export const HERO_PAGE_CONFIG: Record<
 > = {
   inicio: {
     label: "Inicio",
-    hint: "Fotos grandes detrás del título, ocupan toda la primera pantalla.",
-    recommended: [2400, 1350],
-    fallback: [
-      { url: "/images/exhibicion-iluminacion-materiales-belgrano.webp", alt: "Luminarias colgantes encendidas en el salón de Materiales Belgrano" },
-      { url: "/images/salon-exhibicion-materiales-belgrano.webp", alt: "Salón de ventas de Materiales Belgrano con exhibición de luminarias" },
-    ],
+    hint: "Fotos grandes detrás del título: ocupan toda la primera pantalla. Usá fotos horizontales con lo importante al centro (en celular se ve sólo la parte central).",
+    recommended: [2560, 1440],
+    fallback: [{ url: "/images/salon-materiales-belgrano-mendoza.webp", alt: "Salón de ventas de Materiales Belgrano en Godoy Cruz, Mendoza" }],
   },
   marcas: {
     label: "Marcas",
-    hint: "Banner al inicio de la página Marcas (mitad de alto que el del inicio).",
-    recommended: [2400, 900],
+    hint: "Banner al inicio de la página Marcas (la mitad de alto que el del inicio). Foto horizontal con lo importante al centro.",
+    recommended: [2560, 800],
     fallback: [{ url: "/images/salon-exhibicion-materiales-belgrano.webp", alt: "Exhibición de productos en el salón de Materiales Belgrano" }],
   },
   nosotros: {
     label: "Nosotros",
-    hint: "Banner al inicio de la página Nosotros (mitad de alto que el del inicio).",
-    recommended: [2400, 900],
+    hint: "Banner al inicio de la página Nosotros (la mitad de alto que el del inicio). Foto horizontal con lo importante al centro.",
+    recommended: [2560, 800],
     fallback: [{ url: "/images/salon-materiales-belgrano-mendoza.webp", alt: "Equipo de Materiales Belgrano en el salón de ventas" }],
   },
 };

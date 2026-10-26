@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { BANNER_CONFIG, BANNER_MOBILE_SIZE, BANNER_SIZE, type BannerKey } from "@mb/shared";
-import { Badge, Button, Card, Hint, Input, Label, PageHeader, Spinner, Switch, Textarea } from "@/components/ui";
+import { Badge, Button, Card, Hint, Input, Label, PageHeader, Switch, Textarea } from "@/components/ui";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
 import { saveBanner } from "./actions";
@@ -25,7 +25,7 @@ export function BannersBoard({ banners }: { banners: BannerDTO[] }) {
         title="Banners"
         subtitle={`Cada banner es sólo imagen (el texto va en el diseño): una de ${BANNER_SIZE[0]} × ${BANNER_SIZE[1]} px para computadora y otra de ${BANNER_MOBILE_SIZE[0]} × ${BANNER_MOBILE_SIZE[1]} px para celular. Si les cargás un link, todo el banner es clickeable.`}
       />
-      <div className="grid gap-5 lg:grid-cols-2">
+      <div className="grid gap-5">
         {banners.map((banner) => (
           <BannerCard key={banner.key} banner={banner} />
         ))}
@@ -63,7 +63,7 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
   }
 
   return (
-    <Card className="p-5">
+    <Card className="p-5 sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="font-bold text-ink">{config.label}</h2>
@@ -71,11 +71,11 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
         </div>
         <div className="flex items-center gap-2">
           {!banner.saved && <Badge>Por defecto</Badge>}
-          <Switch checked={active} onChange={setActive} label={active ? "Visible" : "Oculto"} />
+          <Switch checked={active} onChange={setActive} label="Mostrar en la web" text={active ? "Visible" : "Oculto"} />
         </div>
       </div>
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-[2fr_1fr]">
+      <div className="mt-5 grid items-start gap-5 md:grid-cols-[minmax(0,1fr)_220px]">
         <div>
           <Label>Computadora</Label>
           <ImageUploadField
@@ -84,10 +84,9 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
             folder="slots"
             label="Banner para computadora"
             recommended={BANNER_SIZE}
-            previewClassName="aspect-[4/1] w-full"
           />
         </div>
-        <div>
+        <div className="max-w-[260px] md:max-w-none">
           <Label>Celular</Label>
           <ImageUploadField
             value={imageMobile}
@@ -95,12 +94,11 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
             folder="slots"
             label="Banner para celular"
             recommended={BANNER_MOBILE_SIZE}
-            previewClassName="aspect-[4/3] w-full"
           />
         </div>
       </div>
 
-      <div className="mt-4 grid gap-4">
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
         <div>
           <Label htmlFor={`title-${banner.key}`}>Qué dice el banner</Label>
           <Textarea id={`title-${banner.key}`} value={title} onChange={(event) => setTitle(event.target.value)} maxLength={200} rows={2} />
@@ -120,15 +118,9 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
         </div>
       </div>
 
-      <div className="mt-4 flex justify-end">
-        <Button onClick={save} disabled={pending || !dirty || !title.trim() || !image || !imageMobile}>
-          {pending ? (
-            <>
-              <Spinner /> Guardando…
-            </>
-          ) : (
-            "Guardar"
-          )}
+      <div className="mt-5 flex justify-end border-t border-line pt-4">
+        <Button onClick={save} loading={pending} loadingText="Guardando…" disabled={!dirty || !title.trim() || !image || !imageMobile}>
+          Guardar
         </Button>
       </div>
     </Card>

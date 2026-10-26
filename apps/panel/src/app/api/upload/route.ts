@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
-import { assertConfigured } from "@/lib/actions";
+import { assertConfigured, assertMutationAllowed } from "@/lib/actions";
 import { requireProfile } from "@/lib/auth";
 import { canManageSection } from "@/lib/permissions";
 import { uploadToStorage } from "@/lib/storage";
@@ -16,6 +16,8 @@ export async function POST(request: NextRequest) {
   if (guard) return NextResponse.json(guard, { status: 503 });
 
   const profile = await requireProfile();
+  const limited = await assertMutationAllowed("upload");
+  if (limited) return NextResponse.json(limited, { status: 429 });
   const formData = await request.formData();
   const folder = folderSchema.safeParse(formData.get("folder"));
   if (!folder.success) {

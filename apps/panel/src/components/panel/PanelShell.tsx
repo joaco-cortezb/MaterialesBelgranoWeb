@@ -23,6 +23,17 @@ const SIDEBAR_WIDTH = 248;
 export function PanelShell({ user, role, webUrl, children }: { user: User; role: Role; webUrl: string; children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  // En celular el menú cerrado queda fuera de pantalla: también se saca del
+  // foco del teclado y de los lectores de pantalla (`inert`).
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsDesktop(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     queueMicrotask(() => setMobileOpen(false));
@@ -58,11 +69,13 @@ export function PanelShell({ user, role, webUrl, children }: { user: User; role:
   }, []);
 
   const navItems = NAV_ITEMS.filter((item) => !item.section || canViewSection(role, item.section));
+  const currentLabel = navItems.find((item) => isActive(pathname, item.href))?.label ?? "Panel";
 
   return (
     <div className="min-h-screen">
       <aside
         aria-label="Navegación del panel"
+        inert={!isDesktop && !mobileOpen}
         className={cn(
           "fixed inset-y-0 left-0 z-40 flex w-[min(100%,320px)] flex-col bg-sidebar text-white transition-transform duration-200 ease-[var(--ease-out-strong)] motion-reduce:transition-none lg:w-[var(--w)] lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
@@ -138,9 +151,9 @@ export function PanelShell({ user, role, webUrl, children }: { user: User; role:
 
       <div className="flex min-h-screen flex-col lg:pl-[var(--w)]" style={{ "--w": `${SIDEBAR_WIDTH}px` } as React.CSSProperties}>
         <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/10 bg-sidebar px-4 py-2.5 text-white lg:hidden">
-          <Link href="/panel" className="flex items-center gap-2 text-sm font-extrabold tracking-tight">
-            <Image src="/brand/isotipo.png" alt="" width={28} height={28} className="h-7 w-7" />
-            Panel
+          <Link href="/panel" className="flex min-w-0 items-center gap-2 text-sm font-extrabold tracking-tight">
+            <Image src="/brand/isotipo.png" alt="" width={28} height={28} className="h-7 w-7 shrink-0" />
+            <span className="truncate">{currentLabel}</span>
           </Link>
           <button type="button" onClick={() => setMobileOpen(true)} aria-label="Abrir menú" className="rounded-lg border border-white/20 p-2 hover:bg-white/10">
             <Menu className="h-5 w-5" />

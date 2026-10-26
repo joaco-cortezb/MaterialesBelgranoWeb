@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
     // inicio y de Nosotros. 308 para no perder enlaces externos ni indexación.
     return [
       { source: "/servicios", destination: "/#servicios", permanent: true },
-      { source: "/rubros", destination: "/soluciones", permanent: true },
+      { source: "/rubros", destination: "/#soluciones", permanent: true },
       { source: "/rubros/:slug", destination: "/soluciones/:slug", permanent: true },
       { source: "/contacto", destination: "/nosotros#contacto", permanent: true },
     ];
@@ -27,6 +27,7 @@ const nextConfig: NextConfig = {
         headers: [
           { key: "X-Frame-Options", value: "DENY" },
           { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin-allow-popups" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
           {
@@ -41,9 +42,9 @@ const nextConfig: NextConfig = {
   images: {
     // Los defaults de Next arrancan en 640 px: en teléfonos servían cards al
     // doble de su ancho real.
-    deviceSizes: [320, 420, 480, 640, 750, 828, 1080, 1200, 1920, 2048],
+    deviceSizes: [320, 420, 480, 640, 750, 828, 1080, 1200, 1920, 2048, 2560],
     formats: ["image/webp"],
-    qualities: [60, 65, 70, 75, 90],
+    qualities: [60, 65, 70, 75, 85, 90],
     minimumCacheTTL: 60 * 60 * 24 * 30,
     dangerouslyAllowSVG: false,
     contentDispositionType: "attachment",

@@ -9,6 +9,23 @@ const checkbox = z.union([z.literal("on"), z.literal("")]).optional();
 
 export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+/** Ruta local segura ("/marcas"): sin "//" ni "/\\" (que el navegador lee como otro dominio). */
+export function isSafeLocalPath(value: string): boolean {
+  return /^\/(?![\/\\])/.test(value) && !/[\u0000-\u001f\\]/.test(value);
+}
+
+/** Imagen válida: vacía, un archivo de la web ("/images/…") o el Storage público de Supabase. */
+export function isSafeImageUrl(value: string): boolean {
+  if (value === "") return true;
+  if (isSafeLocalPath(value)) return true;
+  const url = safeExternalUrl(value);
+  if (!url) return false;
+  const { hostname, pathname } = new URL(url);
+  return hostname.endsWith(".supabase.co") && pathname.startsWith("/storage/v1/object/public/");
+}
+
+const imageUrl = z.string().trim().max(500).refine(isSafeImageUrl, "URL de imagen inválida");
+
 const lines = (max: number, maxItems: number) =>
   z
     .string()
@@ -30,7 +47,7 @@ export const brandSchema = z.object({
     .trim()
     .max(500)
     .refine((value) => Boolean(safeExternalUrl(value)), "La URL del catálogo tiene que empezar con https://"),
-  logo: z.string().trim().max(500).optional().default(""),
+  logo: imageUrl.optional().default(""),
   rubroSlug: z
     .string()
     .trim()
@@ -42,7 +59,7 @@ export const brandSchema = z.object({
 
 export const imageSlotSchema = z.object({
   key: z.string().refine((value) => IMAGE_SLOT_KEYS.includes(value), "Slot inválido"),
-  url: z.string().trim().max(500),
+  url: imageUrl,
   alt: z.string().trim().min(1, "El texto alternativo es obligatorio").max(200),
   position: z
     .string()
@@ -65,20 +82,9 @@ export const whatsappNumberSchema = z.object({
   active: checkbox,
 });
 
-const imageUrl = z
-  .string()
-  .trim()
-  .max(500)
-  .refine((value) => value === "" || value.startsWith("https://") || value.startsWith("/"), "URL de imagen inválida");
-
 export const heroSlideSchema = z.object({
   page: z.enum(HERO_PAGES).default("inicio"),
-  url: z
-    .string()
-    .trim()
-    .min(1, "Subí una imagen")
-    .max(500)
-    .refine((value) => value.startsWith("https://") || value.startsWith("/"), "URL de imagen inválida"),
+  url: imageUrl.refine((value) => value !== "", "Subí una imagen"),
   alt: z.string().trim().min(1, "El texto alternativo es obligatorio").max(200),
   position: z
     .string()
@@ -102,7 +108,7 @@ const bannerLink = z
   .optional()
   .default("")
   .refine(
-    (value) => value === "" || (value.startsWith("/") && !value.startsWith("//")) || Boolean(safeExternalUrl(value)),
+    (value) => value === "" || isSafeLocalPath(value) || Boolean(safeExternalUrl(value)),
     "Link inválido: usá una dirección que empiece con https:// o una ruta como /marcas",
   );
 
@@ -127,7 +133,7 @@ export const homeVideoSchema = z.object({
 
 export const aboutSchema = z.object({
   headline: z.string().trim().min(1, "El título es obligatorio").max(160),
-  body: z.string().trim().min(1, "El texto es obligatorio").max(6000),
+  body: z.string().trim().min(1, "El texto es obligatorio").max(1200),
 });
 
 /** Formulario de solución del panel. `faqs` llega como JSON (lista de preguntas). */
@@ -162,13 +168,7 @@ export const categorySchema = z.object({
       }
     })
     .pipe(z.array(faqItem).max(12, "Máximo 12 preguntas")),
-  image: z
-    .string()
-    .trim()
-    .max(500)
-    .optional()
-    .default("")
-    .refine((value) => value === "" || value.startsWith("https://") || value.startsWith("/"), "URL de imagen inválida"),
+  image: imageUrl.optional().default(""),
   imageAlt: z.string().trim().max(200).optional().default(""),
   imagePosition: z
     .string()

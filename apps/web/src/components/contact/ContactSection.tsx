@@ -3,7 +3,7 @@ import { formatWhatsappPhone, SITE, type WhatsappNumber } from "@mb/shared";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
-import { MapEmbed } from "@/components/contact/MapEmbed";
+import { MAPS_LINK, MapEmbed } from "@/components/contact/MapEmbed";
 import { whatsappGoHref } from "@/lib/whatsapp";
 
 const AUDIENCE_LABEL: Record<WhatsappNumber["audience"], string> = {
@@ -17,7 +17,7 @@ const AUDIENCE_LABEL: Record<WhatsappNumber["audience"], string> = {
  */
 export function ContactSection({ whatsapps }: { whatsapps: WhatsappNumber[] }) {
   return (
-    <section id="contacto" aria-labelledby="contacto-title" className="scroll-mt-20 bg-surface py-16 sm:py-24">
+    <section id="contacto" aria-labelledby="contacto-title" className="bg-surface py-16 sm:py-24">
       <Container>
         <SectionHeading eyebrow="Contacto" title="Hablemos" text="La forma más rápida es WhatsApp: mandá tu consulta o tu listado." align="center" />
         <h2 id="contacto-title" className="sr-only">
@@ -47,7 +47,7 @@ export function ContactSection({ whatsapps }: { whatsapps: WhatsappNumber[] }) {
           ))}
         </div>
 
-        <dl className="mx-auto mt-10 grid max-w-4xl gap-3 sm:grid-cols-2 sm:gap-4">
+        <dl className="mx-auto mt-10 grid max-w-4xl grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 sm:gap-4">
           <InfoCard icon={<FaLocationDot />} label="Dirección">
             <address className="not-italic">{SITE.address.singleLine}</address>
           </InfoCard>
@@ -59,24 +59,34 @@ export function ContactSection({ whatsapps }: { whatsapps: WhatsappNumber[] }) {
             ))}
           </InfoCard>
           <InfoCard icon={<FaPhone />} label="Teléfono">
-            <a href={`tel:${SITE.phone.e164}`} className="hover:text-brand-700">
+            <a href={`tel:${SITE.phone.e164}`} className="inline-flex min-h-11 items-center hover:text-brand-700">
               {SITE.phone.display}
             </a>
           </InfoCard>
           <InfoCard icon={<FaEnvelope />} label="Email">
-            <a href={`mailto:${SITE.email}`} className="break-words hover:text-brand-700">
+            <a href={`mailto:${SITE.email}`} className="inline-flex min-h-11 items-center break-all hover:text-brand-700">
               {SITE.email}
             </a>
           </InfoCard>
         </dl>
 
-        <p className="mx-auto mt-6 flex max-w-3xl items-center justify-center gap-2 text-center text-sm text-ink-soft">
-          <FaTruckFast className="h-4 w-4 shrink-0 text-brand-700" aria-hidden />
+        <p className="mx-auto mt-6 flex max-w-3xl items-start justify-center gap-2 text-sm text-ink-soft sm:items-center sm:text-center">
+          <FaTruckFast className="mt-0.5 h-4 w-4 shrink-0 text-brand-700 sm:mt-0" aria-hidden />
           Entrega en 24 hs con transporte propio en {SITE.deliveryRegions.join(", ")}. Resto del país por {SITE.nationalCarrier}.
         </p>
 
         <div className="mx-auto mt-12 max-w-5xl">
           <MapEmbed />
+          <div className="mt-4 text-center">
+            <a
+              href={MAPS_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pressable inline-flex min-h-11 items-center gap-2 rounded-full bg-ink-dark px-6 text-sm font-semibold text-white hover:bg-ink"
+            >
+              <FaLocationDot className="h-4 w-4 text-brand-400" aria-hidden /> Cómo llegar
+            </a>
+          </div>
         </div>
       </Container>
     </section>
@@ -85,7 +95,7 @@ export function ContactSection({ whatsapps }: { whatsapps: WhatsappNumber[] }) {
 
 function InfoCard({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-line bg-bg px-5 py-4">
+    <div className="flex min-w-0 items-center gap-4 rounded-2xl border border-line bg-bg px-5 py-4">
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-500 text-ink-dark [&>svg]:h-[18px] [&>svg]:w-[18px]" aria-hidden>
         {icon}
       </span>

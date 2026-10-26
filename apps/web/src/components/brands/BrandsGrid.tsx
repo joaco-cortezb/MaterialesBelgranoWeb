@@ -33,7 +33,7 @@ export function BrandsGrid({ brands, source }: { brands: Brand[]; source: string
                 alt={`Logo de ${brand.name}`}
                 width={240}
                 height={120}
-                sizes="(min-width: 1024px) 220px, (min-width: 640px) 30vw, 45vw"
+                sizes="150px"
                 className="h-11 w-full max-w-[150px] object-contain"
               />
             ) : (

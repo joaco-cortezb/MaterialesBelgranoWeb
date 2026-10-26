@@ -76,8 +76,9 @@ export function MobileMenu({ links, whatsappHref }: { links: readonly NavLink[];
             role="dialog"
             aria-modal="true"
             aria-label="Menú de navegación"
+            inert={!open}
             className={cn(
-              "fixed inset-x-0 bottom-0 top-16 z-50 flex flex-col overflow-y-auto overscroll-contain bg-surface px-4 pt-4 transition-[opacity,transform] duration-200 ease-[var(--ease-out-strong)] lg:hidden",
+              "fixed inset-x-0 bottom-0 top-[65px] z-50 flex flex-col overflow-y-auto overscroll-contain bg-surface px-4 pt-4 transition-[opacity,transform] duration-200 ease-[var(--ease-out-strong)] lg:hidden",
               open ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0",
             )}
             style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 1.5rem)" }}

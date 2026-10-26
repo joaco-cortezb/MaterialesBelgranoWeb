@@ -41,3 +41,31 @@ export async function assertMutationAllowed(scope: string): Promise<ActionResult
 export function firstIssue(error: { issues: Array<{ message: string }> }): string {
   return error.issues[0]?.message ?? "Datos inválidos";
 }
+
+/**
+ * Corre una escritura y, si la base falla (o el registro ya no existe),
+ * devuelve un error legible en vez de romper la acción.
+ */
+export async function attempt(write: () => Promise<unknown>, errorMessage: string): Promise<ActionResult | null> {
+  try {
+    await write();
+    return null;
+  } catch (error) {
+    console.error(errorMessage, error);
+    return fail(errorMessage);
+  }
+}
+
+/**
+ * Nuevo orden de una lista al mover `id` un lugar (`dir`). Devuelve los ids en
+ * el orden final, o `null` si no hay nada que mover. Renumerar toda la lista
+ * evita que dos ítems con el mismo `order` queden trabados.
+ */
+export function moveInList(ids: string[], id: string, dir: -1 | 1): string[] | null {
+  const index = ids.indexOf(id);
+  const swap = index + dir;
+  if (index < 0 || swap < 0 || swap >= ids.length) return null;
+  const next = [...ids];
+  [next[index], next[swap]] = [next[swap], next[index]];
+  return next;
+}

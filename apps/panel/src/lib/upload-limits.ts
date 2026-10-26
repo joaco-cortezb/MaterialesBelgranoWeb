@@ -15,15 +15,15 @@ export const UPLOAD_MANAGE_SECTION = {
 /** Lado máximo al que reescala el servidor (`fit: inside`, nunca agranda). */
 export const UPLOAD_MAX_DIMENSION: Readonly<Record<UploadFolder, number>> = {
   brands: 800,
-  slots: 2400,
-  categories: 2000,
+  slots: 2560,
+  categories: 2400,
 };
 
 /** Calidad WebP por carpeta. */
 export const UPLOAD_QUALITY: Readonly<Record<UploadFolder, number>> = {
-  brands: 88,
-  slots: 82,
-  categories: 82,
+  brands: 90,
+  slots: 85,
+  categories: 85,
 };
 
 /**
@@ -35,7 +35,7 @@ export const MAX_FUNCTION_UPLOAD_MB = 4;
 export const FUNCTION_UPLOAD_LIMIT_BYTES = MAX_FUNCTION_UPLOAD_MB * 1024 * 1024;
 
 /** Peso máximo del archivo original que acepta el campo (se achica en el cliente si hace falta). */
-export const CLIENT_MAX_MB = 40;
+export const CLIENT_MAX_MB = 20;
 
 /**
  * Extensiones aceptadas. Sin SVG a propósito: es XML que puede llevar
@@ -63,5 +63,5 @@ export function isAllowedUploadFile(fileName: string, contentType: string): bool
 
 export function uploadHint(folder: UploadFolder, recommended?: readonly [number, number]): string {
   const size = recommended ? `${recommended[0]} × ${recommended[1]} px` : `hasta ${UPLOAD_MAX_DIMENSION[folder]} px de lado`;
-  return `${size} · JPG, PNG o WEBP · hasta ${CLIENT_MAX_MB} MB`;
+  return `${size} · JPG, PNG, WEBP o HEIC · hasta ${CLIENT_MAX_MB} MB`;
 }

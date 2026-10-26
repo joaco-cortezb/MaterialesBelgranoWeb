@@ -72,13 +72,13 @@ export function BrandsExplorer({ groups }: { groups: Group[] }) {
                         alt={`Logo de ${brand.name}`}
                         width={240}
                         height={120}
-                        sizes="(min-width: 1024px) 220px, (min-width: 640px) 30vw, 45vw"
-                        className="h-10 w-full max-w-[150px] object-contain opacity-80 grayscale transition-[filter,opacity] duration-300 group-hover:opacity-100 group-hover:grayscale-0 sm:h-12"
+                        sizes="150px"
+                        className="h-10 w-full max-w-[150px] object-contain opacity-80 grayscale transition-[filter,opacity] duration-300 group-hover:opacity-100 group-hover:grayscale-0 [@media(hover:none)]:opacity-100 [@media(hover:none)]:grayscale-0 sm:h-12"
                       />
                     ) : (
                       <span className="text-center text-base font-bold tracking-tight text-ink-dark">{brand.name}</span>
                     )}
-                    <span className="absolute inset-x-0 bottom-3 text-center font-condensed text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                    <span className="absolute inset-x-0 bottom-3 text-center font-condensed text-xs font-semibold uppercase tracking-[0.14em] text-ink-soft opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100">
                       Catálogo de {brand.name}
                     </span>
                     <span
@@ -106,7 +106,7 @@ function Chip({ selected, onClick, children }: { selected: boolean; onClick: () 
       aria-selected={selected}
       onClick={onClick}
       className={cn(
-        "pressable inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full border px-4 text-sm font-semibold",
+        "pressable inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border px-4 text-sm font-semibold",
         selected ? "border-ink-dark bg-ink-dark text-white" : "border-line bg-surface text-ink-dark hover:border-ink-dark/40",
       )}
     >

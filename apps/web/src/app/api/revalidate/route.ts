@@ -53,7 +53,9 @@ export async function POST(request: Request) {
     return Response.json({ ok: false, error: "Invalid tag" }, { status: 400 });
   }
 
-  revalidateTag(body.tag, "max");
+  // `expire: 0` la invalida ya: la próxima visita trae lo nuevo. Con "max" se
+  // seguía sirviendo la versión vieja mientras se refrescaba por detrás.
+  revalidateTag(body.tag, { expire: 0 });
   for (const path of TAG_PATHS[body.tag]) {
     if (path.includes("[")) revalidatePath(path, "page");
     else revalidatePath(path);

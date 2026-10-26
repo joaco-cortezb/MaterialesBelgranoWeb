@@ -4,6 +4,8 @@ import { unstable_cache } from "next/cache";
 import {
   findImageSlot,
   BANNER_CONFIG,
+  DEFAULT_ABOUT_BODY,
+  DEFAULT_ABOUT_HEADLINE,
   DEFAULT_HOME_HERO_TEXT,
   DEFAULT_HOME_HERO_TITLE,
   HERO_PAGE_CONFIG,
@@ -11,6 +13,7 @@ import {
   PUBLIC_SETTING_KEYS,
   SETTING_KEYS,
   SITE,
+  splitParagraphs,
   seedCategories,
   youtubeVideoId,
   type AboutContent,
@@ -341,13 +344,6 @@ export async function getHomeVideoId(): Promise<string | null> {
   return typeof value === "string" ? youtubeVideoId(value) : null;
 }
 
-const DEFAULT_ABOUT: AboutContent = {
-  headline: "Casi 10 años creciendo con la atención como diferencial",
-  body: [
-    "Nacimos de la idea de tres socios, Federico, Tomás y Pablo: que comprar materiales eléctricos sea rápido, claro y con alguien del otro lado que sepa lo que vende.",
-    "Hoy somos una de las principales casas del rubro en Mendoza, con un salón moderno, depósito propio y un equipo joven que crece con cada recomendación.",
-  ],
-};
 
 /** Textos de la portada del inicio (título obligatorio, bajada opcional). */
 export async function getHomeHeroText(): Promise<{ title: string; text: string }> {
@@ -365,10 +361,7 @@ export async function getAboutContent(): Promise<AboutContent> {
   const headline = settings[SETTING_KEYS.aboutHeadline];
   const body = settings[SETTING_KEYS.aboutBody];
   return {
-    headline: typeof headline === "string" && headline.trim() ? headline : DEFAULT_ABOUT.headline,
-    body:
-      typeof body === "string" && body.trim()
-        ? body.split(/\n{2,}/).map((paragraph) => paragraph.trim()).filter(Boolean)
-        : DEFAULT_ABOUT.body,
+    headline: typeof headline === "string" && headline.trim() ? headline.trim() : DEFAULT_ABOUT_HEADLINE,
+    body: splitParagraphs(typeof body === "string" && body.trim() ? body : DEFAULT_ABOUT_BODY),
   };
 }

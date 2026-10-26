@@ -58,8 +58,8 @@ export default async function NosotrosPage() {
             {FACTS.map((fact) => (
               <div key={fact.label}>
                 <dt className="sr-only">{fact.label}</dt>
-                <dd className="font-condensed text-3xl font-bold tracking-tight text-brand-700 sm:text-5xl">{fact.value}</dd>
-                <dd className="mt-1 text-xs text-ink-soft sm:text-sm">{fact.label}</dd>
+                <dd className="whitespace-nowrap font-condensed text-2xl font-bold tracking-tight text-brand-700 sm:text-5xl">{fact.value}</dd>
+                <dd className="mt-1 text-[13px] leading-snug text-ink-soft sm:text-sm">{fact.label}</dd>
               </div>
             ))}
           </dl>
@@ -99,7 +99,7 @@ function GalleryTile({ title, image, large }: { title: string; image: ImageSlot 
           src={image.url}
           alt={image.alt}
           position={image.position}
-          sizes={large ? "(min-width: 1024px) 66vw, 100vw" : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"}
+          sizes={large ? "(min-width: 1280px) 820px, 100vw" : "(min-width: 1280px) 400px, (min-width: 640px) 50vw, 100vw"}
           className="absolute inset-0"
         />
       ) : (

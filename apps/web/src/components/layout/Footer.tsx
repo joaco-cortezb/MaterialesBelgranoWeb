@@ -43,12 +43,12 @@ export function Footer() {
               ))}
             </FooterItem>
             <FooterItem icon={<FaPhone />} label="Teléfono">
-              <a href={`tel:${SITE.phone.e164}`} className="hover:text-white">
+              <a href={`tel:${SITE.phone.e164}`} className="inline-flex min-h-11 items-center hover:text-white">
                 {SITE.phone.display}
               </a>
             </FooterItem>
             <FooterItem icon={<FaEnvelope />} label="Email">
-              <a href={`mailto:${SITE.email}`} className="break-all hover:text-white">
+              <a href={`mailto:${SITE.email}`} className="inline-flex min-h-11 items-center break-all hover:text-white">
                 {SITE.email}
               </a>
             </FooterItem>
@@ -58,7 +58,7 @@ export function Footer() {
         <div className="mt-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-4 border-t border-white/10 pt-6">
           <nav aria-label="Pie de página" className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm font-semibold">
             {NAV_LINKS.map((link) => (
-              <Link key={link.href} href={link.href} className="inline-flex min-h-9 items-center text-white/70 hover:text-white">
+              <Link key={link.href} href={link.href} className="inline-flex min-h-11 items-center text-white/70 hover:text-white">
                 {link.label}
               </Link>
             ))}
@@ -67,7 +67,7 @@ export function Footer() {
               event="distribuidora_click"
               params={{ source: "footer" }}
               external
-              className="inline-flex min-h-9 items-center text-brand-400 hover:text-brand-300"
+              className="inline-flex min-h-11 items-center text-brand-400 hover:text-brand-300"
             >
               {SITE.distribuidora370.name} ↗
             </TrackedLink>
@@ -80,7 +80,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="pressable flex h-10 w-10 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-brand-400"
+                  className="pressable flex h-11 w-11 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-brand-400"
                 >
                   <Icon className="h-[18px] w-[18px]" aria-hidden />
                 </a>
@@ -89,11 +89,11 @@ export function Footer() {
           </ul>
         </div>
 
-        <div className="mt-4 flex flex-col gap-2 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-4 flex flex-col gap-2 text-[13px] text-white/60 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()} {SITE.legalName} · {SITE.name}
           </p>
-          <a href={BUCLY_URL} target="_blank" rel="noopener noreferrer" className="bucly-credit inline-flex min-h-9 items-center self-start font-semibold sm:self-auto">
+          <a href={BUCLY_URL} target="_blank" rel="noopener noreferrer" className="bucly-credit inline-flex min-h-11 items-center self-start font-semibold sm:self-auto">
             <span className="bucly-shimmer border-b border-transparent transition-colors duration-200 hover:border-brand-400">Desarrollado por Bucly</span>
           </a>
         </div>
@@ -109,7 +109,7 @@ function FooterItem({ icon, label, children }: { icon: React.ReactNode; label: s
         {icon}
       </span>
       <div className="min-w-0 text-sm">
-        <span className="block font-condensed text-xs font-semibold uppercase tracking-[0.16em] text-white/45">{label}</span>
+        <span className="block font-condensed text-xs font-semibold uppercase tracking-[0.16em] text-white/60">{label}</span>
         <span className="mt-0.5 block leading-relaxed text-white/80">{children}</span>
       </div>
     </div>

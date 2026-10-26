@@ -17,8 +17,14 @@ export const env = {
   SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
   SUPABASE_STORAGE_BUCKET: process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET ?? "media",
-  PUBLIC_WEB_URL: (process.env.PUBLIC_WEB_URL ?? "https://materialesbelgrano.com").replace(/\/$/, ""),
-  PANEL_URL: process.env.PANEL_URL ?? "http://localhost:3001",
+  // Mismo valor por defecto que `next.config.ts` (la web en Vercel hasta que tenga dominio propio).
+  PUBLIC_WEB_URL: (process.env.PUBLIC_WEB_URL || "https://materiales-belgrano-web.vercel.app").replace(/\/$/, ""),
+  // En Vercel, sin PANEL_URL se usa el dominio de producción del proyecto: los
+  // mails de invitación nunca deben apuntar a localhost.
+  PANEL_URL: (
+    process.env.PANEL_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3001")
+  ).replace(/\/$/, ""),
   REVALIDATE_WEBHOOK_URL: process.env.REVALIDATE_WEBHOOK_URL ?? "",
   REVALIDATE_SECRET: process.env.REVALIDATE_SECRET ?? "",
 } as const;

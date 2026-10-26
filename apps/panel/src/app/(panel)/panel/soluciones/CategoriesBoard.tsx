@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, ExternalLink, Pencil, Plus, Trash2, X } from "lucide-react";
 import { slugify, type Faq } from "@mb/shared";
-import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, PageHeader, Select, Spinner, Switch, Textarea } from "@/components/ui";
+import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, PageHeader, Select, Switch, Textarea } from "@/components/ui";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
 import type { ActionResult } from "@/lib/actions";
+import { resolveMediaSrc } from "@/lib/media-src";
 import { deleteCategory, reorderCategory, saveCategory, toggleCategoryActive } from "./actions";
 
 export type CategoryDTO = {
@@ -100,45 +101,46 @@ export function CategoriesBoard({ categories, webUrl }: { categories: CategoryDT
         <ul className="space-y-3">
           {categories.map((category, index) => (
             <li key={category.id}>
-              <Card className="flex items-center gap-3 p-3 sm:gap-4 sm:p-4">
-                <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-surface-2">
+              <Card className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 p-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:gap-4 sm:p-4">
+                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-surface-2">
                   {category.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={category.image.startsWith("/") ? `${webUrl}${category.image}` : category.image} alt="" className="h-full w-full object-cover" style={{ objectPosition: category.imagePosition }} />
+                    <img src={resolveMediaSrc(category.image)} alt="" className="h-full w-full object-cover" style={{ objectPosition: category.imagePosition }} />
                   ) : (
                     <span className="flex h-full items-center justify-center px-1 text-center text-[11px] font-semibold text-ink-soft">Sin foto</span>
                   )}
                 </div>
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="truncate font-semibold text-ink">{category.name}</span>
-                    <Badge tone={category.active ? "green" : "gray"}>{category.active ? "Visible" : "Oculta"}</Badge>
                     <Badge>
                       {category.brands} {category.brands === 1 ? "marca" : "marcas"}
                     </Badge>
                   </div>
                   <p className="mt-0.5 truncate text-xs text-ink-soft">{category.summary}</p>
                   {webUrl && (
-                    <a href={`${webUrl}/soluciones/${category.slug}`} target="_blank" rel="noopener noreferrer" className="mt-0.5 inline-flex items-center gap-1 text-xs text-ink-soft hover:text-ink">
-                      <ExternalLink className="h-3 w-3" /> /soluciones/{category.slug}
+                    <a href={`${webUrl}/soluciones/${category.slug}`} target="_blank" rel="noopener noreferrer" className="mt-0.5 inline-flex max-w-full items-center gap-1 truncate text-xs text-ink-soft hover:text-ink">
+                      <ExternalLink className="h-3 w-3 shrink-0" /> <span className="truncate">/soluciones/{category.slug}</span>
                     </a>
                   )}
                 </div>
-                <div className="hidden items-center gap-1 sm:flex">
-                  <IconButton label="Subir" disabled={pending || index === 0} onClick={() => run(() => reorderCategory(category.id, -1))}>
-                    <ArrowUp className="h-4 w-4" />
-                  </IconButton>
-                  <IconButton label="Bajar" disabled={pending || index === categories.length - 1} onClick={() => run(() => reorderCategory(category.id, 1))}>
-                    <ArrowDown className="h-4 w-4" />
-                  </IconButton>
+                <div className="col-span-2 flex items-center justify-between gap-1 border-t border-line pt-3 sm:col-span-1 sm:justify-end sm:gap-2 sm:border-0 sm:pt-0">
+                  <Switch checked={category.active} label={`Mostrar ${category.name}`} text={category.active ? "Visible" : "Oculta"} disabled={pending} onChange={(value) => run(() => toggleCategoryActive(category.id, value))} />
+                  <div className="flex items-center gap-1">
+                    <IconButton label="Subir" disabled={pending || index === 0} onClick={() => run(() => reorderCategory(category.id, -1))}>
+                      <ArrowUp className="h-4 w-4" />
+                    </IconButton>
+                    <IconButton label="Bajar" disabled={pending || index === categories.length - 1} onClick={() => run(() => reorderCategory(category.id, 1))}>
+                      <ArrowDown className="h-4 w-4" />
+                    </IconButton>
+                    <IconButton label="Editar" onClick={() => setEditing(category)}>
+                      <Pencil className="h-4 w-4" />
+                    </IconButton>
+                    <IconButton label="Eliminar" onClick={() => setDeleting(category)} className="hover:text-[var(--color-danger)]">
+                      <Trash2 className="h-4 w-4" />
+                    </IconButton>
+                  </div>
                 </div>
-                <Switch checked={category.active} label={`Mostrar ${category.name}`} disabled={pending} onChange={(value) => run(() => toggleCategoryActive(category.id, value))} />
-                <IconButton label="Editar" onClick={() => setEditing(category)}>
-                  <Pencil className="h-4 w-4" />
-                </IconButton>
-                <IconButton label="Eliminar" onClick={() => setDeleting(category)} className="hover:text-[var(--color-danger)]">
-                  <Trash2 className="h-4 w-4" />
-                </IconButton>
               </Card>
             </li>
           ))}
@@ -179,13 +181,20 @@ function CategoryForm({
   const [position, setPosition] = useState(category.imagePosition);
   const [faqs, setFaqs] = useState<Faq[]>(category.faqs);
   const [seoDescription, setSeoDescription] = useState(category.seoDescription);
+  const [active, setActive] = useState(category.active);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // El formulario se abre arriba de la lista: se lleva a la vista al abrirlo.
+  useEffect(() => {
+    cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
 
   function updateFaq(index: number, patch: Partial<Faq>) {
     setFaqs((items) => items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
   }
 
   return (
-    <Card className="mb-6 p-5 sm:p-6">
+    <Card ref={cardRef} className="mb-6 scroll-mt-24 p-5 sm:p-6">
       <h2 className="text-lg font-bold text-ink">{isNew ? "Nueva solución" : `Editar ${category.name}`}</h2>
       <form
         className="mt-5 space-y-8"
@@ -217,7 +226,7 @@ function CategoryForm({
             </div>
             <div>
               <Label htmlFor="slug">Dirección de la página</Label>
-              <div className="flex items-center rounded-xl border border-line bg-surface-2 pl-3.5 text-sm text-ink-soft focus-within:border-brand-600">
+              <div className="flex h-11 items-center rounded-xl border border-line bg-surface-2 pl-3.5 text-sm text-ink-soft transition-[border-color,box-shadow] hover:border-brand-300 focus-within:border-brand-600 focus-within:ring-2 focus-within:ring-inset focus-within:ring-brand-500/25">
                 /soluciones/
                 <Input
                   id="slug"
@@ -229,7 +238,7 @@ function CategoryForm({
                   }}
                   required
                   maxLength={80}
-                  className="border-0 bg-transparent pl-1 focus:ring-0"
+                  className="h-full border-0 bg-transparent pl-1 hover:border-0 focus:ring-0"
                 />
               </div>
               {!isNew && <Hint>Si la cambiás, los links viejos dejan de funcionar.</Hint>}
@@ -240,14 +249,18 @@ function CategoryForm({
             <Input id="summary" name="summary" value={summary} onChange={(event) => setSummary(event.target.value)} required maxLength={160} />
             <Hint>Se ve en la card del carrusel, debajo del nombre. Una frase corta ({summary.length}/160).</Hint>
           </div>
-          <label className="flex min-h-11 items-center gap-3 text-sm font-semibold text-ink">
-            <input type="checkbox" name="active" defaultChecked={category.active} /> Visible en la web
-          </label>
+          <div className="flex min-h-11 items-center">
+            <input type="hidden" name="active" value={active ? "on" : ""} />
+            <Switch checked={active} onChange={setActive} label="Visible en la web" text="Visible en la web" />
+          </div>
         </FormSection>
 
         <FormSection title="Imagen">
           <div className="grid gap-5 sm:grid-cols-[260px_1fr]">
-            <ImageUploadField value={image} onChange={setImage} folder="categories" label="imagen de la solución" recommended={[1600, 2000]} position={position} previewClassName="aspect-[4/5] w-full" />
+            <div>
+              <ImageUploadField value={image} onChange={setImage} folder="categories" label="imagen de la solución" recommended={[2000, 2000]} position={position} />
+              <Hint>Se usa en la card vertical del carrusel y en la portada horizontal de la página: dejá lo importante al centro.</Hint>
+            </div>
             <div className="space-y-4">
               <div>
                 <Label htmlFor="imageAlt">Descripción de la foto</Label>
@@ -325,14 +338,8 @@ function CategoryForm({
         </FormSection>
 
         <div className="flex flex-wrap gap-2 border-t border-line pt-5">
-          <Button type="submit" disabled={pending}>
-            {pending ? (
-              <>
-                <Spinner /> Guardando…
-              </>
-            ) : (
-              "Guardar"
-            )}
+          <Button type="submit" loading={pending} loadingText="Guardando…">
+            Guardar
           </Button>
           <Button type="button" variant="secondary" onClick={onCancel} disabled={pending}>
             Cancelar
