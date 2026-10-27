@@ -106,20 +106,25 @@ export default async function HomePage() {
               Mismas marcas que todos. <span className="text-brand-600">Otra forma de atenderte.</span>
             </h2>
           </div>
-          <ul className="mx-auto mt-8 grid max-w-6xl gap-3 sm:mt-10 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+          {/* Un solo panel dividido con líneas finas: cada celda centrada, con un dato grande arriba. */}
+          <ul className="mx-auto mt-8 grid max-w-6xl gap-px overflow-hidden rounded-3xl border border-line bg-line sm:mt-10 sm:grid-cols-2 lg:grid-cols-3">
             {SERVICIOS.map((servicio) => (
               <li
                 key={servicio.slug}
                 id={servicio.slug}
-                className="card-hover flex h-full items-start gap-4 rounded-2xl border border-line bg-surface p-5"
+                className="group relative flex flex-col items-center overflow-hidden bg-surface px-6 py-7 text-center transition-colors duration-300 hover:bg-brand-50 sm:px-8 sm:py-10"
               >
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-500 text-ink-dark">
-                  <ServicioIcon icon={servicio.icon} className="h-6 w-6" />
-                </span>
-                <div className="min-w-0">
-                  <h3 className="text-balance text-base font-bold leading-snug tracking-tight text-ink-dark">{servicio.title}</h3>
-                  <p className="mt-1 text-pretty text-sm leading-relaxed text-ink-soft">{servicio.short}</p>
-                </div>
+                <ServicioIcon
+                  icon={servicio.icon}
+                  className="pointer-events-none absolute -right-3 -top-3 h-20 w-20 text-brand-500/10 transition-transform duration-500 group-hover:-rotate-6 group-hover:scale-110"
+                />
+                <p className="whitespace-nowrap font-condensed text-4xl font-bold uppercase leading-none tracking-tight text-brand-600 sm:text-[2.6rem] xl:text-5xl">{servicio.stat}</p>
+                <span aria-hidden className="mt-4 h-0.5 w-8 rounded-full bg-brand-500 transition-[width] duration-300 group-hover:w-14" />
+                <h3 className="mt-4 text-base font-bold tracking-tight text-ink-dark sm:text-lg">
+                  <span className="sr-only">{servicio.title}: </span>
+                  <span aria-hidden>{servicio.label}</span>
+                </h3>
+                <p className="mt-2 max-w-[30ch] text-pretty text-sm leading-relaxed text-ink-soft sm:text-[15px]">{servicio.short}</p>
               </li>
             ))}
           </ul>
