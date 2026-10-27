@@ -25,8 +25,8 @@ const GALLERY = [
 ] as const;
 
 const FACTS = [
-  { value: `Desde ${SITE.foundedYear}`, label: "en Godoy Cruz, Mendoza" },
-  { value: "+5.000", label: "artículos en stock" },
+  { value: "Casi 10", label: "años de trayectoria" },
+  { value: "5 rubros", label: "de la obra a la seguridad" },
   { value: "24 hs", label: "entrega con transporte propio" },
 ];
 

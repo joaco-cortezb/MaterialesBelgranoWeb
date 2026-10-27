@@ -11,7 +11,7 @@ import { whatsappGoHref } from "@/lib/whatsapp";
 export function WhatsappCta({
   source,
   title = "¿Tenés una obra o un proyecto? Pasanos el listado.",
-  text = "Te cotizamos completo en minutos por WhatsApp.",
+  text = "Te cotizamos todo junto por WhatsApp.",
 }: {
   source: WhatsappSource;
   title?: string;

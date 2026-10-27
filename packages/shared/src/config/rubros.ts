@@ -41,7 +41,7 @@ export const RUBROS: readonly Rubro[] = [
     summary: "Cables, caños, tableros y protecciones para cualquier instalación, de la casa a la obra.",
     description: [
       "Materiales Belgrano es una casa de materiales eléctricos en Godoy Cruz, Mendoza, con stock permanente de cables, cañerías, tableros, protecciones y accesorios para instalaciones domiciliarias e industriales. Vendemos a instaladores, empresas, constructoras y consumidor final, con entrega en 24 hs en Mendoza, San Juan y San Luis.",
-      "Trabajamos tres rangos de precio en la mayoría de las líneas, con proveedores que responden ante fallas y devoluciones. Si tenés una obra en marcha, pasanos el listado por WhatsApp y te cotizamos todo junto en minutos.",
+      "Trabajamos con proveedores que responden ante fallas y devoluciones. Si tenés una obra en marcha, pasanos el listado por WhatsApp y te cotizamos todo junto.",
     ],
     subcategories: [
       "Cables y cañerías",
@@ -53,7 +53,7 @@ export const RUBROS: readonly Rubro[] = [
       {
         question: "¿Venden materiales eléctricos por cantidad para obras?",
         answer:
-          "Sí. Cotizamos listados completos de obra por WhatsApp y entregamos en el domicilio de la empresa o directamente en obra. Para pedidos grandes conviene avisar con 24 hs de anticipación, así preparamos todo y pedimos lo que no tengamos en stock.",
+          "Sí. Cotizamos listados completos de obra por WhatsApp y entregamos en el domicilio de la empresa o directamente en obra. Para pedidos grandes conviene avisar con anticipación, así preparamos todo y pedimos lo que no tengamos en stock.",
       },
       {
         question: "¿Qué marcas de cables y protecciones trabajan?",
