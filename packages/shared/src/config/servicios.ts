@@ -5,7 +5,7 @@
 export type Servicio = {
   slug: string;
   title: string;
-  /** Dato grande de la sección del inicio ("24 hs", "+5.000"). */
+  /** Dato grande de la sección del inicio ("24 hs", "Todo el país"). */
   stat: string;
   /** Título corto (una línea) bajo el dato. */
   label: string;
@@ -23,11 +23,11 @@ export const SERVICIOS: readonly Servicio[] = [
   {
     slug: "entrega-24-hs",
     stat: "24 hs",
-    label: "Entrega con transporte propio",
-    short: "A tu empresa o a la obra, en Mendoza, San Juan y San Luis.",
+    label: "Transporte propio",
+    short: "Entrega en 24 hs en Mendoza, San Juan y San Luis.",
     title: "Transporte propio con entrega en 24 hs",
     description:
-      "Con nuestro transporte propio entregamos pedidos en 24 hs en Mendoza, San Juan y San Luis. Llevamos el material al domicilio de la empresa o directamente a la obra, para que el instalador no pierda tiempo yendo a buscarlo.",
+      "Con nuestro transporte propio entregamos en 24 hs en Mendoza, San Juan y San Luis. Consultanos por WhatsApp para coordinar la entrega de tu pedido.",
     detail: "TODO(cliente): confirmar zonas exactas con entrega en 24 hs y si tiene costo o mínimo de compra.",
     icon: "truck",
   },
@@ -35,20 +35,20 @@ export const SERVICIOS: readonly Servicio[] = [
     slug: "envios-a-todo-el-pais",
     stat: "Todo el país",
     label: "Envíos por Andreani",
-    short: "Llegamos a cualquier localidad. Consultá costo y plazo.",
+    short: "Al resto del país, enviamos tu pedido por Andreani.",
     title: "Envíos a todo el país por Andreani",
     description:
-      "Enviamos materiales eléctricos e iluminación a todo el país por Andreani. Consultanos por WhatsApp el costo y el plazo de entrega para tu localidad antes de confirmar el pedido.",
+      "Enviamos a todo el país por Andreani. Consultanos por WhatsApp el costo y el plazo de entrega para tu localidad.",
     icon: "box",
   },
   {
     slug: "financiacion",
     stat: "Financiación",
-    label: "Medios de pago a tu medida",
-    short: "Múltiples formas de pago para particulares y empresas.",
+    label: "Medios de pago",
+    short: "Financiación y distintos medios de pago para tu compra.",
     title: "Financiación y medios de pago",
     description:
-      "Aceptamos múltiples formas de pago y ofrecemos financiación para que elijas la que mejor se adapta a tu compra, tanto para el consumidor final como para empresas.",
+      "Ofrecemos financiación y distintos medios de pago. Consultanos por WhatsApp las opciones vigentes para tu compra.",
     detail: "TODO(cliente): detallar tarjetas, cuotas, transferencia, efectivo y promociones vigentes.",
     icon: "creditCard",
   },
@@ -56,31 +56,31 @@ export const SERVICIOS: readonly Servicio[] = [
     slug: "cuenta-corriente",
     stat: "Cuenta corriente",
     label: "Para clientes frecuentes",
-    short: "Plazos de pago acordados para instaladores y empresas.",
+    short: "Una cuenta corriente para los clientes que compran seguido.",
     title: "Cuenta corriente para clientes frecuentes",
     description:
-      "Los instaladores y empresas que compran con frecuencia pueden abrir una cuenta corriente con plazos de pago acordados. Es la forma de trabajo de la mitad de nuestros clientes.",
+      "Los clientes frecuentes pueden trabajar con cuenta corriente. Consultanos por WhatsApp cómo abrir la tuya.",
     detail: "TODO(cliente): requisitos para abrir cuenta corriente y plazos habituales.",
     icon: "fileInvoice",
   },
   {
     slug: "stock-amplio",
-    stat: "+5.000",
-    label: "Artículos en stock",
-    short: "En tres rangos de precio: económico, intermedio y alta gama.",
+    stat: "Stock amplio",
+    label: "En todos los rubros",
+    short: "Eléctricos, iluminación, herramientas, smart y cámaras.",
     title: "Stock amplio y variedad",
     description:
-      "Mantenemos stock permanente de más de 5.000 artículos en tres rangos de precio: económico, intermedio y alta gama. Si algo no está, lo pedimos al fabricante y te avisamos el plazo.",
+      "Tenemos stock amplio en materiales eléctricos, iluminación, máquinas y herramientas, dispositivos smart, y cámaras y videovigilancia.",
     icon: "warehouse",
   },
   {
     slug: "atencion-personalizada",
-    stat: "En minutos",
-    label: "Cotización por WhatsApp",
-    short: "Mandanos el listado de tu obra y te pasamos el total.",
+    stat: "Atención",
+    label: "Personalizada",
+    short: "Te asesoramos en el salón o por WhatsApp, como prefieras.",
     title: "Atención personalizada",
     description:
-      "Un equipo joven y capacitado te asesora en el salón o por WhatsApp. Mandanos el listado de tu obra y recibís la cotización completa en minutos, sin armar carritos ni buscar producto por producto.",
+      "Te atendemos de forma personalizada, en el salón o por WhatsApp, para ayudarte a elegir lo que necesitás.",
     icon: "headset",
   },
 ] as const;
