@@ -69,3 +69,19 @@ export function moveInList(ids: string[], id: string, dir: -1 | 1): string[] | n
   [next[index], next[swap]] = [next[swap], next[index]];
   return next;
 }
+
+/**
+ * Filas a actualizar al mover `id` un lugar: sólo las que cambian de `order`
+ * (normalmente las dos intercambiadas). Si los órdenes venían duplicados o con
+ * huecos, también entran las que haga falta renumerar. `null` si no hay nada.
+ */
+export function reorderChanges(
+  items: Array<{ id: string; order: number }>,
+  id: string,
+  dir: -1 | 1,
+): Array<{ id: string; order: number }> | null {
+  const ids = moveInList(items.map((item) => item.id), id, dir);
+  if (!ids) return null;
+  const current = new Map(items.map((item) => [item.id, item.order]));
+  return ids.flatMap((itemId, order) => (current.get(itemId) === order ? [] : [{ id: itemId, order }]));
+}

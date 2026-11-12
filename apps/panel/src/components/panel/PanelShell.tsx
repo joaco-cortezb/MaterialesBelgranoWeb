@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ExternalLink, LogOut, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -20,10 +20,17 @@ type User = { name: string; email: string; role: string };
 
 const SIDEBAR_WIDTH = 248;
 
+// Botones sobre el fondo oscuro: 44 px, foco visible en verde.
+const DARK_ICON_BUTTON =
+  "flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-white/70 transition-colors duration-150 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400";
+
 export function PanelShell({ user, role, webUrl, children }: { user: User; role: Role; webUrl: string; children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
+  const openButtonRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
 
   // En celular el menú cerrado queda fuera de pantalla: también se saca del
   // foco del teclado y de los lectores de pantalla (`inert`).
@@ -38,6 +45,13 @@ export function PanelShell({ user, role, webUrl, children }: { user: User; role:
   useEffect(() => {
     queueMicrotask(() => setMobileOpen(false));
   }, [pathname]);
+
+  // Al abrir el menú el foco entra en él; al cerrarlo vuelve al botón de menú.
+  useEffect(() => {
+    if (mobileOpen) closeButtonRef.current?.focus();
+    else if (wasOpen.current && !isDesktop) openButtonRef.current?.focus({ preventScroll: true });
+    wasOpen.current = mobileOpen;
+  }, [mobileOpen, isDesktop]);
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -73,7 +87,14 @@ export function PanelShell({ user, role, webUrl, children }: { user: User; role:
 
   return (
     <div className="min-h-screen">
+      <a
+        href="#contenido"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-surface focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-ink focus:shadow-lg"
+      >
+        Saltar al contenido
+      </a>
       <aside
+        id="panel-menu"
         aria-label="Navegación del panel"
         inert={!isDesktop && !mobileOpen}
         className={cn(
@@ -83,14 +104,14 @@ export function PanelShell({ user, role, webUrl, children }: { user: User; role:
         style={{ "--w": `${SIDEBAR_WIDTH}px` } as React.CSSProperties}
       >
         <div className="flex h-[72px] items-center justify-between px-5">
-          <Link href="/panel" className="flex items-center gap-3" aria-label="Ir al inicio del panel">
+          <Link href="/panel" className="flex items-center gap-3 rounded-lg" aria-label="Ir al inicio del panel">
             <Image src="/brand/isotipo.png" alt="" width={36} height={36} className="h-9 w-9" />
             <span className="leading-tight">
               <span className="block text-sm font-extrabold tracking-tight">Materiales Belgrano</span>
               <span className="block text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300">Panel</span>
             </span>
           </Link>
-          <button type="button" onClick={() => setMobileOpen(false)} aria-label="Cerrar menú" className="rounded-lg p-2 text-white/70 hover:bg-white/10 lg:hidden">
+          <button ref={closeButtonRef} type="button" onClick={() => setMobileOpen(false)} aria-label="Cerrar menú" className={cn(DARK_ICON_BUTTON, "-mr-2 lg:hidden")}>
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -106,14 +127,14 @@ export function PanelShell({ user, role, webUrl, children }: { user: User; role:
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition-colors",
+                      "flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400",
                       active ? "bg-brand text-brand-ink" : "text-white/75 hover:bg-white/10 hover:text-white",
                     )}
                   >
                     <Icon className="h-5 w-5 shrink-0" />
                     <span className="flex flex-col leading-tight">
                       {item.label}
-                      <span className={cn("text-[11px] font-medium", active ? "text-brand-ink/70" : "text-white/45")}>{item.description}</span>
+                      <span className={cn("text-[11px] font-medium", active ? "text-brand-ink/75" : "text-white/60")}>{item.description}</span>
                     </span>
                   </Link>
                 </li>
@@ -123,8 +144,9 @@ export function PanelShell({ user, role, webUrl, children }: { user: User; role:
         </nav>
 
         <div className="space-y-2 border-t border-white/10 p-3">
-          <a href={webUrl} target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold text-white/75 hover:bg-white/10 hover:text-white">
-            <ExternalLink className="h-5 w-5" /> Ver la web
+          <a href={webUrl} target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold text-white/75 transition-colors duration-150 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">
+            <ExternalLink className="h-5 w-5" aria-hidden="true" /> Ver la web
+            <span className="sr-only">(se abre en otra pestaña)</span>
           </a>
           <div className="flex items-center gap-3 rounded-xl px-3 py-2">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand text-sm font-bold text-brand-ink">
@@ -132,10 +154,10 @@ export function PanelShell({ user, role, webUrl, children }: { user: User; role:
             </span>
             <span className="min-w-0 flex-1 leading-tight">
               <span className="block truncate text-sm font-semibold">{user.name || user.email}</span>
-              <span className="block truncate text-xs text-white/50">{user.role}</span>
+              <span className="block truncate text-xs text-white/60">{user.role}</span>
             </span>
             <form action="/auth/signout" method="post">
-              <button type="submit" aria-label="Cerrar sesión" title="Cerrar sesión" className="rounded-lg p-2 text-white/60 hover:bg-white/10 hover:text-white">
+              <button type="submit" aria-label="Cerrar sesión" title="Cerrar sesión" className={DARK_ICON_BUTTON}>
                 <LogOut className="h-5 w-5" />
               </button>
             </form>
@@ -150,17 +172,25 @@ export function PanelShell({ user, role, webUrl, children }: { user: User; role:
       />
 
       <div className="flex min-h-screen flex-col lg:pl-[var(--w)]" style={{ "--w": `${SIDEBAR_WIDTH}px` } as React.CSSProperties}>
-        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/10 bg-sidebar px-4 py-2.5 text-white lg:hidden">
-          <Link href="/panel" className="flex min-w-0 items-center gap-2 text-sm font-extrabold tracking-tight">
+        <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-white/10 bg-sidebar px-4 py-1.5 text-white lg:hidden">
+          <Link href="/panel" className="flex min-h-11 min-w-0 items-center gap-2 rounded-lg text-sm font-extrabold tracking-tight">
             <Image src="/brand/isotipo.png" alt="" width={28} height={28} className="h-7 w-7 shrink-0" />
             <span className="truncate">{currentLabel}</span>
           </Link>
-          <button type="button" onClick={() => setMobileOpen(true)} aria-label="Abrir menú" className="rounded-lg border border-white/20 p-2 hover:bg-white/10">
+          <button
+            ref={openButtonRef}
+            type="button"
+            onClick={() => setMobileOpen(true)}
+            aria-label="Abrir menú"
+            aria-expanded={mobileOpen}
+            aria-controls="panel-menu"
+            className={cn(DARK_ICON_BUTTON, "-mr-1.5 border border-white/20 text-white")}
+          >
             <Menu className="h-5 w-5" />
           </button>
         </header>
 
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-7 sm:py-8">
+        <main id="contenido" tabIndex={-1} className="mx-auto w-full focus:outline-none max-w-6xl flex-1 px-4 py-6 sm:px-7 sm:py-8">
           <div key={pathname} className="animate-fade-up">
             {children}
           </div>

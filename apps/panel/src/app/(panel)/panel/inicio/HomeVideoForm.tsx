@@ -3,33 +3,32 @@
 import { useState, useTransition } from "react";
 import { CheckCircle2, CircleAlert, PlayCircle } from "lucide-react";
 import { youtubeVideoId } from "@mb/shared";
-import {
-  Badge,
-  Button,
-  Card,
-  Input,
-  Label,
-  PageHeader,
-  Spinner,
-} from "@/components/ui";
+import { Badge, Button, Card, Input, Label, LoadErrorNotice, PageHeader, SaveNote } from "@/components/ui";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
 import { saveHomeVideo } from "./actions";
 
-export function HomeVideoForm({ initialUrl }: { initialUrl: string }) {
+export function HomeVideoForm({ initialUrl, loadError = false }: { initialUrl: string; loadError?: boolean }) {
   const [url, setUrl] = useState(initialUrl);
+  const [confirmRemove, setConfirmRemove] = useState(false);
   const [pending, startTransition] = useTransition();
   const toast = useToast();
   const videoId = youtubeVideoId(url);
   const invalid = url.trim() !== "" && !videoId;
   const savedId = youtubeVideoId(initialUrl);
 
-  function save(nextUrl: string) {
+  function save(nextUrl: string, onDone?: () => void) {
     const formData = new FormData();
     formData.set("videoUrl", nextUrl);
     startTransition(async () => {
       const result = await saveHomeVideo(formData);
-      if (result.ok) toast.success(result.message ?? "Guardado.");
-      else toast.error(result.error);
+      if (result.ok) {
+        // Al quitarlo también se vacía el campo: si no, quedaba el link viejo
+        // con "Publicar" habilitado y la vista previa mostrando el video.
+        setUrl(nextUrl);
+        toast.success(result.message ?? "Guardado.");
+        onDone?.();
+      } else toast.error(result.error);
     });
   }
 
@@ -39,6 +38,7 @@ export function HomeVideoForm({ initialUrl }: { initialUrl: string }) {
         title="Video del inicio"
         subtitle="Un video de YouTube que aparece en el inicio, debajo de la portada. Arranca solo y sin sonido cuando el visitante llega a esa parte."
       />
+      {loadError && <LoadErrorNotice what="los datos del video" />}
       <div className="mx-auto grid max-w-4xl gap-5">
         <Card className="flex flex-col gap-4 p-5 sm:p-6">
           <div className="flex items-center justify-between gap-3">
@@ -57,18 +57,20 @@ export function HomeVideoForm({ initialUrl }: { initialUrl: string }) {
               onChange={(event) => setUrl(event.target.value)}
               placeholder="https://www.youtube.com/watch?v=…"
               aria-invalid={invalid}
+              aria-describedby="videoUrl-status"
             />
             <p
+              id="videoUrl-status"
+              aria-live="polite"
               className={`mt-1.5 flex items-center gap-1.5 text-xs ${invalid ? "text-[var(--color-danger)]" : videoId ? "text-[var(--color-success)]" : "text-ink-soft"}`}
             >
               {invalid ? (
                 <>
-                  <CircleAlert className="h-3.5 w-3.5" /> Ese link no es de un
-                  video de YouTube.
+                  <CircleAlert className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> Ese link no es de un video de YouTube. Copialo desde “Compartir” en YouTube.
                 </>
               ) : videoId ? (
                 <>
-                  <CheckCircle2 className="h-3.5 w-3.5" /> Link válido.
+                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> Link válido.
                 </>
               ) : (
                 "Sirve el link normal, el corto (youtu.be) o el de un short."
@@ -79,27 +81,15 @@ export function HomeVideoForm({ initialUrl }: { initialUrl: string }) {
             <p className="text-xs leading-relaxed text-ink-soft">
               El video tiene que ser público o “no listado” en YouTube.
             </p>
-            <div className="flex flex-wrap justify-end gap-2">
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <SaveNote dirty={url !== initialUrl && Boolean(videoId)} />
               {savedId && (
-                <Button
-                  variant="ghost"
-                  onClick={() => save("")}
-                  disabled={pending}
-                >
+                <Button variant="ghost" onClick={() => setConfirmRemove(true)} disabled={pending} className="text-[var(--color-danger)] hover:text-[var(--color-danger)]">
                   Quitar video
                 </Button>
               )}
-              <Button
-                onClick={() => save(url)}
-                disabled={pending || url === initialUrl || invalid || !videoId}
-              >
-                {pending ? (
-                  <>
-                    <Spinner /> Guardando…
-                  </>
-                ) : (
-                  "Publicar video"
-                )}
+              <Button onClick={() => save(url)} disabled={url === initialUrl || invalid || !videoId} loading={pending && !confirmRemove} loadingText="Publicando…">
+                Publicar video
               </Button>
             </div>
           </div>
@@ -130,6 +120,17 @@ export function HomeVideoForm({ initialUrl }: { initialUrl: string }) {
           </div>
         </Card>
       </div>
+
+      <ConfirmDialog
+        open={confirmRemove}
+        title="¿Quitar el video del inicio?"
+        message="La sección del video deja de verse en la web. Podés volver a publicarlo pegando el link de nuevo."
+        confirmLabel="Quitar video"
+        danger
+        loading={pending}
+        onCancel={() => setConfirmRemove(false)}
+        onConfirm={() => save("", () => setConfirmRemove(false))}
+      />
     </div>
   );
 }

@@ -42,13 +42,13 @@ const nextConfig: NextConfig = {
             value: [
               "default-src 'self'",
               `img-src 'self' data: blob: https://${storageHost} https://i.ytimg.com ${webUrl}`,
-              "media-src 'self' blob: https://*.supabase.co",
+              `media-src 'self' blob: https://${storageHost}`,
               // `unsafe-eval` sólo lo necesita el dev server (React Refresh).
               `script-src 'self' 'unsafe-inline'${isProduction ? "" : " 'unsafe-eval'"}`,
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self' data:",
               "frame-src https://www.youtube-nocookie.com",
-              "connect-src 'self' https://*.supabase.co",
+              `connect-src 'self' https://${storageHost}`,
               "object-src 'none'",
               "base-uri 'self'",
               "frame-ancestors 'none'",

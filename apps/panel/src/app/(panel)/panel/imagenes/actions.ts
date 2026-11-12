@@ -26,8 +26,11 @@ export async function saveImageSlot(formData: FormData): Promise<ActionResult> {
   if (!parsed.success) return fail(firstIssue(parsed.error));
   const { key, url, alt, position } = parsed.data;
 
+  let imageChanged = false;
   try {
     if (url) {
+      const current = await prisma.imageSlot.findUnique({ where: { key }, select: { url: true } });
+      imageChanged = current?.url !== url;
       await prisma.imageSlot.upsert({
         where: { key },
         create: { key, url, alt, position },
@@ -42,7 +45,8 @@ export async function saveImageSlot(formData: FormData): Promise<ActionResult> {
     return fail("No se pudo guardar la imagen.");
   }
 
-  await revalidateWeb("images");
+  // Precalienta sólo si se cargó o cambió la foto (no al restaurar la del repo).
+  revalidateWeb("images", { warm: imageChanged });
   revalidatePath(PATH);
   return ok(url ? "Imagen guardada." : "Se restauró la imagen por defecto.");
 }

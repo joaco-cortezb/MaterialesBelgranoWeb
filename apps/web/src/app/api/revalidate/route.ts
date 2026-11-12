@@ -26,11 +26,6 @@ const TAG_PATHS: Record<CmsTag, string[]> = {
 };
 
 export async function POST(request: Request) {
-  const limited = await rateLimit({ key: `revalidate:${clientIp(request.headers)}`, limit: 30, windowMs: 60_000 });
-  if (!limited.ok) {
-    return Response.json({ ok: false, error: "Too many requests" }, { status: 429 });
-  }
-
   if (!revalidateConfigured()) {
     return Response.json({ ok: false, error: "Revalidate secret is not configured" }, { status: 500 });
   }
@@ -40,6 +35,12 @@ export async function POST(request: Request) {
   const suppliedHash = createHash("sha256").update(bearer ?? "").digest();
   const expectedHash = createHash("sha256").update(env.REVALIDATE_SECRET).digest();
   if (!bearer || !timingSafeEqual(suppliedHash, expectedHash)) {
+    // El rate limit cuenta sólo los intentos sin secreto válido: una ráfaga
+    // legítima del panel (p. ej. varios reordenamientos) nunca recibe 429.
+    const limited = await rateLimit({ key: `revalidate:${clientIp(request.headers)}`, limit: 30, windowMs: 60_000 });
+    if (!limited.ok) {
+      return Response.json({ ok: false, error: "Too many requests" }, { status: 429 });
+    }
     console.warn(`[revalidate] unauthorized request from ${clientIp(request.headers)}`);
     return Response.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
@@ -48,14 +49,17 @@ export async function POST(request: Request) {
   if (Buffer.byteLength(rawBody, "utf8") > 1024) {
     return Response.json({ ok: false, error: "Payload too large" }, { status: 413 });
   }
-  let body: { tag?: unknown } | null = null;
+  let body: { tag?: unknown; warm?: unknown } | null = null;
   try {
-    body = JSON.parse(rawBody) as { tag?: unknown };
+    body = JSON.parse(rawBody) as { tag?: unknown; warm?: unknown };
   } catch {
     return Response.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
   }
   if (!isCmsTag(body?.tag)) {
     return Response.json({ ok: false, error: "Invalid tag" }, { status: 400 });
+  }
+  if (body.warm !== undefined && typeof body.warm !== "boolean") {
+    return Response.json({ ok: false, error: "Invalid warm" }, { status: 400 });
   }
 
   // `expire: 0` la invalida ya: la próxima visita trae lo nuevo. Con "max" se
@@ -67,8 +71,9 @@ export async function POST(request: Request) {
   }
 
   // Con imágenes nuevas, se procesan ya en segundo plano: así el primer
-  // visitante no espera al optimizador.
-  if (body.tag === "images" || body.tag === "brands" || body.tag === "categories") {
+  // visitante no espera al optimizador. El panel manda `warm: true` sólo cuando
+  // se cargó o cambió una imagen (reordenar u ocultar no lo dispara).
+  if (body.warm === true && (body.tag === "images" || body.tag === "brands" || body.tag === "categories")) {
     const origin = new URL(request.url).origin;
     after(() => warmImageCache(origin));
   }

@@ -1,13 +1,33 @@
 import "server-only";
 
+import { after } from "next/server";
 import type { CmsTag } from "@mb/shared";
 import { env, revalidateConfigured } from "@/lib/env";
 
+type RevalidateOptions = {
+  /**
+   * Pedirle a la web que precaliente las imágenes. Sólo cuando se creó o cambió
+   * la URL de una imagen: reordenar, ocultar o borrar no lo necesitan.
+   */
+  warm?: boolean;
+};
+
 /**
  * Notifica a la WEB PÚBLICA que revalide su cache. Única comunicación
- * panel → web. Si el webhook no está configurado, no rompe: sólo loguea.
+ * panel → web. Corre con `after()`: la acción responde enseguida y el webhook
+ * (con sus reintentos) sigue después. Con varios tags, el precalentado se pide
+ * una sola vez (en el último). Si el webhook no está configurado, sólo loguea.
  */
-export async function revalidateWeb(tag: CmsTag): Promise<void> {
+export function revalidateWeb(tags: CmsTag | CmsTag[], options: RevalidateOptions = {}): void {
+  const list = Array.isArray(tags) ? tags : [tags];
+  after(async () => {
+    for (const [index, tag] of list.entries()) {
+      await notifyWeb(tag, options.warm === true && index === list.length - 1);
+    }
+  });
+}
+
+async function notifyWeb(tag: CmsTag, warm: boolean): Promise<void> {
   if (!revalidateConfigured()) {
     console.info(`[revalidate] webhook no configurado; se omite revalidación de "${tag}"`);
     return;
@@ -21,7 +41,7 @@ export async function revalidateWeb(tag: CmsTag): Promise<void> {
       const res = await fetch(webhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.REVALIDATE_SECRET}` },
-        body: JSON.stringify({ tag }),
+        body: JSON.stringify(warm ? { tag, warm: true } : { tag }),
         signal: AbortSignal.timeout(5000),
       });
       if (res.ok) return;

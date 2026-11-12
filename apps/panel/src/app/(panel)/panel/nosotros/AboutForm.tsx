@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { splitParagraphs } from "@mb/shared";
-import { Badge, Button, Card, Hint, Input, Label, Spinner, Textarea } from "@/components/ui";
+import { Badge, Button, Card, Hint, Input, Label, SaveNote, Textarea } from "@/components/ui";
 import { useToast } from "@/components/ui/Toast";
 import { saveAbout } from "./actions";
 
@@ -30,7 +30,7 @@ export function AboutForm({ initialHeadline, initialBody, saved }: { initialHead
       <div className="grid gap-5 lg:grid-cols-2">
         <Card className="flex flex-col gap-5 p-5 sm:p-6">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="font-bold text-ink">Texto</h2>
+            <h3 className="font-bold text-ink">Texto</h3>
             <Badge tone={saved ? "green" : "gray"}>{saved ? "Guardado" : "Texto por defecto"}</Badge>
           </div>
           <div>
@@ -40,24 +40,23 @@ export function AboutForm({ initialHeadline, initialBody, saved }: { initialHead
           </div>
           <div>
             <Label htmlFor="body">Historia</Label>
-            <Textarea id="body" value={body} onChange={(event) => setBody(event.target.value)} maxLength={1200} rows={9} />
-            <Hint>Cada renglón es un párrafo. Conviene 2 o 3 párrafos cortos. {body.length}/1200</Hint>
+            <Textarea id="body" value={body} onChange={(event) => setBody(event.target.value)} maxLength={1200} rows={9} aria-describedby="body-hint" />
+            <div id="body-hint">
+              <Hint>
+                Cada renglón (Enter) es un párrafo. Conviene 2 o 3 párrafos cortos. {body.length}/1200
+              </Hint>
+            </div>
           </div>
-          <div className="mt-auto flex justify-end">
-            <Button onClick={save} disabled={pending || !dirty || !headline.trim() || !body.trim()}>
-              {pending ? (
-                <>
-                  <Spinner /> Guardando…
-                </>
-              ) : (
-                "Guardar"
-              )}
+          <div className="mt-auto flex flex-wrap items-center justify-end gap-3">
+            <SaveNote dirty={dirty && saved} missing={!headline.trim() ? "Falta el título." : !body.trim() ? "Falta la historia." : null} />
+            <Button onClick={save} disabled={!dirty || !headline.trim() || !body.trim()} loading={pending} loadingText="Guardando…">
+              Guardar
             </Button>
           </div>
         </Card>
 
         <Card className="p-5 sm:p-6">
-          <h2 className="font-bold text-ink">Vista previa</h2>
+          <h3 className="font-bold text-ink">Vista previa</h3>
           <div className="mt-4 overflow-hidden rounded-xl bg-sidebar px-5 py-8 text-center text-white">
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300">Nosotros</p>
             <p className="mt-2 text-balance text-xl font-extrabold leading-tight">{headline || "Título"}</p>

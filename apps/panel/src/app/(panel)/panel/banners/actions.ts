@@ -19,14 +19,18 @@ export async function saveBanner(formData: FormData): Promise<ActionResult> {
   const { key, title, text, image, imageMobile, url, active } = parsed.data;
   const data = { title, text, image, imageMobile, url, active: active === "on" };
 
+  let imageChanged = true;
   try {
+    const current = await prisma.banner.findUnique({ where: { key }, select: { image: true, imageMobile: true } });
+    if (current) imageChanged = current.image !== data.image || (Boolean(data.imageMobile) && current.imageMobile !== data.imageMobile);
     await prisma.banner.upsert({ where: { key }, create: { key, ...data }, update: data });
   } catch (error) {
     console.error("No se pudo guardar el banner", error);
     return fail("No se pudo guardar el banner.");
   }
 
-  await revalidateWeb("images");
+  // Precalienta sólo si se cargó o cambió una imagen.
+  revalidateWeb("images", { warm: imageChanged });
   revalidatePath("/panel/banners");
   return ok(data.active ? "Banner guardado." : "Banner guardado y oculto en la web.");
 }

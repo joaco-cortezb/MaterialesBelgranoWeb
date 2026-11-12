@@ -9,6 +9,7 @@ import { GoogleTagManager } from "@/components/analytics/GoogleTagManager";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { storeSchema, websiteSchema } from "@/lib/structured-data";
 import { siteUrl } from "@/lib/site-url";
+import { BASE_OPEN_GRAPH } from "@/lib/metadata";
 import { env } from "@/lib/env";
 
 /**
@@ -27,7 +28,8 @@ const montserrat = Montserrat({
 const barlow = Barlow_Condensed({
   variable: "--font-barlow",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  // Sólo los pesos que se usan (semibold y bold): el 500 no aparece en ningún lado.
+  weight: ["600", "700"],
   display: "swap",
 });
 
@@ -39,12 +41,7 @@ export const metadata: Metadata = {
   },
   description: SITE.description,
   applicationName: SITE.name,
-  openGraph: {
-    type: "website",
-    siteName: SITE.name,
-    locale: "es_AR",
-    images: [{ url: "/og-materiales-belgrano.jpg", width: 1200, height: 630, alt: `${SITE.name} · ${SITE.tagline}` }],
-  },
+  openGraph: BASE_OPEN_GRAPH,
   twitter: { card: "summary_large_image" },
   robots: {
     index: true,

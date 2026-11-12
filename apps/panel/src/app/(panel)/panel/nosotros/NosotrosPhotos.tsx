@@ -52,7 +52,7 @@ function PhotoCard({ slot, value, canManage }: { slot: ImageSlotDefinition; valu
     <Card className="flex h-full flex-col p-5">
       <div className="flex min-h-7 items-center justify-between gap-3">
         <h3 className="font-bold text-ink">{slot.label}</h3>
-        {pending && <Spinner className="text-brand-700" />}
+        {pending && <Spinner className="text-brand-700" label="Guardando" />}
       </div>
       <div className="mt-3">
         {canManage ? (
@@ -64,9 +64,10 @@ function PhotoCard({ slot, value, canManage }: { slot: ImageSlotDefinition; valu
             recommended={slot.recommended}
             fallbackSrc={slot.fallback || undefined}
             compactHint
+            removeMessage="En la web vuelve a verse la foto por defecto. Podés subir otra cuando quieras."
           />
         ) : (
-          <p className="text-sm text-ink-soft">Sólo lectura.</p>
+          <p className="text-sm text-ink-soft">Tu usuario no puede cambiar esta foto. Pedíselo a un administrador.</p>
         )}
       </div>
     </Card>

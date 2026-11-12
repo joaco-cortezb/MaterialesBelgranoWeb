@@ -28,7 +28,7 @@ export async function saveHomeVideo(formData: FormData): Promise<ActionResult> {
     return fail("No se pudo guardar el video.");
   }
 
-  await revalidateWeb("settings");
+  revalidateWeb("settings");
   revalidatePath("/panel/inicio");
   return ok(parsed.data.videoUrl ? "Video guardado." : "Video quitado del inicio.");
 }

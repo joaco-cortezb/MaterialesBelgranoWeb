@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default function NotFound() {
   return (
     <section className="py-24 sm:py-32">
-      <Container className="max-w-2xl text-center">
+      <Container width="text" className="text-center">
         <Eyebrow className="mb-3">Error 404</Eyebrow>
         <h1 className="text-balance text-4xl font-extrabold tracking-tight text-ink-dark sm:text-5xl">Esta página no existe o se movió.</h1>
         <p className="mt-4 text-pretty text-lg text-ink-soft">

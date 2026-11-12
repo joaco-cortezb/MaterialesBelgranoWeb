@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
-import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, PageHeader, Select, Switch } from "@/components/ui";
+import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, LoadErrorNotice, PageHeader, Select, Switch, scrollIntoViewGently } from "@/components/ui";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
@@ -23,7 +23,7 @@ export type CategoryOption = { slug: string; name: string };
 
 const EMPTY: BrandDTO = { id: "", name: "", logo: "", catalogUrl: "", rubroSlug: "", active: true };
 
-export function BrandsBoard({ brands, categories }: { brands: BrandDTO[]; categories: CategoryOption[] }) {
+export function BrandsBoard({ brands, categories, loadError = false }: { brands: BrandDTO[]; categories: CategoryOption[]; loadError?: boolean }) {
   const [editing, setEditing] = useState<BrandDTO | null>(null);
   const [deleting, setDeleting] = useState<BrandDTO | null>(null);
   const [pending, startTransition] = useTransition();
@@ -49,6 +49,8 @@ export function BrandsBoard({ brands, categories }: { brands: BrandDTO[]; catego
         </Button>
       </PageHeader>
 
+      {loadError && <LoadErrorNotice what="las marcas" />}
+
       {editing && (
         <BrandForm
           categories={categories}
@@ -61,7 +63,7 @@ export function BrandsBoard({ brands, categories }: { brands: BrandDTO[]; catego
       )}
 
       {brands.length === 0 ? (
-        <EmptyState title="Todavía no hay marcas" hint="Cargá la primera con el botón de arriba." />
+        !loadError && <EmptyState title="Todavía no hay marcas" hint="Cargá la primera con “Nueva marca”." />
       ) : (
         <ul className="space-y-3">
           {brands.map((brand, index) => (
@@ -93,10 +95,10 @@ export function BrandsBoard({ brands, categories }: { brands: BrandDTO[]; catego
                     <IconButton label="Bajar" disabled={pending || index === brands.length - 1} onClick={() => run(() => reorderBrand(brand.id, 1))}>
                       <ArrowDown className="h-4 w-4" />
                     </IconButton>
-                    <IconButton label="Editar" onClick={() => setEditing(brand)}>
+                    <IconButton label={`Editar ${brand.name}`} disabled={pending} onClick={() => setEditing(brand)}>
                       <Pencil className="h-4 w-4" />
                     </IconButton>
-                    <IconButton label="Eliminar" onClick={() => setDeleting(brand)} className="hover:text-[var(--color-danger)]">
+                    <IconButton label={`Eliminar ${brand.name}`} disabled={pending} onClick={() => setDeleting(brand)} className="hover:text-[var(--color-danger)]">
                       <Trash2 className="h-4 w-4" />
                     </IconButton>
                   </div>
@@ -140,7 +142,7 @@ function BrandForm({
 
   // El formulario se abre arriba de la lista: se lleva a la vista al abrirlo.
   useEffect(() => {
-    cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    scrollIntoViewGently(cardRef.current);
   }, []);
 
   return (
@@ -157,8 +159,8 @@ function BrandForm({
       >
         <div>
           <Label>Logo</Label>
-          <ImageUploadField value={logo} onChange={setLogo} folder="brands" label="logo" recommended={[800, 267]} objectFit="contain" />
-          <Hint>800 px de ancho, fondo transparente (PNG o WEBP).</Hint>
+          <ImageUploadField value={logo} onChange={setLogo} folder="brands" label="logo" recommended={[800, 267]} objectFit="contain" compactHint />
+          <Hint>Ideal en PNG o WEBP con fondo transparente. Sin logo, la tarjeta muestra el nombre y la marca no entra en la cinta de logos del inicio.</Hint>
         </div>
         <div className="space-y-4">
           <div>
@@ -166,9 +168,9 @@ function BrandForm({
             <Input id="name" name="name" defaultValue={brand.name} required maxLength={120} autoFocus />
           </div>
           <div>
-            <Label htmlFor="catalogUrl">URL del catálogo</Label>
+            <Label htmlFor="catalogUrl">Link del catálogo</Label>
             <Input id="catalogUrl" name="catalogUrl" type="url" inputMode="url" placeholder="https://" defaultValue={brand.catalogUrl} required />
-            <Hint>Se abre en una pestaña nueva desde la web. Tiene que empezar con https://</Hint>
+            <Hint>La dirección completa, copiada del navegador (empieza con https://). Se abre en otra pestaña.</Hint>
           </div>
           <div>
             <Label htmlFor="rubroSlug">Solución</Label>

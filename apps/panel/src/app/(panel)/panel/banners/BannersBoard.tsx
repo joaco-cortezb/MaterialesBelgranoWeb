@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { BANNER_CONFIG, BANNER_MOBILE_SIZE, BANNER_SIZE, type BannerKey } from "@mb/shared";
-import { Button, Card, Hint, Input, Label, PageHeader, Switch } from "@/components/ui";
+import { Button, Card, Hint, Input, Label, LoadErrorNotice, PageHeader, SaveNote, Switch } from "@/components/ui";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
 import { saveBanner } from "./actions";
@@ -18,13 +18,14 @@ export type BannerDTO = {
   saved: boolean;
 };
 
-export function BannersBoard({ banners }: { banners: BannerDTO[] }) {
+export function BannersBoard({ banners, loadError = false }: { banners: BannerDTO[]; loadError?: boolean }) {
   return (
     <div>
       <PageHeader
         title="Banners"
         subtitle={`Cada banner es sólo imagen (el texto va en el diseño): una de ${BANNER_SIZE[0]} × ${BANNER_SIZE[1]} px para computadora y otra de ${BANNER_MOBILE_SIZE[0]} × ${BANNER_MOBILE_SIZE[1]} px para celular. Si les cargás un link, todo el banner es clickeable.`}
       />
+      {loadError && <LoadErrorNotice what="los banners" />}
       <div className="grid gap-5">
         {banners.map((banner) => (
           <BannerCard key={banner.key} banner={banner} />
@@ -45,6 +46,8 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
   const toast = useToast();
   const dirty =
     !banner.saved || title !== banner.title || image !== banner.image || imageMobile !== banner.imageMobile || url !== banner.url || active !== banner.active;
+  // El botón se deshabilita si falta algo: se dice qué, para no dejar adivinando.
+  const missing = !image ? "Falta la imagen de computadora." : !imageMobile ? "Falta la imagen de celular." : !title.trim() ? "Falta completar “Qué dice el banner”." : null;
 
   function save() {
     const formData = new FormData();
@@ -69,9 +72,7 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
           <h2 className="font-bold text-ink">{config.label}</h2>
           <p className="mt-0.5 text-xs text-ink-soft">{config.hint}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Switch checked={active} onChange={setActive} label="Mostrar en la web" text={active ? "Visible" : "Oculto"} />
-        </div>
+        <Switch checked={active} onChange={setActive} label={`Mostrar ${config.label.toLowerCase()} en la web`} text={active ? "Visible" : "Oculto"} />
       </div>
 
       {/* 3fr + 1fr con 4:1 y 4:3 dan exactamente el mismo alto: quedan alineadas. */}
@@ -90,7 +91,7 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
         <div>
           <Label htmlFor={`title-${banner.key}`}>Qué dice el banner</Label>
           <Input id={`title-${banner.key}`} value={title} onChange={(event) => setTitle(event.target.value)} maxLength={200} />
-          <Hint>Lo leen Google y los lectores de pantalla.</Hint>
+          <Hint>Escribí el texto que tiene la imagen: lo leen Google y los lectores de pantalla.</Hint>
         </div>
         <div>
           <Label htmlFor={`url-${banner.key}`}>Link (opcional)</Label>
@@ -106,8 +107,9 @@ function BannerCard({ banner }: { banner: BannerDTO }) {
         </div>
       </div>
 
-      <div className="mt-5 flex justify-end border-t border-line pt-4">
-        <Button onClick={save} loading={pending} loadingText="Guardando…" disabled={!dirty || !title.trim() || !image || !imageMobile}>
+      <div className="mt-5 flex flex-wrap items-center justify-end gap-3 border-t border-line pt-4">
+        <SaveNote dirty={dirty && banner.saved} missing={dirty ? missing : null} />
+        <Button onClick={save} loading={pending} loadingText="Guardando…" disabled={!dirty || Boolean(missing)}>
           Guardar
         </Button>
       </div>

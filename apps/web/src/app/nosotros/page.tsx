@@ -9,13 +9,14 @@ import { PageBanner } from "@/components/sections/PageBanner";
 import { ContactSection } from "@/components/contact/ContactSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/structured-data";
+import { BASE_OPEN_GRAPH } from "@/lib/metadata";
 import { getAboutContent, getDefaultWhatsapp, getHeroSlides, getImageSlots, getWhatsappNumbers } from "@/lib/cms";
 
 export const metadata: Metadata = {
   title: "Nosotros y contacto",
   description: `Casi 10 años como casa de materiales eléctricos e iluminación en ${SITE.address.singleLine}. Salón moderno, depósito con stock permanente, equipo joven. Horarios, WhatsApp y mapa.`,
   alternates: { canonical: ROUTES.nosotros },
-  openGraph: { title: `Nosotros y contacto | ${SITE.name}`, url: ROUTES.nosotros },
+  openGraph: { ...BASE_OPEN_GRAPH, title: `Nosotros y contacto | ${SITE.name}`, url: ROUTES.nosotros },
 };
 
 const GALLERY = [
@@ -47,7 +48,7 @@ export default async function NosotrosPage() {
 
       {/* Historia: poco texto, centrado, con tres datos que la resumen. */}
       <section className="py-16 sm:py-24">
-        <Container className="max-w-3xl text-center">
+        <Container width="text" className="text-center">
           <Eyebrow>Nuestra historia</Eyebrow>
           <div className="mt-5 space-y-4 text-pretty text-lg leading-relaxed text-ink sm:text-xl">
             {about.body.map((paragraph) => (

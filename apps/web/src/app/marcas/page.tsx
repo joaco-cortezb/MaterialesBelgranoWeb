@@ -5,6 +5,7 @@ import { BrandsExplorer } from "@/components/brands/BrandsExplorer";
 import { PageBanner } from "@/components/sections/PageBanner";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/structured-data";
+import { BASE_OPEN_GRAPH } from "@/lib/metadata";
 import { getBanner, getBrands, getCategories, getHeroSlides } from "@/lib/cms";
 import { HomeBanner } from "@/components/sections/HomeBanner";
 
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   description:
     "Marcas de materiales eléctricos e iluminación que trabaja Materiales Belgrano en Mendoza: Schneider Electric, Kalop, Genrod, Macroled, Leuk, Chint, Uniview y más. Catálogos oficiales.",
   alternates: { canonical: ROUTES.marcas },
-  openGraph: { title: `Marcas | ${SITE.name}`, url: ROUTES.marcas },
+  openGraph: { ...BASE_OPEN_GRAPH, title: `Marcas | ${SITE.name}`, url: ROUTES.marcas },
 };
 
 export default async function MarcasPage() {

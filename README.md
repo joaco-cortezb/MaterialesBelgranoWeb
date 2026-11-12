@@ -15,7 +15,7 @@ packages/
 
 - **La web** renderiza estático. Todo lo administrable pasa por `apps/web/src/lib/cms.ts` (`unstable_cache` con tags `brands`, `images`, `whatsapp`, `settings` y TTL de respaldo de 1 h).
 - **El panel** escribe con Prisma y, después de cada cambio, hace `POST {web}/api/revalidate` con `Authorization: Bearer REVALIDATE_SECRET` y `{ "tag": "..." }`. La web invalida el tag y las rutas que lo usan. No hay redeploy.
-- **WhatsApp**: todos los CTA apuntan a `/go/whatsapp/<origen>`. Esa ruta registra el clic en `WhatsappClick` (service role, sin IP: hash irreversible) y redirige a `wa.me` con el mensaje precargado del número + el origen. El panel muestra el contador por origen. Además, cada clic dispara `whatsapp_click` al `dataLayer` (GA4 vía GTM, pendiente de configurar).
+- **WhatsApp**: todos los CTA apuntan a `/go/whatsapp/<origen>`. Esa ruta registra el clic en `WhatsappClick` (con la anon key, que sólo tiene permiso de INSERT por RLS; sin IP: hash irreversible) y redirige a `wa.me` con el mensaje precargado del número + el origen. El panel muestra el contador por origen. Además, cada clic dispara `whatsapp_click` al `dataLayer` (GA4 vía GTM, pendiente de configurar).
 - **Rubros y servicios** viven en código (`packages/shared/src/config/`): son las páginas SEO/GEO/AEO. El panel administra sus imágenes y las marcas asociadas.
 - **Seguridad**: RLS en todas las tablas (`anon` sólo `SELECT` sobre lo activo), CSP por directiva, rate limit (Upstash si está configurado, memoria si no), login con límite por IP y por email, acceso al panel sólo con fila en `Profile`, uploads validados por MIME + contenido y convertidos a WebP.
 
@@ -65,7 +65,7 @@ pnpm build
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | URL del proyecto | Supabase → Settings → API |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | anon key (lectura con RLS) | Supabase → Settings → API |
-| `SUPABASE_SERVICE_ROLE_KEY` | sólo server: registra clics a WhatsApp | Supabase → Settings → API (secret) |
+| `CLICK_HASH_SALT` | sólo server: sal del hash anónimo de los clics a WhatsApp (los clics se insertan con la anon key) | `openssl rand -hex 32` |
 | `NEXT_PUBLIC_SITE_URL` | URL canónica (metadata, sitemap, JSON-LD) | el dominio final |
 | `REVALIDATE_SECRET` | Bearer del webhook `/api/revalidate` | `openssl rand -hex 32`; el mismo en el panel |
 | `UPSTASH_REDIS_REST_URL` / `_TOKEN` | rate limit distribuido (opcional) | Upstash |
@@ -104,6 +104,6 @@ Para pasar a producción con el dominio final: apuntar `materialesbelgrano.com` 
 ## Contenido
 
 - Datos del negocio y `TODO` pendientes del cliente: `packages/shared/src/config/site.ts`.
-- Rubros (texto, subcategorías, FAQ, mensaje de WhatsApp): `packages/shared/src/config/rubros.ts`.
+- Soluciones (texto, subcategorías, FAQ, mensaje de WhatsApp): se editan en el panel y viven en la base. `packages/shared/src/config/rubros.ts` es sólo el contenido inicial (seed) y el respaldo si la base falla.
 - Servicios: `packages/shared/src/config/servicios.ts`.
 - Slots de imagen y fallbacks: `packages/shared/src/config/image-slots.ts` y [IMAGENES.md](IMAGENES.md).

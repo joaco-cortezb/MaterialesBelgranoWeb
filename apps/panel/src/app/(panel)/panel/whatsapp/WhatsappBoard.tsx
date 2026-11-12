@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { MousePointerClick } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa6";
 import { formatWhatsappPhone, normalizeWhatsappPhone, type WhatsappAudience } from "@mb/shared";
-import { Badge, Button, Card, Hint, Input, Label, Spinner, Switch, Textarea } from "@/components/ui";
+import { Badge, Button, Card, Hint, Input, Label, SaveNote, Switch, Textarea } from "@/components/ui";
 import { useToast } from "@/components/ui/Toast";
 import { saveWhatsappSlot } from "./actions";
 
@@ -76,7 +76,7 @@ function SlotCard({ audience, slot, canManage }: { audience: WhatsappAudience; s
             <FaWhatsapp className="h-6 w-6" />
           </span>
           <div>
-            <h2 className="text-lg font-bold text-ink">{info.title}</h2>
+            <h3 className="text-lg font-bold text-ink">{info.title}</h3>
             <p className="text-sm text-ink-soft">{info.where}</p>
           </div>
         </div>
@@ -85,7 +85,7 @@ function SlotCard({ audience, slot, canManage }: { audience: WhatsappAudience; s
             <Badge tone="green">Siempre visible</Badge>
           </span>
         ) : (
-          <Switch checked={active} onChange={setActive} disabled={!canManage || pending} label={active ? "Visible en la web" : "Oculto en la web"} />
+          <Switch checked={active} onChange={setActive} disabled={!canManage || pending} label={`Mostrar ${info.title} en la web`} text={active ? "Visible" : "Oculto"} />
         )}
       </div>
 
@@ -104,12 +104,15 @@ function SlotCard({ audience, slot, canManage }: { audience: WhatsappAudience; s
             placeholder="54 9 261 533 0777"
             disabled={!canManage}
             aria-invalid={phone !== "" && !phoneValid}
+            aria-describedby={`phone-hint-${audience}`}
           />
         </div>
       </div>
-      <Hint>
-        {phone && phoneValid ? `Se va a ver como ${formatWhatsappPhone(normalized)}.` : "Con código de país y el 9: 54 9 261 533 0777 (sin 0 ni 15)."}
-      </Hint>
+      <div id={`phone-hint-${audience}`}>
+        <Hint>
+          {phone && phoneValid ? `Se va a ver como ${formatWhatsappPhone(normalized)}.` : "Con código de país y el 9: 54 9 261 533 0777 (sin 0 ni 15)."}
+        </Hint>
+      </div>
 
       <div className="mt-4">
         <Label htmlFor={`message-${audience}`}>Mensaje precargado</Label>
@@ -125,20 +128,22 @@ function SlotCard({ audience, slot, canManage }: { audience: WhatsappAudience; s
         <Hint>Lo que aparece escrito al abrir el chat. La web le agrega desde qué página se escribió.</Hint>
       </div>
 
-      <div className="mt-5 flex items-center justify-between gap-3 border-t border-line pt-4">
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
         <span className="inline-flex items-center gap-2 text-sm text-ink-soft">
-          <MousePointerClick className="h-4 w-4" /> {slot.clicks30} clics en los últimos 30 días
+          <MousePointerClick className="h-4 w-4" aria-hidden="true" /> {slot.clicks30} {slot.clicks30 === 1 ? "clic" : "clics"} en los últimos 30 días
         </span>
-        {canManage && (
-          <Button onClick={save} disabled={pending || !dirty || !label.trim() || !phoneValid}>
-            {pending ? (
-              <>
-                <Spinner /> Guardando…
-              </>
-            ) : (
-              "Guardar"
-            )}
-          </Button>
+        {canManage ? (
+          <div className="flex flex-wrap items-center justify-end gap-3">
+            <SaveNote
+              dirty={dirty && slot.saved}
+              missing={dirty ? (!label.trim() ? "Falta el nombre." : !phoneValid ? "Revisá el número." : null) : null}
+            />
+            <Button onClick={save} disabled={!dirty || !label.trim() || !phoneValid} loading={pending} loadingText="Guardando…">
+              Guardar
+            </Button>
+          </div>
+        ) : (
+          <p className="text-xs text-ink-soft">Sólo un administrador puede cambiar los números.</p>
         )}
       </div>
     </Card>

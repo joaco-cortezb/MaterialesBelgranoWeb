@@ -5,7 +5,7 @@ import { brandSchema, slugify } from "@mb/shared";
 import { prisma } from "@/lib/prisma";
 import { requireSection } from "@/lib/auth";
 import { revalidateWeb } from "@/lib/revalidate";
-import { assertConfigured, assertMutationAllowed, attempt, fail, firstIssue, moveInList, ok, type ActionResult } from "@/lib/actions";
+import { assertConfigured, assertMutationAllowed, attempt, fail, firstIssue, ok, reorderChanges, type ActionResult } from "@/lib/actions";
 
 const PATH = "/panel/marcas";
 
@@ -18,8 +18,9 @@ async function guard(): Promise<ActionResult | null> {
   return null;
 }
 
-async function finish(message?: string): Promise<ActionResult> {
-  await revalidateWeb("brands");
+/** `warm`: sólo si se cargó o cambió un logo (la web precalienta las imágenes). */
+async function finish(message?: string, warm = false): Promise<ActionResult> {
+  revalidateWeb("brands", { warm });
   revalidatePath(PATH);
   return ok(message);
 }
@@ -42,8 +43,11 @@ export async function saveBrand(id: string, formData: FormData): Promise<ActionR
     active: d.active === "on",
   };
 
+  let logoChanged = Boolean(data.logo);
   try {
     if (id) {
+      const current = await prisma.brand.findUnique({ where: { id }, select: { logo: true } });
+      logoChanged = Boolean(data.logo) && data.logo !== current?.logo;
       await prisma.brand.update({ where: { id }, data });
     } else {
       const base = slugify(d.name) || "marca";
@@ -56,7 +60,7 @@ export async function saveBrand(id: string, formData: FormData): Promise<ActionR
     console.error("No se pudo guardar la marca", error);
     return fail("No se pudo guardar la marca.");
   }
-  return finish("Marca guardada.");
+  return finish("Marca guardada.", logoChanged);
 }
 
 export async function deleteBrand(id: string): Promise<ActionResult> {
@@ -79,11 +83,11 @@ export async function reorderBrand(id: string, dir: -1 | 1): Promise<ActionResul
   const blocked = await guard();
   if (blocked) return blocked;
 
-  const items = await prisma.brand.findMany({ orderBy: [{ order: "asc" }, { createdAt: "asc" }], select: { id: true } });
-  const ids = moveInList(items.map((item) => item.id), id, dir);
-  if (!ids) return ok();
+  const items = await prisma.brand.findMany({ orderBy: [{ order: "asc" }, { createdAt: "asc" }], select: { id: true, order: true } });
+  const changes = reorderChanges(items, id, dir);
+  if (!changes?.length) return ok();
   const failed = await attempt(
-    () => prisma.$transaction(ids.map((brandId, order) => prisma.brand.update({ where: { id: brandId }, data: { order } }))),
+    () => prisma.$transaction(changes.map((change) => prisma.brand.update({ where: { id: change.id }, data: { order: change.order } }))),
     "No se pudo cambiar el orden.",
   );
   if (failed) return failed;

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button, ErrorBox, Hint, Input, Label, Spinner } from "@/components/ui";
+import { Button, ErrorBox, Hint, Label, PasswordInput } from "@/components/ui";
 import { updatePassword } from "./actions";
 
 export function ResetForm() {
@@ -14,6 +15,11 @@ export function ResetForm() {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    // Se avisa antes de ir al servidor: es el error más común y el más fácil de corregir.
+    if (password !== confirm) {
+      setError("Las contraseñas no coinciden. Escribí la misma en los dos campos.");
+      return;
+    }
     setError(null);
     setLoading(true);
     try {
@@ -38,23 +44,35 @@ export function ResetForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <Label htmlFor="password">Contraseña nueva</Label>
-        <Input id="password" type="password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={10} autoFocus />
-        <Hint>Mínimo 10 caracteres. No puede ser una contraseña que haya aparecido en filtraciones públicas.</Hint>
+        <PasswordInput
+          id="password"
+          autoComplete="new-password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          required
+          minLength={10}
+          autoFocus
+          aria-describedby="password-hint"
+        />
+        <div id="password-hint">
+          <Hint>Mínimo 10 caracteres y sin tu email adentro. Las contraseñas muy usadas (como “1234567890”) se rechazan.</Hint>
+        </div>
       </div>
       <div>
         <Label htmlFor="confirm">Repetir contraseña</Label>
-        <Input id="confirm" type="password" autoComplete="new-password" value={confirm} onChange={(event) => setConfirm(event.target.value)} required />
+        <PasswordInput id="confirm" autoComplete="new-password" value={confirm} onChange={(event) => setConfirm(event.target.value)} required />
       </div>
       {error && <ErrorBox>{error}</ErrorBox>}
-      <Button type="submit" size="lg" className="w-full" disabled={loading}>
-        {loading ? (
-          <>
-            <Spinner /> Guardando…
-          </>
-        ) : (
-          "Guardar y entrar"
-        )}
+      <Button type="submit" size="lg" className="w-full" loading={loading} loadingText="Guardando…">
+        Guardar y entrar
       </Button>
+      <p className="pt-1 text-center text-xs leading-relaxed text-ink-soft">
+        ¿El enlace venció? Pedile uno nuevo a un administrador o{" "}
+        <Link href="/login" className="font-semibold text-brand-700 underline-offset-2 hover:underline">
+          volvé a iniciar sesión
+        </Link>
+        .
+      </p>
     </form>
   );
 }

@@ -14,6 +14,7 @@ export default async function PortadaPage({ searchParams }: { searchParams: Prom
   let heroTitle = DEFAULT_HOME_HERO_TITLE;
   // Sin nada guardado se precarga lo que hoy muestra la web.
   let heroText = DEFAULT_HOME_HERO_TEXT;
+  let loadError = false;
   try {
     const [rows, settings] = await Promise.all([
       prisma.heroSlide.findMany({
@@ -29,12 +30,14 @@ export default async function PortadaPage({ searchParams }: { searchParams: Prom
     if (typeof text === "string") heroText = text;
   } catch (error) {
     console.error("No se pudieron leer las portadas", error);
+    loadError = true;
   }
 
   return (
     <HeroSlidesBoard
       slides={slides}
       initialPage={initialPage}
+      loadError={loadError}
       heroText={{ title: heroTitle, text: heroText, defaultTitle: DEFAULT_HOME_HERO_TITLE }}
     />
   );

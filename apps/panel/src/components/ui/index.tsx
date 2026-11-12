@@ -1,6 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ── Button ───────────────────────────────────────────────────
@@ -16,13 +16,14 @@ const VARIANTS: Record<Variant, string> = {
 };
 
 const SIZES: Record<Size, string> = {
-  sm: "min-h-9 text-[13px] px-3 py-1.5 rounded-lg gap-1.5",
+  // En pantallas táctiles el chico también llega a 44 px de alto.
+  sm: "min-h-9 pointer-coarse:min-h-11 text-[13px] px-3 py-1.5 rounded-lg gap-1.5",
   md: "min-h-11 text-sm px-4 py-2.5 rounded-xl gap-2",
   lg: "min-h-12 text-[15px] px-5 py-3 rounded-xl gap-2",
 };
 
 const BASE =
-  "inline-flex items-center justify-center font-semibold transition-[transform,background-color,filter] duration-150 select-none disabled:cursor-not-allowed active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-1";
+  "inline-flex items-center justify-center font-semibold transition-[scale,color,background-color,border-color,filter] duration-150 select-none disabled:cursor-not-allowed active:scale-[0.97] disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-1";
 
 type ButtonProps = React.ComponentProps<"button"> & {
   variant?: Variant;
@@ -64,7 +65,7 @@ export function BackButton({ className, children, ...props }: React.ComponentPro
   );
 }
 
-/** Botón sólo-icono, cuadrado (44 px en touch). */
+/** Botón sólo-icono, cuadrado (40 px con mouse, 44 px en pantallas táctiles). */
 export function IconButton({ className, label, ...props }: React.ComponentProps<"button"> & { label: string }) {
   return (
     <button
@@ -72,12 +73,19 @@ export function IconButton({ className, label, ...props }: React.ComponentProps<
       aria-label={label}
       title={label}
       className={cn(
-        "inline-flex h-10 w-10 items-center justify-center rounded-lg border border-line bg-surface text-ink-soft transition-colors hover:border-brand-300 hover:bg-surface-2 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40 active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60",
+        "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-line bg-surface text-ink-soft transition-[scale,color,background-color,border-color] duration-150 pointer-coarse:h-11 pointer-coarse:w-11 hover:border-brand-300 hover:bg-surface-2 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40 active:scale-[0.96] disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60",
         className,
       )}
       {...props}
     />
   );
+}
+
+/** Lleva un elemento a la vista (sin animar si la persona pidió menos movimiento). */
+export function scrollIntoViewGently(element: HTMLElement | null) {
+  if (!element) return;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  element.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
 }
 
 // ── Card ─────────────────────────────────────────────────────
@@ -112,6 +120,26 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, React.ComponentPro
   return <textarea ref={ref} rows={4} className={cn(FIELD, "resize-none leading-relaxed [field-sizing:fixed]", className)} {...props} />;
 });
 
+/** Contraseña con botón para mostrarla (ayuda a no equivocarse desde el celular). */
+export const PasswordInput = React.forwardRef<HTMLInputElement, Omit<React.ComponentProps<"input">, "type">>(function PasswordInput({ className, ...props }, ref) {
+  const [visible, setVisible] = React.useState(false);
+  return (
+    <div className="relative">
+      <input ref={ref} type={visible ? "text" : "password"} className={cn(FIELD, "h-11 pr-12", className)} {...props} />
+      <button
+        type="button"
+        onClick={() => setVisible((value) => !value)}
+        aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
+        aria-pressed={visible}
+        title={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
+        className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-xl text-ink-soft transition-colors duration-150 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500/60"
+      >
+        {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
+    </div>
+  );
+});
+
 export function Select({ className, children, ...props }: React.ComponentProps<"select">) {
   return (
     <select className={cn(FIELD, "h-11 appearance-none bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23646464%22 stroke-width=%222%22><path d=%22m6 9 6 6 6-6%22/></svg>')] bg-[length:16px] bg-[right_12px_center] bg-no-repeat pr-10", className)} {...props}>
@@ -134,7 +162,8 @@ export function Switch({
   /** Texto visible al lado del interruptor (si falta, sólo se anuncia `label`). */
   text?: string;
 }) {
-  const control = (
+  // Con texto, todo el conjunto (interruptor + texto) es el área para tocar.
+  return (
     <button
       type="button"
       role="switch"
@@ -143,19 +172,26 @@ export function Switch({
       disabled={disabled}
       onClick={() => onChange(!checked)}
       className={cn(
-        "relative inline-flex h-7 w-12 shrink-0 items-center rounded-full ring-1 ring-inset ring-line transition-colors disabled:opacity-50",
-        checked ? "bg-brand" : "bg-surface-2",
+        "group/switch inline-flex shrink-0 items-center gap-2 rounded-full text-sm font-semibold text-ink disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-2",
+        "pointer-coarse:min-h-11",
       )}
     >
-      <span className={cn("inline-block h-6 w-6 rounded-full bg-surface shadow transition-transform duration-150", checked ? "translate-x-[22px]" : "translate-x-0.5")} />
+      <span
+        aria-hidden="true"
+        className={cn(
+          "relative inline-flex h-7 w-12 shrink-0 items-center rounded-full ring-1 ring-inset ring-line transition-colors duration-150",
+          checked ? "bg-brand" : "bg-surface-2",
+        )}
+      >
+        <span
+          className={cn(
+            "inline-block h-6 w-6 rounded-full bg-surface shadow transition-transform duration-150 group-active/switch:scale-95",
+            checked ? "translate-x-[22px]" : "translate-x-0.5",
+          )}
+        />
+      </span>
+      {text && <span aria-hidden="true">{text}</span>}
     </button>
-  );
-  if (!text) return control;
-  return (
-    <span className="inline-flex items-center gap-2 text-sm font-semibold text-ink">
-      {control}
-      <span>{text}</span>
-    </span>
   );
 }
 
@@ -352,12 +388,15 @@ export function FieldsSkeleton({ fields = 2 }: { fields?: number }) {
   );
 }
 
-export function Spinner({ className }: { className?: string }) {
+/**
+ * Sólo se anuncia a lectores de pantalla si recibe `label`; dentro de botones
+ * (que ya tienen `aria-busy` y texto) va oculto para no repetir.
+ */
+export function Spinner({ className, label }: { className?: string; label?: string }) {
   return (
     <span
       className={cn("inline-block h-4 w-4 shrink-0 animate-spin-smooth rounded-full border-2 border-current border-r-transparent", className)}
-      role="status"
-      aria-label="Cargando"
+      {...(label ? { role: "status", "aria-label": label } : { "aria-hidden": true })}
     />
   );
 }
@@ -377,5 +416,32 @@ export function SuccessBox({ children }: { children: React.ReactNode }) {
     <div role="status" className="rounded-xl border border-[var(--color-success)]/25 bg-[var(--color-success-bg)] px-4 py-3 text-sm font-medium text-[var(--color-success)]">
       {children}
     </div>
+  );
+}
+
+/** Aviso cuando la página no pudo leer los datos: evita que una lista vacía parezca real. */
+export function LoadErrorNotice({ what }: { what: string }) {
+  return (
+    <div role="alert" className="mb-6 flex items-start gap-3 rounded-xl border border-[var(--color-warning)]/25 bg-[var(--color-warning-bg)] px-4 py-3 text-sm text-[var(--color-warning)]">
+      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+      <p>
+        <span className="font-semibold">No se pudieron cargar {what}.</span> Lo que ves puede estar incompleto: recargá la página antes de cambiar algo. Si sigue
+        igual, avisale a quien mantiene la web.
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Texto al lado del botón Guardar: avisa que hay cambios sin guardar o, si el
+ * botón está deshabilitado por un dato faltante, explica qué falta.
+ */
+export function SaveNote({ dirty, missing }: { dirty: boolean; missing?: string | null }) {
+  if (missing) return <p className="text-xs font-medium text-ink-soft">{missing}</p>;
+  if (!dirty) return null;
+  return (
+    <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--color-warning)]">
+      <span aria-hidden="true" className="h-2 w-2 rounded-full bg-current" /> Cambios sin guardar
+    </p>
   );
 }

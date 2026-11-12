@@ -36,8 +36,23 @@ import { getSupabaseClient } from "@/lib/supabase";
  *
  * Sin Supabase configurado devuelve vacío: la web compila y se ve con los
  * fallbacks del repo.
+ *
+ * Si Supabase da error, la función cacheada tira (así `unstable_cache` no
+ * guarda el fallback una hora) y `withFallback` lo atrapa afuera del cache:
+ * la próxima visita vuelve a intentar.
  */
 const FALLBACK_TTL_SECONDS = 3600;
+
+function withFallback<T>(read: () => Promise<T>, fallback: () => T, what: string): () => Promise<T> {
+  return async () => {
+    try {
+      return await read();
+    } catch (error) {
+      console.error(`[cms] no se pudieron leer ${what}`, error instanceof Error ? error.message : error);
+      return fallback();
+    }
+  };
+}
 
 /* ── Marcas ──────────────────────────────────────────────────────────────── */
 
@@ -67,7 +82,7 @@ function brandFromRow(row: BrandRow): Brand {
   };
 }
 
-export const getBrands = unstable_cache(
+const readBrands = unstable_cache(
   async (): Promise<Brand[]> => {
     const supabase = getSupabaseClient();
     if (!supabase) return [];
@@ -76,15 +91,14 @@ export const getBrands = unstable_cache(
       .select(BRAND_SELECT)
       .eq("active", true)
       .order("order", { ascending: true });
-    if (error) {
-      console.error("[cms] no se pudieron leer las marcas", error.message);
-      return [];
-    }
+    if (error) throw new Error(error.message);
     return (data as BrandRow[]).map(brandFromRow);
   },
   ["cms-brands"],
   { tags: ["brands"], revalidate: FALLBACK_TTL_SECONDS },
 );
+
+export const getBrands = withFallback(readBrands, (): Brand[] => [], "las marcas");
 
 export async function getBrandsForRubro(rubroSlug: string): Promise<Brand[]> {
   const brands = await getBrands();
@@ -95,20 +109,19 @@ export async function getBrandsForRubro(rubroSlug: string): Promise<Brand[]> {
 
 type ImageSlotRow = { key: string; url: string; alt: string; position: string | null };
 
-const getImageSlotRows = unstable_cache(
+const readImageSlotRows = unstable_cache(
   async (): Promise<ImageSlotRow[]> => {
     const supabase = getSupabaseClient();
     if (!supabase) return [];
     const { data, error } = await supabase.from("ImageSlot").select("key, url, alt, position");
-    if (error) {
-      console.error("[cms] no se pudieron leer los slots de imagen", error.message);
-      return [];
-    }
+    if (error) throw new Error(error.message);
     return data as ImageSlotRow[];
   },
   ["cms-image-slots"],
   { tags: ["images"], revalidate: FALLBACK_TTL_SECONDS },
 );
+
+const getImageSlotRows = withFallback(readImageSlotRows, (): ImageSlotRow[] => [], "los slots de imagen");
 
 /**
  * Imagen de un slot: la cargada en el panel o el fallback del repo. Devuelve
@@ -185,7 +198,7 @@ function categoryFromRow(row: CategoryRow): Category {
  * contenido inicial del repo para que las páginas clave de SEO no se caigan.
  * (Si la base responde vacía es porque se borraron todas: se respeta.)
  */
-export const getCategories = unstable_cache(
+const readCategories = unstable_cache(
   async (): Promise<Category[]> => {
     const supabase = getSupabaseClient();
     if (!supabase) return seedCategories();
@@ -194,15 +207,14 @@ export const getCategories = unstable_cache(
       .select("id, slug, name, summary, description, subcategories, faqs, image, imageAlt, imagePosition, whatsappMessage, seoTitle, seoDescription, order")
       .eq("active", true)
       .order("order", { ascending: true });
-    if (error) {
-      console.error("[cms] no se pudieron leer las soluciones", error.message);
-      return seedCategories();
-    }
+    if (error) throw new Error(error.message);
     return (data as CategoryRow[]).map(categoryFromRow);
   },
   ["cms-categories"],
   { tags: ["categories"], revalidate: FALLBACK_TTL_SECONDS },
 );
+
+export const getCategories = withFallback(readCategories, seedCategories, "las soluciones");
 
 export async function getCategory(slug: string): Promise<Category | undefined> {
   const categories = await getCategories();
@@ -213,7 +225,7 @@ export async function getCategory(slug: string): Promise<Category | undefined> {
 
 type HeroSlideRow = { id: string; page: string; url: string; urlMobile?: string | null; alt: string; position: string | null };
 
-const getHeroSlideRows = unstable_cache(
+const readHeroSlideRows = unstable_cache(
   async (): Promise<HeroSlideRow[]> => {
     const supabase = getSupabaseClient();
     if (!supabase) return [];
@@ -224,15 +236,14 @@ const getHeroSlideRows = unstable_cache(
       .select("*")
       .eq("active", true)
       .order("order", { ascending: true });
-    if (error) {
-      console.error("[cms] no se pudieron leer las fotos de portada", error.message);
-      return [];
-    }
+    if (error) throw new Error(error.message);
     return data as HeroSlideRow[];
   },
   ["cms-hero-slides-v3"],
   { tags: ["images"], revalidate: FALLBACK_TTL_SECONDS },
 );
+
+const getHeroSlideRows = withFallback(readHeroSlideRows, (): HeroSlideRow[] => [], "las fotos de portada");
 
 /** Fotos activas de la portada de una página (vacío = la portada va con fondo oscuro). */
 export async function getHeroSlides(page: HeroPage = "inicio"): Promise<HeroSlide[]> {
@@ -247,20 +258,19 @@ export async function getHeroSlides(page: HeroPage = "inicio"): Promise<HeroSlid
 
 type BannerRow = { key: string; title: string; text: string; image: string; imageMobile: string | null; url: string; active: boolean };
 
-const getBannerRows = unstable_cache(
+const readBannerRows = unstable_cache(
   async (): Promise<BannerRow[]> => {
     const supabase = getSupabaseClient();
     if (!supabase) return [];
     const { data, error } = await supabase.from("Banner").select("key, title, text, image, imageMobile, url, active");
-    if (error) {
-      console.error("[cms] no se pudieron leer los banners", error.message);
-      return [];
-    }
+    if (error) throw new Error(error.message);
     return data as BannerRow[];
   },
   ["cms-banners-v2"],
   { tags: ["images"], revalidate: FALLBACK_TTL_SECONDS },
 );
+
+const getBannerRows = withFallback(readBannerRows, (): BannerRow[] => [], "los banners");
 
 /** Banner de un lugar: el del panel, el por defecto si no hay fila, o `null` si está apagado o sin imagen. */
 export async function getBanner(key: BannerKey): Promise<Banner | null> {
@@ -282,7 +292,7 @@ type WhatsappRow = {
   active: boolean;
 };
 
-export const getWhatsappNumbers = unstable_cache(
+const readWhatsappNumbers = unstable_cache(
   async (): Promise<WhatsappNumber[]> => {
     const supabase = getSupabaseClient();
     if (!supabase) return [];
@@ -291,15 +301,14 @@ export const getWhatsappNumbers = unstable_cache(
       .select("id, label, phone, message, audience, order, active")
       .eq("active", true)
       .order("order", { ascending: true });
-    if (error) {
-      console.error("[cms] no se pudieron leer los números de WhatsApp", error.message);
-      return [];
-    }
+    if (error) throw new Error(error.message);
     return data as WhatsappRow[];
   },
   ["cms-whatsapp"],
   { tags: ["whatsapp"], revalidate: FALLBACK_TTL_SECONDS },
 );
+
+export const getWhatsappNumbers = withFallback(readWhatsappNumbers, (): WhatsappNumber[] => [], "los números de WhatsApp");
 
 /** Número por defecto para los CTA: el primer GENERAL activo, o el fallback del repo. */
 export async function getDefaultWhatsapp(): Promise<WhatsappNumber> {
@@ -321,7 +330,7 @@ export async function getDefaultWhatsapp(): Promise<WhatsappNumber> {
 
 type SettingRow = { key: string; value: unknown };
 
-const getSettings = unstable_cache(
+const readSettings = unstable_cache(
   async (): Promise<Record<string, unknown>> => {
     const supabase = getSupabaseClient();
     if (!supabase) return {};
@@ -329,15 +338,14 @@ const getSettings = unstable_cache(
       .from("Setting")
       .select("key, value")
       .in("key", PUBLIC_SETTING_KEYS as string[]);
-    if (error) {
-      console.error("[cms] no se pudieron leer los settings", error.message);
-      return {};
-    }
+    if (error) throw new Error(error.message);
     return Object.fromEntries((data as SettingRow[]).map((row) => [row.key, row.value]));
   },
   ["cms-settings"],
   { tags: ["settings"], revalidate: FALLBACK_TTL_SECONDS },
 );
+
+const getSettings = withFallback(readSettings, (): Record<string, unknown> => ({}), "los settings");
 
 /** ID del video de YouTube del inicio, o `null` si no hay uno válido cargado. */
 export async function getHomeVideoId(): Promise<string | null> {

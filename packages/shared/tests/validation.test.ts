@@ -14,10 +14,19 @@ test("rutas locales seguras", () => {
 test("imágenes: sólo archivos de la web o el Storage de Supabase", () => {
   assert.equal(isSafeImageUrl(""), true);
   assert.equal(isSafeImageUrl("/images/banners/tienda-online.webp"), true);
-  assert.equal(isSafeImageUrl("https://abc.supabase.co/storage/v1/object/public/media/slots/x.webp"), true);
+  // Sin proyecto configurado (`null`) alcanza con que sea Storage de Supabase.
+  assert.equal(isSafeImageUrl("https://abc.supabase.co/storage/v1/object/public/media/slots/x.webp", null), true);
   assert.equal(isSafeImageUrl("https://evil.com/x.png"), false);
   assert.equal(isSafeImageUrl("https://abc.supabase.co/rest/v1/x"), false);
   assert.equal(isSafeImageUrl("data:image/png;base64,AAAA"), false);
+});
+
+test("imágenes: con el proyecto configurado, sólo su Storage", () => {
+  const host = "abc.supabase.co";
+  assert.equal(isSafeImageUrl("https://abc.supabase.co/storage/v1/object/public/media/slots/x.webp", host), true);
+  assert.equal(isSafeImageUrl("https://otro.supabase.co/storage/v1/object/public/media/x.webp", host), false);
+  assert.equal(isSafeImageUrl("https://abc.supabase.co.evil.com/storage/v1/object/public/x.webp", host), false);
+  assert.equal(isSafeImageUrl("/images/x.webp", host), true);
 });
 
 test("párrafos: cada renglón es un párrafo, sin vacíos", () => {

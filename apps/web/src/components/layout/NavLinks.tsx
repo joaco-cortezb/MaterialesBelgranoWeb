@@ -35,7 +35,7 @@ export function NavLinks({
               onClick={onNavigate}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "pressable relative flex items-center rounded-lg font-semibold transition-colors",
+                "pressable group relative flex items-center rounded-lg font-semibold transition-colors",
                 orientation === "horizontal"
                   ? "px-3 py-2 text-[17px] text-ink-dark hover:text-brand-700"
                   : "min-h-12 px-4 text-lg text-ink hover:bg-surface-2",
@@ -47,8 +47,9 @@ export function NavLinks({
                 <span
                   aria-hidden
                   className={cn(
-                    "absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-brand-500 transition-transform duration-200 ease-[var(--ease-out-strong)]",
-                    active ? "scale-x-100" : "scale-x-0",
+                    "absolute inset-x-3 -bottom-0.5 h-0.5 origin-left rounded-full bg-brand-500 transition-[transform,opacity] duration-200 ease-[var(--ease-out-strong)]",
+                    // La página actual lo tiene fijo; en las demás asoma al pasar el mouse.
+                    active ? "scale-x-100" : "scale-x-0 opacity-60 group-hover:scale-x-100",
                   )}
                 />
               )}

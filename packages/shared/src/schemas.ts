@@ -14,17 +14,35 @@ export function isSafeLocalPath(value: string): boolean {
   return /^\/(?![\/\\])/.test(value) && !/[\u0000-\u001f\\]/.test(value);
 }
 
-/** Imagen válida: vacía, un archivo de la web ("/images/…") o el Storage público de Supabase. */
-export function isSafeImageUrl(value: string): boolean {
+/** Host del proyecto de Supabase (`NEXT_PUBLIC_SUPABASE_URL`), o `null` si no está configurado. */
+function configuredStorageHost(): string | null {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").hostname || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Imagen válida: vacía, un archivo de la web ("/images/…") o el Storage público
+ * de Supabase. Con el proyecto configurado, sólo SU Storage: cualquiera puede
+ * crear otro proyecto en `*.supabase.co` y servir desde ahí lo que quiera.
+ */
+export function isSafeImageUrl(value: string, storageHost: string | null = configuredStorageHost()): boolean {
   if (value === "") return true;
   if (isSafeLocalPath(value)) return true;
   const url = safeExternalUrl(value);
   if (!url) return false;
   const { hostname, pathname } = new URL(url);
-  return hostname.endsWith(".supabase.co") && pathname.startsWith("/storage/v1/object/public/");
+  const hostOk = storageHost ? hostname === storageHost : hostname.endsWith(".supabase.co");
+  return hostOk && pathname.startsWith("/storage/v1/object/public/");
 }
 
-const imageUrl = z.string().trim().max(500).refine(isSafeImageUrl, "URL de imagen inválida");
+const imageUrl = z
+  .string()
+  .trim()
+  .max(500)
+  .refine((value) => isSafeImageUrl(value), "URL de imagen inválida");
 
 const lines = (max: number, maxItems: number) =>
   z
@@ -156,8 +174,10 @@ export const categorySchema = z.object({
     .default("")
     .transform((value) => value.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean)),
   subcategories: lines(2000, 20),
+  // Tope antes del `JSON.parse`: 12 preguntas con sus máximos entran holgadas.
   faqs: z
     .string()
+    .max(40_000, "Preguntas frecuentes demasiado largas")
     .optional()
     .default("[]")
     .transform((value, ctx) => {

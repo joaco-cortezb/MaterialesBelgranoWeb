@@ -2,7 +2,7 @@ import { DEFAULT_ABOUT_BODY, DEFAULT_ABOUT_HEADLINE, SETTING_KEYS } from "@mb/sh
 import { prisma } from "@/lib/prisma";
 import { requireSectionView } from "@/lib/auth";
 import { canManageSection } from "@/lib/permissions";
-import { PageHeader } from "@/components/ui";
+import { LoadErrorNotice, PageHeader } from "@/components/ui";
 import { loadWhatsappSlots } from "../whatsapp/data";
 import { WhatsappSlots } from "../whatsapp/WhatsappBoard";
 import { AboutForm } from "./AboutForm";
@@ -19,6 +19,7 @@ export default async function NosotrosPage() {
   let body = "";
   let saved = false;
   let photos: Record<string, PhotoValue> = {};
+  let loadError = false;
   try {
     const [rows, slots] = await Promise.all([
       prisma.setting.findMany({ where: { key: { in: [SETTING_KEYS.aboutHeadline, SETTING_KEYS.aboutBody] } } }),
@@ -32,12 +33,14 @@ export default async function NosotrosPage() {
     photos = Object.fromEntries(slots.map((slot) => [slot.key, { url: slot.url, alt: slot.alt, position: slot.position ?? "50% 50%" }]));
   } catch (error) {
     console.error("No se pudo leer Nosotros", error);
+    loadError = true;
   }
   const whatsapp = await loadWhatsappSlots();
 
   return (
     <div>
       <PageHeader title="Nosotros" subtitle="Todo lo que se ve en la página Nosotros: la historia, las fotos del negocio y los números de WhatsApp de Contacto." />
+      {loadError && <LoadErrorNotice what="los textos y fotos de Nosotros" />}
 
       <section aria-labelledby="historia-title">
         <h2 id="historia-title" className="mb-4 text-lg font-bold text-ink">
@@ -47,9 +50,10 @@ export default async function NosotrosPage() {
       </section>
 
       <section id="fotos" aria-labelledby="fotos-title" className="mt-10 scroll-mt-6">
-        <h2 id="fotos-title" className="mb-4 text-lg font-bold text-ink">
+        <h2 id="fotos-title" className="mb-1 text-lg font-bold text-ink">
           Fotos del negocio
         </h2>
+        <p className="mb-4 text-sm text-ink-soft">Se guardan solas apenas las subís.</p>
         <NosotrosPhotos values={photos} canManage={canManageSection(profile.role, "imagenes")} />
       </section>
 

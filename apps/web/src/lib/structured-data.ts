@@ -67,6 +67,7 @@ export function websiteSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": `${siteUrl()}/#website`,
     url: siteUrl(),
     name: SITE.name,
     inLanguage: "es-AR",
@@ -99,7 +100,10 @@ export function faqSchema(faqs: readonly Faq[]) {
   };
 }
 
-/** Un rubro es una categoría de oferta del negocio. */
+/**
+ * Un rubro es una categoría de oferta del negocio. Lo que incluye va como
+ * lista de nombres: un `Offer`/`Product` sin precio no es válido para Google.
+ */
 export function rubroSchema(rubro: Category) {
   const url = absoluteUrl(ROUTES.rubro(rubro.slug));
   return {
@@ -112,11 +116,12 @@ export function rubroSchema(rubro: Category) {
     inLanguage: "es-AR",
     isPartOf: { "@id": `${siteUrl()}/#website` },
     about: {
-      "@type": "OfferCatalog",
+      "@type": "ItemList",
       name: rubro.name,
-      itemListElement: rubro.subcategories.map((name) => ({
-        "@type": "Offer",
-        itemOffered: { "@type": "Product", name },
+      itemListElement: rubro.subcategories.map((name, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name,
       })),
     },
     provider: { "@id": STORE_ID },

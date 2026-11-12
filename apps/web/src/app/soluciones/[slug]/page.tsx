@@ -11,6 +11,7 @@ import { BrandsGrid } from "@/components/brands/BrandsGrid";
 import { FaqList } from "@/components/rubros/FaqList";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, faqSchema, rubroSchema } from "@/lib/structured-data";
+import { BASE_OPEN_GRAPH } from "@/lib/metadata";
 import { getBrandsForRubro, getCategories, getCategory } from "@/lib/cms";
 import { rubroWhatsappSource } from "@/lib/whatsapp";
 
@@ -29,7 +30,7 @@ export async function generateMetadata(props: PageProps<"/soluciones/[slug]">): 
     title: rubro.seoTitle,
     description: rubro.seoDescription,
     alternates: { canonical: path },
-    openGraph: { title: `${rubro.seoTitle} | ${SITE.name}`, description: rubro.seoDescription, url: path },
+    openGraph: { ...BASE_OPEN_GRAPH, title: `${rubro.seoTitle} | ${SITE.name}`, description: rubro.seoDescription, url: path },
   };
 }
 
@@ -45,12 +46,8 @@ export default async function RubroPage(props: PageProps<"/soluciones/[slug]">) 
 
   return (
     <>
-      <JsonLd
-        schema={breadcrumbSchema([
-          { name: "Soluciones", path: ROUTES.rubros },
-          { name: rubro.name, path: ROUTES.rubro(rubro.slug) },
-        ])}
-      />
+      {/* Inicio › Solución: las soluciones no tienen página propia (son una sección del inicio). */}
+      <JsonLd schema={breadcrumbSchema([{ name: rubro.name, path: ROUTES.rubro(rubro.slug) }])} />
       <JsonLd schema={rubroSchema(rubro)} />
       {rubro.faqs.length > 0 && <JsonLd schema={faqSchema(rubro.faqs)} />}
 
@@ -82,10 +79,12 @@ export default async function RubroPage(props: PageProps<"/soluciones/[slug]">) 
       {brands.length > 0 && (
         <section aria-labelledby="marcas-rubro" className="bg-surface py-16 sm:py-24">
           <Container>
-            <SectionHeading eyebrow="Marcas" title={`Marcas de ${rubro.name.toLowerCase()} que trabajamos`} text="Entrá al catálogo del fabricante y consultanos por WhatsApp el modelo que necesitás." />
-            <h2 id="marcas-rubro" className="sr-only">
-              Marcas de la solución
-            </h2>
+            <SectionHeading
+              id="marcas-rubro"
+              eyebrow="Marcas"
+              title={`Marcas de ${rubro.name.toLowerCase()} que trabajamos`}
+              text="Entrá al catálogo del fabricante y consultanos por WhatsApp el modelo que necesitás."
+            />
             <div className="mt-10">
               <BrandsGrid brands={brands} source={`rubro_${rubro.slug}`} />
             </div>
@@ -96,10 +95,7 @@ export default async function RubroPage(props: PageProps<"/soluciones/[slug]">) 
       {rubro.faqs.length > 0 && (
       <section aria-labelledby="faq-title" className="py-16 sm:py-24">
         <Container className="grid gap-10 lg:grid-cols-[1fr_1.5fr]">
-          <SectionHeading eyebrow="Preguntas frecuentes" title={`Lo que más nos preguntan sobre ${rubro.name.toLowerCase()}`} />
-          <h2 id="faq-title" className="sr-only">
-            Preguntas frecuentes
-          </h2>
+          <SectionHeading id="faq-title" eyebrow="Preguntas frecuentes" title={`Lo que más nos preguntan sobre ${rubro.name.toLowerCase()}`} />
           <FaqList faqs={rubro.faqs} />
         </Container>
       </section>

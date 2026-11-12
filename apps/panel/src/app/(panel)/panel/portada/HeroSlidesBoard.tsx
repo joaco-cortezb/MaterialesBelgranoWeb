@@ -3,8 +3,8 @@
 import { useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { HERO_MAX_SLIDES, HERO_PAGE_CONFIG, HERO_PAGES, type HeroPage } from "@mb/shared";
-import { Button, Card, Hint, IconButton, Input, Label, PageHeader, Spinner, Switch, Textarea } from "@/components/ui";
-import { Tabs } from "@/components/ui/Tabs";
+import { Button, Card, Hint, IconButton, Input, Label, LoadErrorNotice, PageHeader, SaveNote, Spinner, Switch, Textarea } from "@/components/ui";
+import { Tabs, tabIds } from "@/components/ui/Tabs";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
@@ -21,10 +21,12 @@ export function HeroSlidesBoard({
   slides: allSlides,
   initialPage,
   heroText,
+  loadError = false,
 }: {
   slides: (HeroSlideDTO & { page: string })[];
   initialPage: HeroPage;
   heroText: HeroTextValue;
+  loadError?: boolean;
 }) {
   const [page, setPage] = useState<HeroPage>(initialPage);
   const slides = allSlides.filter((slide) => slide.page === page);
@@ -54,81 +56,90 @@ export function HeroSlidesBoard({
         title="Portadas"
         subtitle="Las fotos grandes del inicio de cada página. Con más de una visible, pasan solas cada pocos segundos, en este orden."
       >
-        <Button onClick={() => setAdding(true)} disabled={adding || full}>
+        <Button onClick={() => setAdding(true)} disabled={adding || full || loadError}>
           <Plus className="h-4 w-4" /> Agregar foto
         </Button>
       </PageHeader>
 
+      {loadError && <LoadErrorNotice what="las portadas" />}
+
       <Tabs
+        id="portadas"
         label="Página de la web"
         items={HERO_PAGES.map((item) => ({ value: item, label: HERO_PAGE_CONFIG[item].label }))}
         value={page}
         onChange={(item) => {
           setPage(item);
           setAdding(false);
+          // Queda en la dirección: al recargar o volver se abre la misma pestaña.
+          window.history.replaceState(null, "", `?pagina=${item}`);
         }}
       />
-      <p className="mx-auto mb-5 max-w-3xl text-center text-sm text-ink-soft">{config.hint}</p>
+      <div role="tabpanel" id={tabIds("portadas", page).panel} aria-labelledby={tabIds("portadas", page).tab}>
+        <p className="mx-auto mb-5 max-w-3xl text-center text-sm text-ink-soft">{config.hint}</p>
 
-      {page === "inicio" && <HeroTextCard value={heroText} />}
+        {page === "inicio" && <HeroTextCard value={heroText} />}
 
-      {visibleCount === 0 && (
-        <Card className="mb-5 px-5 py-4 text-sm text-ink-soft">
-          No hay fotos visibles: la portada de {config.label} se ve con fondo oscuro, sin foto.
-        </Card>
-      )}
-      {full && <p className="mb-5 text-sm text-ink-soft">Llegaste al máximo de {HERO_MAX_SLIDES} fotos. Eliminá una para agregar otra.</p>}
-
-      <ul className="grid gap-5 lg:grid-cols-2">
-        {adding && (
-          <li>
-            <SlideCard
-              key={page}
-              slide={NEW_SLIDE}
-              page={page}
-              isNew
-              onCancel={() => setAdding(false)}
-              onSaved={() => setAdding(false)}
-            />
-          </li>
+        {visibleCount === 0 && !adding && (
+          <Card className="mb-5 px-5 py-4 text-sm text-ink-soft">
+            {slides.length === 0
+              ? `Todavía no hay fotos: la portada de ${config.label} se ve con fondo oscuro. Tocá “Agregar foto” para subir la primera.`
+              : `Todas las fotos están ocultas: la portada de ${config.label} se ve con fondo oscuro. Activá alguna con su interruptor.`}
+          </Card>
         )}
-        {slides.map((slide, index) => (
-          <li key={slide.id}>
-            <SlideCard
-              slide={slide}
-              page={page}
-              index={index}
-              // "Quitar" ya pidió confirmación en el campo de imagen.
-              onRemove={() => run(() => deleteHeroSlide(slide.id))}
-              toolbar={
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={slide.active}
-                    disabled={pending}
-                    label="Mostrar en la portada"
-                    text={slide.active ? "Visible" : "Oculta"}
-                    onChange={(value) => run(() => toggleHeroSlideActive(slide.id, value))}
-                  />
-                  <IconButton label="Subir" disabled={pending || index === 0} onClick={() => run(() => reorderHeroSlide(slide.id, -1))}>
-                    <ArrowUp className="h-4 w-4" />
-                  </IconButton>
-                  <IconButton label="Bajar" disabled={pending || index === slides.length - 1} onClick={() => run(() => reorderHeroSlide(slide.id, 1))}>
-                    <ArrowDown className="h-4 w-4" />
-                  </IconButton>
-                  <IconButton label="Eliminar" disabled={pending} onClick={() => setDeleting(slide)} className="hover:text-[var(--color-danger)]">
-                    <Trash2 className="h-4 w-4" />
-                  </IconButton>
-                </div>
-              }
-            />
-          </li>
-        ))}
-      </ul>
+        {full && <p className="mb-5 text-sm text-ink-soft">Llegaste al máximo de {HERO_MAX_SLIDES} fotos. Eliminá una para agregar otra.</p>}
+
+        <ul className="grid gap-5 lg:grid-cols-2">
+          {adding && (
+            <li>
+              <SlideCard
+                key={page}
+                slide={NEW_SLIDE}
+                page={page}
+                isNew
+                onCancel={() => setAdding(false)}
+                onSaved={() => setAdding(false)}
+              />
+            </li>
+          )}
+          {slides.map((slide, index) => (
+            <li key={slide.id}>
+              <SlideCard
+                slide={slide}
+                page={page}
+                index={index}
+                // "Quitar" ya pidió confirmación en el campo de imagen.
+                onRemove={() => run(() => deleteHeroSlide(slide.id))}
+                toolbar={
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Switch
+                      checked={slide.active}
+                      disabled={pending}
+                      label={`Mostrar la foto ${index + 1} en la portada`}
+                      text={slide.active ? "Visible" : "Oculta"}
+                      onChange={(value) => run(() => toggleHeroSlideActive(slide.id, value))}
+                    />
+                    <IconButton label={`Mover la foto ${index + 1} antes`} disabled={pending || index === 0} onClick={() => run(() => reorderHeroSlide(slide.id, -1))}>
+                      <ArrowUp className="h-4 w-4" />
+                    </IconButton>
+                    <IconButton label={`Mover la foto ${index + 1} después`} disabled={pending || index === slides.length - 1} onClick={() => run(() => reorderHeroSlide(slide.id, 1))}>
+                      <ArrowDown className="h-4 w-4" />
+                    </IconButton>
+                    <IconButton label={`Eliminar la foto ${index + 1}`} disabled={pending} onClick={() => setDeleting(slide)} className="hover:text-[var(--color-danger)]">
+                      <Trash2 className="h-4 w-4" />
+                    </IconButton>
+                  </div>
+                }
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <ConfirmDialog
         open={Boolean(deleting)}
         title="¿Eliminar esta foto?"
-        message="Se quita de la portada. La podés volver a subir cuando quieras."
+        message="Se quita de la portada, con su versión para celular. La podés volver a subir cuando quieras."
         confirmLabel="Eliminar"
         danger
         loading={pending}
@@ -208,7 +219,7 @@ function SlideCard({
       <div className="flex min-h-10 flex-wrap items-center justify-between gap-3">
         <h2 className="flex items-center gap-2 font-bold text-ink">
           {isNew ? "Nueva foto" : `Foto ${(index ?? 0) + 1}`}
-          {pending && <Spinner className="text-brand-700" />}
+          {pending && <Spinner className="text-brand-700" label="Guardando" />}
         </h2>
         {toolbar}
         {isNew && (
@@ -227,6 +238,11 @@ function SlideCard({
             label="Foto de portada para computadora"
             recommended={config.recommended}
             compactHint
+            removeMessage={
+              slide.id
+                ? "Sin la foto de computadora no hay portada: se elimina esta foto completa, también la de celular."
+                : "Se quita la imagen que subiste."
+            }
           />
         </div>
         <div className="min-w-0">
@@ -238,6 +254,7 @@ function SlideCard({
             label="Foto de portada para celular"
             recommended={config.recommendedMobile}
             compactHint
+            removeMessage="En el celular se va a ver la foto de computadora, recortada al centro."
           />
         </div>
       </div>
@@ -271,7 +288,7 @@ function HeroTextCard({ value }: { value: HeroTextValue }) {
         <div>
           <Label htmlFor="hero-title">Título</Label>
           <Input id="hero-title" value={title} onChange={(event) => setTitle(event.target.value)} maxLength={120} placeholder={value.defaultTitle} />
-          <Hint>Es el texto grande de la portada del inicio.</Hint>
+          <Hint>Es el texto grande de la portada del inicio. Si lo dejás vacío, se usa el que aparece de ejemplo.</Hint>
         </div>
         <div>
           <Label htmlFor="hero-text">Bajada (opcional)</Label>
@@ -279,15 +296,10 @@ function HeroTextCard({ value }: { value: HeroTextValue }) {
           <Hint>Una línea corta debajo del título. Si la borrás y guardás, la portada queda sin bajada.</Hint>
         </div>
       </div>
-      <div className="mt-4 flex justify-end">
-        <Button onClick={save} disabled={pending || !dirty}>
-          {pending ? (
-            <>
-              <Spinner /> Guardando…
-            </>
-          ) : (
-            "Guardar texto"
-          )}
+      <div className="mt-4 flex flex-wrap items-center justify-end gap-3">
+        <SaveNote dirty={dirty} />
+        <Button onClick={save} disabled={!dirty} loading={pending} loadingText="Guardando…">
+          Guardar texto
         </Button>
       </div>
     </Card>

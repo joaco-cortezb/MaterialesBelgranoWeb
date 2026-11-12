@@ -9,10 +9,12 @@ export default async function BannersPage() {
   await requireSectionView("inicio");
 
   let rows: { key: string; title: string; text: string; image: string; imageMobile: string; url: string; active: boolean }[] = [];
+  let loadError = false;
   try {
     rows = await prisma.banner.findMany();
   } catch (error) {
     console.error("No se pudieron leer los banners", error);
+    loadError = true;
   }
 
   // Sin fila cargada, el formulario arranca con lo que hoy muestra la web.
@@ -23,5 +25,5 @@ export default async function BannersPage() {
       : { key, ...BANNER_CONFIG[key].defaults, active: true, saved: false };
   });
 
-  return <BannersBoard banners={banners} />;
+  return <BannersBoard banners={banners} loadError={loadError} />;
 }

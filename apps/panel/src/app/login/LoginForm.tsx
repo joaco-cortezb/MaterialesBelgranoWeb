@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button, ErrorBox, Input, Label, Spinner } from "@/components/ui";
+import { Button, ErrorBox, Input, Label, PasswordInput, Spinner } from "@/components/ui";
 import { createClient } from "@/lib/supabase/client";
 import { safePanelDestination } from "@/lib/panel-destination";
 import { signInWithPassword } from "./actions";
@@ -99,7 +99,7 @@ export function LoginForm() {
 
   if (processingLink) {
     return (
-      <div className="flex items-center gap-3 rounded-xl border border-line bg-surface-2 px-4 py-5 text-sm text-ink-soft">
+      <div role="status" className="flex items-center gap-3 rounded-xl border border-line bg-surface-2 px-4 py-5 text-sm text-ink-soft">
         <Spinner />
         <span>Activando el enlace…</span>
       </div>
@@ -114,19 +114,13 @@ export function LoginForm() {
       </div>
       <div>
         <Label htmlFor="password">Contraseña</Label>
-        <Input id="password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required />
+        <PasswordInput id="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required />
       </div>
       {error && <ErrorBox>{error}</ErrorBox>}
-      <Button type="submit" size="lg" className="w-full" disabled={loading}>
-        {loading ? (
-          <>
-            <Spinner /> Ingresando…
-          </>
-        ) : (
-          "Ingresar"
-        )}
+      <Button type="submit" size="lg" className="w-full" loading={loading} loadingText="Ingresando…">
+        Ingresar
       </Button>
-      <p className="pt-1 text-center text-xs text-ink-soft">¿No podés ingresar? Pedile a un administrador que te reenvíe el enlace de acceso.</p>
+      <p className="pt-1 text-center text-xs leading-relaxed text-ink-soft">¿Te olvidaste la contraseña? Pedile a un administrador que te mande un enlace de acceso desde Equipo.</p>
     </form>
   );
 }

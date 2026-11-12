@@ -5,7 +5,7 @@ import { HERO_MAX_SLIDES, heroSlideSchema, heroTextSchema, isHeroPage, SETTING_K
 import { prisma } from "@/lib/prisma";
 import { requireSection } from "@/lib/auth";
 import { revalidateWeb } from "@/lib/revalidate";
-import { assertConfigured, assertMutationAllowed, attempt, fail, firstIssue, moveInList, ok, type ActionResult } from "@/lib/actions";
+import { assertConfigured, assertMutationAllowed, attempt, fail, firstIssue, ok, reorderChanges, type ActionResult } from "@/lib/actions";
 
 const PATH = "/panel/portada";
 
@@ -19,8 +19,9 @@ async function guard(): Promise<ActionResult | null> {
   return null;
 }
 
-async function finish(message?: string): Promise<ActionResult> {
-  await revalidateWeb("images");
+/** `warm`: sólo si se cargó o cambió una foto (la web precalienta las imágenes). */
+async function finish(message?: string, warm = false): Promise<ActionResult> {
+  revalidateWeb("images", { warm });
   revalidatePath(PATH);
   return ok(message);
 }
@@ -33,8 +34,11 @@ export async function saveHeroSlide(id: string, formData: FormData): Promise<Act
   if (!parsed.success) return fail(firstIssue(parsed.error));
   const data = parsed.data;
 
+  let imageChanged = true;
   try {
     if (id) {
+      const current = await prisma.heroSlide.findUnique({ where: { id }, select: { url: true, urlMobile: true } });
+      imageChanged = data.url !== current?.url || (Boolean(data.urlMobile) && data.urlMobile !== current?.urlMobile);
       // La página de una foto no cambia al editarla.
       await prisma.heroSlide.update({ where: { id }, data: { url: data.url, urlMobile: data.urlMobile, alt: data.alt, position: data.position } });
     } else {
@@ -47,7 +51,7 @@ export async function saveHeroSlide(id: string, formData: FormData): Promise<Act
     console.error("No se pudo guardar la foto de portada", error);
     return fail("No se pudo guardar la foto.");
   }
-  return finish(id ? "Foto actualizada." : "Foto agregada a la portada.");
+  return finish(id ? "Foto actualizada." : "Foto agregada a la portada.", imageChanged);
 }
 
 export async function deleteHeroSlide(id: string): Promise<ActionResult> {
@@ -75,11 +79,11 @@ export async function reorderHeroSlide(id: string, dir: -1 | 1): Promise<ActionR
 
   const slide = await prisma.heroSlide.findUnique({ where: { id }, select: { page: true } });
   if (!slide || !isHeroPage(slide.page)) return ok();
-  const items = await prisma.heroSlide.findMany({ where: { page: slide.page }, orderBy: [{ order: "asc" }, { createdAt: "asc" }], select: { id: true } });
-  const ids = moveInList(items.map((item) => item.id), id, dir);
-  if (!ids) return ok();
+  const items = await prisma.heroSlide.findMany({ where: { page: slide.page }, orderBy: [{ order: "asc" }, { createdAt: "asc" }], select: { id: true, order: true } });
+  const changes = reorderChanges(items, id, dir);
+  if (!changes?.length) return ok();
   const failed = await attempt(
-    () => prisma.$transaction(ids.map((slideId, order) => prisma.heroSlide.update({ where: { id: slideId }, data: { order } }))),
+    () => prisma.$transaction(changes.map((change) => prisma.heroSlide.update({ where: { id: change.id }, data: { order: change.order } }))),
     "No se pudo cambiar el orden.",
   );
   if (failed) return failed;
@@ -111,7 +115,7 @@ export async function saveHomeHeroText(formData: FormData): Promise<ActionResult
     console.error("No se pudo guardar el texto de la portada", error);
     return fail("No se pudo guardar el texto.");
   }
-  await revalidateWeb("settings");
+  revalidateWeb("settings");
   revalidatePath(PATH);
   return ok("Texto de la portada guardado.");
 }

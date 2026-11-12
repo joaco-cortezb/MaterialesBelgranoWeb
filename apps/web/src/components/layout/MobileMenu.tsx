@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
 import { FaWhatsapp } from "react-icons/fa6";
@@ -12,16 +12,19 @@ import { NavLinks } from "@/components/layout/NavLinks";
 type NavLink = { href: string; label: string };
 
 /**
- * Menú hamburguesa accesible: `aria-expanded`/`aria-controls`, panel con
- * `role="dialog"`, cierra con Escape y al navegar, bloquea el scroll del body
- * y respeta `safe-area-inset-bottom`. Se despliega como una cortina de arriba
- * hacia abajo y los ítems entran escalonados (`mobile-menu` en globals.css).
+ * Menú hamburguesa accesible: desplegable de navegación (no un diálogo: el
+ * botón que lo cierra queda afuera, en el header) con `aria-expanded`/
+ * `aria-controls`. Cierra con Escape (y devuelve el foco al botón), al navegar
+ * y al pasar a pantalla de computadora; bloquea el scroll del body y respeta
+ * `safe-area-inset-bottom`. Se despliega como una cortina de arriba hacia
+ * abajo y los ítems entran escalonados (`mobile-menu` en globals.css).
  */
 export function MobileMenu({ links, whatsappHref }: { links: readonly NavLink[]; whatsappHref: string }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const panelId = useId();
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     queueMicrotask(() => setMounted(true));
@@ -36,24 +39,35 @@ export function MobileMenu({ links, whatsappHref }: { links: readonly NavLink[];
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      buttonRef.current?.focus();
+    };
+    // Desde `lg` el menú no se ve: si la ventana se agranda con el menú
+    // abierto, se cierra para no dejar el body sin scroll.
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const onDesktop = (event: MediaQueryListEvent) => {
+      if (event.matches) setOpen(false);
     };
     window.addEventListener("keydown", onKey);
+    desktop.addEventListener("change", onDesktop);
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKey);
+      desktop.removeEventListener("change", onDesktop);
     };
   }, [open]);
 
   return (
     <>
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-controls={panelId}
         aria-label={open ? "Cerrar menú" : "Abrir menú"}
-        className="pressable flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-surface text-ink lg:hidden"
+        className="pressable flex h-11 w-11 items-center justify-center rounded-full bg-ink-dark/[0.06] text-ink-dark lg:hidden"
       >
         <span className="relative block h-4 w-5" aria-hidden>
           {[0, 1, 2].map((index) => (
@@ -72,15 +86,13 @@ export function MobileMenu({ links, whatsappHref }: { links: readonly NavLink[];
 
       {mounted &&
         createPortal(
-          <div
+          <nav
             id={panelId}
-            role="dialog"
-            aria-modal="true"
             aria-label="Menú de navegación"
             inert={!open}
             data-open={open || undefined}
             className={cn(
-              "mobile-menu fixed inset-x-0 bottom-0 top-[65px] z-50 flex flex-col overflow-y-auto overscroll-contain bg-surface px-4 pt-4 lg:hidden",
+              "mobile-menu fixed inset-x-0 bottom-0 top-[65px] z-50 sm:top-[81px] flex flex-col overflow-y-auto overscroll-contain bg-surface px-4 pt-4 lg:hidden",
               !open && "pointer-events-none",
             )}
             style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 1.5rem)" }}
@@ -113,7 +125,7 @@ export function MobileMenu({ links, whatsappHref }: { links: readonly NavLink[];
             <p className="mobile-menu-item mt-auto pt-8 text-center text-sm text-ink-soft" style={{ "--i": 2 } as React.CSSProperties}>
               {SITE.address.singleLine}
             </p>
-          </div>,
+          </nav>,
           document.body,
         )}
     </>

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, ExternalLink, Pencil, Plus, Trash2, X } from "lucide-react";
 import { slugify, type Faq } from "@mb/shared";
-import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, PageHeader, Select, Switch, Textarea } from "@/components/ui";
+import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, LoadErrorNotice, PageHeader, Select, Switch, Textarea, scrollIntoViewGently } from "@/components/ui";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
@@ -49,6 +49,9 @@ const EMPTY: CategoryDTO = {
   brands: 0,
 };
 
+let faqKey = 0;
+const withKey = (faq: Faq) => ({ ...faq, key: ++faqKey });
+
 const POSITIONS = [
   { value: "50% 50%", label: "Centro" },
   { value: "50% 0%", label: "Arriba" },
@@ -59,7 +62,7 @@ const POSITIONS = [
   { value: "50% 75%", label: "Centro-abajo" },
 ];
 
-export function CategoriesBoard({ categories, webUrl }: { categories: CategoryDTO[]; webUrl: string }) {
+export function CategoriesBoard({ categories, webUrl, loadError = false }: { categories: CategoryDTO[]; webUrl: string; loadError?: boolean }) {
   const [editing, setEditing] = useState<CategoryDTO | null>(null);
   const [deleting, setDeleting] = useState<CategoryDTO | null>(null);
   const [pending, startTransition] = useTransition();
@@ -85,6 +88,8 @@ export function CategoriesBoard({ categories, webUrl }: { categories: CategoryDT
         </Button>
       </PageHeader>
 
+      {loadError && <LoadErrorNotice what="las soluciones" />}
+
       {editing && (
         <CategoryForm
           key={editing.id || "new"}
@@ -96,7 +101,7 @@ export function CategoriesBoard({ categories, webUrl }: { categories: CategoryDT
       )}
 
       {categories.length === 0 ? (
-        <EmptyState title="Todavía no hay soluciones" hint="Creá la primera con el botón de arriba." />
+        !loadError && <EmptyState title="Todavía no hay soluciones" hint="Creá la primera con “Nueva solución”." />
       ) : (
         <ul className="space-y-3">
           {categories.map((category, index) => (
@@ -120,7 +125,8 @@ export function CategoriesBoard({ categories, webUrl }: { categories: CategoryDT
                   <p className="mt-0.5 truncate text-xs text-ink-soft">{category.summary}</p>
                   {webUrl && (
                     <a href={`${webUrl}/soluciones/${category.slug}`} target="_blank" rel="noopener noreferrer" title={`${webUrl}/soluciones/${category.slug}`} className="mt-1 inline-flex min-h-6 max-w-full items-center gap-1 truncate text-xs font-semibold text-brand-700 hover:text-brand-800">
-                      <ExternalLink className="h-3 w-3 shrink-0" /> <span className="truncate">Ver página en la web</span>
+                      <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" /> <span className="truncate">Ver página en la web</span>
+                      <span className="sr-only">(se abre en otra pestaña)</span>
                     </a>
                   )}
                 </div>
@@ -133,10 +139,10 @@ export function CategoriesBoard({ categories, webUrl }: { categories: CategoryDT
                     <IconButton label="Bajar" disabled={pending || index === categories.length - 1} onClick={() => run(() => reorderCategory(category.id, 1))}>
                       <ArrowDown className="h-4 w-4" />
                     </IconButton>
-                    <IconButton label="Editar" onClick={() => setEditing(category)}>
+                    <IconButton label={`Editar ${category.name}`} disabled={pending} onClick={() => setEditing(category)}>
                       <Pencil className="h-4 w-4" />
                     </IconButton>
-                    <IconButton label="Eliminar" onClick={() => setDeleting(category)} className="hover:text-[var(--color-danger)]">
+                    <IconButton label={`Eliminar ${category.name}`} disabled={pending} onClick={() => setDeleting(category)} className="hover:text-[var(--color-danger)]">
                       <Trash2 className="h-4 w-4" />
                     </IconButton>
                   </div>
@@ -179,14 +185,16 @@ function CategoryForm({
   const [summary, setSummary] = useState(category.summary);
   const [image, setImage] = useState(category.image);
   const [position, setPosition] = useState(category.imagePosition);
-  const [faqs, setFaqs] = useState<Faq[]>(category.faqs);
+  // Cada pregunta lleva una clave propia: con el índice, al quitar una el foco y
+  // el cursor saltaban a la de abajo.
+  const [faqs, setFaqs] = useState<(Faq & { key: number })[]>(() => category.faqs.map(withKey));
   const [seoDescription, setSeoDescription] = useState(category.seoDescription);
   const [active, setActive] = useState(category.active);
   const cardRef = useRef<HTMLDivElement>(null);
 
   // El formulario se abre arriba de la lista: se lleva a la vista al abrirlo.
   useEffect(() => {
-    cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    scrollIntoViewGently(cardRef.current);
   }, []);
 
   function updateFaq(index: number, patch: Partial<Faq>) {
@@ -203,7 +211,10 @@ function CategoryForm({
           const formData = new FormData(event.currentTarget);
           formData.set("image", image);
           formData.set("imagePosition", position);
-          formData.set("faqs", JSON.stringify(faqs.filter((faq) => faq.question.trim() || faq.answer.trim())));
+          formData.set(
+            "faqs",
+            JSON.stringify(faqs.filter((faq) => faq.question.trim() || faq.answer.trim()).map(({ question, answer }) => ({ question, answer }))),
+          );
           onSubmit(formData);
         }}
       >
@@ -297,25 +308,25 @@ function CategoryForm({
             <Label>Preguntas frecuentes</Label>
             <div className="space-y-3">
               {faqs.map((faq, index) => (
-                <div key={index} className="rounded-xl border border-line bg-surface-2 p-3">
+                <div key={faq.key} className="rounded-xl border border-line bg-surface-2 p-3">
                   <div className="flex items-start gap-2">
                     <div className="flex-1 space-y-2">
                       <Input value={faq.question} onChange={(event) => updateFaq(index, { question: event.target.value })} placeholder="Pregunta" maxLength={200} aria-label={`Pregunta ${index + 1}`} />
                       <Textarea value={faq.answer} onChange={(event) => updateFaq(index, { answer: event.target.value })} placeholder="Respuesta directa, de dos o tres oraciones" rows={3} maxLength={1200} aria-label={`Respuesta ${index + 1}`} />
                     </div>
-                    <IconButton label="Quitar pregunta" onClick={() => setFaqs((items) => items.filter((_, i) => i !== index))}>
+                    <IconButton label={`Quitar pregunta ${index + 1}`} onClick={() => setFaqs((items) => items.filter((_, i) => i !== index))}>
                       <X className="h-4 w-4" />
                     </IconButton>
                   </div>
                 </div>
               ))}
               {faqs.length < 12 && (
-                <Button type="button" variant="secondary" size="sm" onClick={() => setFaqs((items) => [...items, { question: "", answer: "" }])}>
+                <Button type="button" variant="secondary" size="sm" onClick={() => setFaqs((items) => [...items, withKey({ question: "", answer: "" })])}>
                   <Plus className="h-4 w-4" /> Agregar pregunta
                 </Button>
               )}
             </div>
-            <Hint>Aparecen en la página y en los resultados de Google. Si no hay ninguna, la sección no se muestra.</Hint>
+            <Hint>Aparecen en la página y en los resultados de Google. Si no hay ninguna, la sección no se muestra. Máximo 12.</Hint>
           </div>
           <div>
             <Label htmlFor="whatsappMessage">Mensaje de WhatsApp</Label>

@@ -23,6 +23,8 @@ export function useToast() {
 
 let seq = 0;
 const TOAST_DURATION_MS = 4200;
+// Los errores suelen ser más largos y hay que leerlos con calma.
+const TOAST_ERROR_DURATION_MS = 8000;
 const TOAST_EXIT_MS = 160;
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
@@ -44,7 +46,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     (type: ToastType, message: React.ReactNode) => {
       const id = ++seq;
       setToasts((items) => [...items, { id, type, message }]);
-      timers.current.push(window.setTimeout(() => dismiss(id), TOAST_DURATION_MS));
+      timers.current.push(window.setTimeout(() => dismiss(id), type === "error" ? TOAST_ERROR_DURATION_MS : TOAST_DURATION_MS));
     },
     [dismiss],
   );
@@ -56,7 +58,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       {mounted &&
         createPortal(
-          <div className="pointer-events-none fixed inset-x-4 top-4 z-[200] flex flex-col items-end gap-2 sm:inset-x-auto sm:right-4 sm:w-[360px]">
+          // La región queda siempre montada: los lectores de pantalla sólo anuncian
+          // lo que entra en una región viva que ya existía.
+          <div
+            aria-live="polite"
+            aria-relevant="additions"
+            className="pointer-events-none fixed inset-x-4 top-4 z-[1000] flex flex-col items-end gap-2 sm:inset-x-auto sm:right-4 sm:w-[360px]"
+          >
             {toasts.map((toast) => (
               <ToastCard key={toast.id} toast={toast} onClose={() => dismiss(toast.id)} />
             ))}
@@ -74,7 +82,7 @@ function ToastCard({ toast, onClose }: { toast: Toast; onClose: () => void }) {
   const Icon = ICON[toast.type];
   return (
     <div
-      role="status"
+      role={toast.type === "error" ? "alert" : "status"}
       className={cn(
         "pointer-events-auto flex w-full items-start gap-3 rounded-xl border border-line bg-surface px-4 py-3 shadow-lg",
         toast.leaving ? "animate-toast-out" : "animate-toast-in",
@@ -82,7 +90,12 @@ function ToastCard({ toast, onClose }: { toast: Toast; onClose: () => void }) {
     >
       <Icon className={cn("mt-0.5 h-5 w-5 shrink-0", ACCENT[toast.type])} />
       <div className="flex-1 text-sm font-semibold leading-snug text-ink">{toast.message}</div>
-      <button onClick={onClose} aria-label="Cerrar" className="shrink-0 rounded-md p-1 text-ink-soft hover:bg-surface-2 hover:text-ink">
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Cerrar aviso"
+        className="-my-1 -mr-2 flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-ink-soft transition-colors duration-150 hover:bg-surface-2 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 pointer-coarse:h-10 pointer-coarse:w-10"
+      >
         <X className="h-4 w-4" />
       </button>
     </div>

@@ -40,7 +40,7 @@ export function Footer() {
                 <br />
                 {SITE.address.locality}, {SITE.address.region}
               </span>
-              <a href={MAPS_LINK} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-brand-400 underline-offset-4 transition-colors hover:text-brand-300 hover:underline">
+              <a href={MAPS_LINK} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center text-brand-400 underline-offset-4 transition-colors hover:text-brand-300 hover:underline sm:min-h-0">
                 Cómo llegar ↗
               </a>
             </FooterColumn>
@@ -55,20 +55,21 @@ export function Footer() {
               ))}
             </FooterColumn>
             <FooterColumn label="Contacto">
-              <a href={`tel:${SITE.phone.e164}`} className="underline-offset-4 transition-colors hover:text-white hover:underline block w-fit tabular-nums">
+              <a href={`tel:${SITE.phone.e164}`} className="flex min-h-11 w-fit items-center tabular-nums underline-offset-4 transition-colors hover:text-white hover:underline sm:min-h-0">
                 {SITE.phone.display}
               </a>
-              <a href={`mailto:${SITE.email}`} className="underline-offset-4 transition-colors hover:text-white hover:underline block w-fit break-all sm:break-normal">
+              <a href={`mailto:${SITE.email}`} className="flex min-h-11 w-fit items-center break-all underline-offset-4 transition-colors hover:text-white hover:underline sm:min-h-0 sm:break-normal">
                 {SITE.email}
               </a>
             </FooterColumn>
           </address>
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 sm:justify-between gap-y-4 border-t border-white/10 pt-6">
+        {/* En celular el último acordeón ya trae su línea: no se dibuja otra. */}
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:mt-8 sm:justify-between sm:border-t sm:border-white/10 sm:pt-6">
           <nav aria-label="Pie de página" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-sm font-semibold sm:justify-start">
             {NAV_LINKS.map((link) => (
-              <Link key={link.href} href={link.href} className="inline-flex min-h-11 items-center text-white/70 hover:text-white">
+              <Link key={link.href} href={link.href} className="inline-flex min-h-11 items-center text-white/70 transition-colors hover:text-white">
                 {link.label}
               </Link>
             ))}
@@ -77,7 +78,7 @@ export function Footer() {
               event="distribuidora_click"
               params={{ source: "footer" }}
               external
-              className="inline-flex min-h-11 items-center text-brand-400 hover:text-brand-300"
+              className="inline-flex min-h-11 items-center text-brand-400 transition-colors hover:text-brand-300"
             >
               {SITE.distribuidora370.name} ↗
             </TrackedLink>

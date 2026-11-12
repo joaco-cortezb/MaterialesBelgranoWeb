@@ -9,6 +9,7 @@ export default async function SolucionesPage() {
   await requireSectionView("soluciones");
 
   let categories: CategoryDTO[] = [];
+  let loadError = false;
   try {
     const [rows, brandCounts] = await Promise.all([
       prisma.category.findMany({ orderBy: { order: "asc" } }),
@@ -34,7 +35,8 @@ export default async function SolucionesPage() {
     }));
   } catch (error) {
     console.error("No se pudieron leer las soluciones", error);
+    loadError = true;
   }
 
-  return <CategoriesBoard categories={categories} webUrl={env.PUBLIC_WEB_URL} />;
+  return <CategoriesBoard categories={categories} webUrl={env.PUBLIC_WEB_URL} loadError={loadError} />;
 }

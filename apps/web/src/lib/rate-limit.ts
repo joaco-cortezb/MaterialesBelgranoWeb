@@ -25,6 +25,11 @@ export async function rateLimit(options: RateLimitOptions) {
 
 function localRateLimit({ key, limit, windowMs }: RateLimitOptions) {
   const now = Date.now();
+  // Las claves vencidas no se borraban nunca: con muchas IPs distintas el Map
+  // crecía sin techo. Se limpia sólo cuando ya es grande, así no cuesta nada.
+  if (buckets.size >= 5_000) {
+    for (const [bucketKey, bucket] of buckets) if (bucket.resetAt <= now) buckets.delete(bucketKey);
+  }
   const current = buckets.get(key);
 
   if (!current || current.resetAt <= now) {

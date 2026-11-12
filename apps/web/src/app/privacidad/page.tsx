@@ -25,7 +25,7 @@ export default function PrivacidadPage() {
     <>
       <JsonLd schema={breadcrumbSchema([{ name: "Privacidad y cookies", path: ROUTES.privacidad }])} />
       <article className="py-16 sm:py-24">
-        <Container className="max-w-3xl">
+        <Container width="text">
           <Eyebrow className="mb-3">Legales</Eyebrow>
           <h1 className="text-balance text-4xl font-extrabold tracking-tight text-ink-dark sm:text-5xl">Privacidad y cookies</h1>
           <p className="mt-4 text-sm text-ink-soft">Última actualización: {UPDATED}</p>

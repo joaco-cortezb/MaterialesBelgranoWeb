@@ -10,6 +10,7 @@ export default async function UsuariosPage() {
   const me = await requireSectionView("usuarios");
 
   let users: UserDTO[] = [];
+  let loadError = false;
   try {
     const profiles = await prisma.profile.findMany({ orderBy: { createdAt: "asc" } });
 
@@ -35,7 +36,8 @@ export default async function UsuariosPage() {
     }));
   } catch (error) {
     console.error("No se pudieron leer los usuarios", error);
+    loadError = true;
   }
 
-  return <UsersBoard users={users} currentUserId={me.id} />;
+  return <UsersBoard users={users} currentUserId={me.id} loadError={loadError} />;
 }

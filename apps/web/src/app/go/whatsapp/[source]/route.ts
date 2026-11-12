@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { composeWhatsappMessage, isWhatsappSource, rubroSlugFromSource, whatsappUrl } from "@mb/shared";
 import { getCategory, getDefaultWhatsapp, getWhatsappNumbers } from "@/lib/cms";
 import { env } from "@/lib/env";
@@ -30,7 +30,8 @@ export async function GET(request: Request, context: RouteContext<"/go/whatsapp/
     ? category.whatsappMessage
     : composeWhatsappMessage(number.message, whatsappPageLabel(source, category?.name));
 
-  await recordClick(request, source, number.id);
+  // El clic se registra después de responder: la redirección no espera a la base.
+  after(() => recordClick(request, source, number.id));
 
   return NextResponse.redirect(whatsappUrl(number.phone, message), 302);
 }
@@ -49,8 +50,10 @@ async function recordClick(request: Request, source: string, numberId: string) {
   if (!supabase) return;
 
   // Hash irreversible: sirve para deduplicar sin guardar la IP.
-  const salt = process.env.CLICK_HASH_SALT || env.REVALIDATE_SECRET;
-  // Sin sal el hash se podría revertir: mejor no registrar el clic.
+  // La sal de ejemplo de `.env.example` es pública: cuenta como si faltara.
+  const isRealSalt = (value: string | undefined) => Boolean(value) && !/cambiame|placeholder/i.test(value ?? "");
+  const salt = [process.env.CLICK_HASH_SALT, env.REVALIDATE_SECRET].find(isRealSalt);
+  // Sin sal el hash se podría revertir probando IPs: mejor no registrar el clic.
   if (!salt) return;
   const visitorHash = createHash("sha256").update(`${ip}|${userAgent}|${salt}`).digest("hex").slice(0, 32);
   const { error } = await supabase.from("WhatsappClick").insert({

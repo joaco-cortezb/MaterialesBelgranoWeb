@@ -64,32 +64,39 @@
   --default-transition-timing-function: var(--ease-out-strong);
 }
 
-* {
-  border-color: var(--line);
-}
+/* En `@layer base`: sin capa, estas reglas le ganan a cualquier utilidad de
+   Tailwind (p. ej. `* { border-color }` anulaba todos los `border-brand-*` y
+   `focus:border-*`, y el contorno global tapaba los `outline-none`). */
+@layer base {
+  * {
+    border-color: var(--line);
+  }
 
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.9375rem;
-  -webkit-font-smoothing: antialiased;
-}
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-size: 0.9375rem;
+    -webkit-font-smoothing: antialiased;
+  }
 
-::selection {
-  background: var(--brand);
-  color: var(--brand-ink);
-}
+  ::selection {
+    background: var(--brand);
+    color: var(--brand-ink);
+  }
 
-:where(a, [tabindex]):focus-visible {
-  outline: 2px solid var(--color-brand-600);
-  outline-offset: 2px;
-}
+  /* Red de seguridad: todo lo que se puede enfocar muestra el foco (los
+     componentes con anillo propio lo reemplazan con `focus-visible:outline-none`). */
+  :where(a, button, select, summary, [tabindex], input[type="checkbox"], input[type="radio"]):focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
 
-input[type="checkbox"] {
-  accent-color: var(--brand);
-  width: 1.125rem;
-  height: 1.125rem;
+  input[type="checkbox"] {
+    accent-color: var(--brand);
+    width: 1.125rem;
+    height: 1.125rem;
+  }
 }
 
 @keyframes fadeUp {
@@ -103,7 +110,7 @@ input[type="checkbox"] {
   }
 }
 .animate-fade-up {
-  animation: fadeUp 0.32s var(--ease-out-strong) both;
+  animation: fadeUp 0.22s var(--ease-out-strong) both;
 }
 
 @keyframes popIn {
@@ -140,7 +147,7 @@ input[type="checkbox"] {
   }
 }
 .animate-toast-out {
-  animation: toastOut 0.16s ease-in both;
+  animation: toastOut 0.16s var(--ease-out-strong) both;
 }
 
 @keyframes shimmer {
@@ -175,7 +182,19 @@ input[type="checkbox"] {
   .animate-fade-up,
   .animate-pop,
   .animate-toast-in,
-  .animate-toast-out {
+  .animate-toast-out,
+  .skeleton::after {
     animation: none;
+  }
+  /* Sin desplazamientos ni escalas: los cambios de color quedan, pero instantáneos. */
+  *,
+  ::before,
+  ::after {
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* El spinner sigue girando (es la señal de que algo está pasando), más lento. */
+  .animate-spin-smooth {
+    animation-duration: 1.2s;
   }
 }

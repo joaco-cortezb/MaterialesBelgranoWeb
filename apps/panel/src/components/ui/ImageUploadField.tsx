@@ -36,6 +36,7 @@ export function ImageUploadField({
   position = "50% 50%",
   fallbackSrc,
   compactHint = false,
+  removeMessage = "La imagen deja de verse en la web. Podés volver a subirla cuando quieras.",
 }: {
   value: string;
   onChange: (url: string) => void;
@@ -49,6 +50,8 @@ export function ImageUploadField({
   fallbackSrc?: string;
   /** Sólo la medida recomendada debajo (para columnas angostas). */
   compactHint?: boolean;
+  /** Texto del modal de "Quitar" (cada pantalla explica qué pasa en la web). */
+  removeMessage?: string;
 }) {
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -112,7 +115,9 @@ export function ImageUploadField({
       <div
         role="button"
         tabIndex={0}
-        aria-label={`Subir ${label.toLowerCase()}`}
+        aria-label={`${value ? "Reemplazar" : "Subir"} ${label.toLowerCase()}`}
+        aria-disabled={uploading || undefined}
+        aria-busy={uploading || undefined}
         onClick={() => !uploading && inputRef.current?.click()}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
@@ -124,7 +129,10 @@ export function ImageUploadField({
           event.preventDefault();
           if (!uploading) setDragging(true);
         }}
-        onDragLeave={() => setDragging(false)}
+        onDragLeave={(event) => {
+          // Pasar por encima de la imagen o del texto de adentro no cuenta como salir.
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragging(false);
+        }}
         onDrop={(event) => {
           event.preventDefault();
           setDragging(false);
@@ -133,7 +141,8 @@ export function ImageUploadField({
         }}
         style={aspectRatio ? { aspectRatio } : undefined}
         className={cn(
-          "group relative w-full cursor-pointer overflow-hidden rounded-xl transition-colors",
+          "group relative w-full cursor-pointer overflow-hidden rounded-xl transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-2",
+          uploading && "cursor-wait",
           shown ? "border border-line" : "border-2 border-dashed border-line hover:border-brand-400",
           objectFit === "contain" && "bg-surface-2",
           dragging && "border-brand-600 bg-brand-50",
@@ -181,7 +190,7 @@ export function ImageUploadField({
         )}
 
         {uploading && (
-          <div className="absolute inset-0 flex items-center justify-center gap-2 bg-surface/80 text-sm font-semibold text-ink">
+          <div role="status" className="absolute inset-0 flex items-center justify-center gap-2 bg-surface/80 text-sm font-semibold text-ink">
             <Spinner /> Subiendo…
           </div>
         )}
@@ -195,9 +204,11 @@ export function ImageUploadField({
           <button
             type="button"
             onClick={() => setConfirmRemove(true)}
-            className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-[var(--color-danger)] hover:underline"
+            disabled={uploading}
+            aria-label={`Quitar ${label.toLowerCase()}`}
+            className="-my-2 -mr-2 inline-flex min-h-9 shrink-0 items-center gap-1 rounded-lg px-2 text-xs font-semibold text-[var(--color-danger)] hover:bg-[var(--color-danger-bg)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-danger)]/50 pointer-coarse:min-h-11"
           >
-            <Trash2 className="h-3.5 w-3.5" /> Quitar
+            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" /> Quitar
           </button>
         )}
       </div>
@@ -205,7 +216,7 @@ export function ImageUploadField({
       <ConfirmDialog
         open={confirmRemove}
         title="¿Quitar esta imagen?"
-        message="La imagen deja de verse en la web. Podés volver a subirla cuando quieras."
+        message={removeMessage}
         confirmLabel="Quitar"
         danger
         onCancel={() => setConfirmRemove(false)}

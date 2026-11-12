@@ -25,51 +25,54 @@ export function Header() {
 
   return (
     <AutoHideHeader className="border-b border-ink-dark/20 bg-surface/55 backdrop-blur-xl backdrop-saturate-150">
-      <Container className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-5 sm:h-20 lg:gap-10 xl:gap-14">
-        <div className="flex items-center justify-between gap-4 lg:justify-end xl:justify-between">
-          <MobileMenu links={NAV_LINKS} whatsappHref={whatsappHref} />
-          {/* Wrapper aparte: `hidden` y el `inline-flex` del botón se pisarían. */}
-          <div className="hidden xl:block">
+      {/* Un solo landmark para toda la barra: los links van partidos a los lados del logo. */}
+      <nav aria-label="Principal">
+        <Container className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-5 sm:h-20 lg:gap-10 xl:gap-14">
+          <div className="flex items-center justify-between gap-4 lg:justify-end xl:justify-between">
+            <MobileMenu links={NAV_LINKS} whatsappHref={whatsappHref} />
+            {/* Wrapper aparte: `hidden` y el `inline-flex` del botón se pisarían. */}
+            <div className="hidden xl:block">
+              <TrackedLink
+                href={SITE.distribuidora370.url}
+                event="distribuidora_click"
+                params={{ source: "header" }}
+                external
+                className="pressable group inline-flex h-10 items-center gap-2 rounded-full bg-ink-dark/[0.06] pl-1.5 pr-4 text-sm font-semibold text-ink-dark hover:bg-ink-dark hover:text-white"
+              >
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-surface text-brand-700 shadow-sm">
+                  <LuShoppingBag className="h-3.5 w-3.5" aria-hidden />
+                </span>
+                Tienda online
+                <LuArrowUpRight className="h-4 w-4 opacity-60 group-hover:opacity-100" aria-hidden />
+              </TrackedLink>
+            </div>
+            <div className="hidden lg:block">
+              <NavLinks links={LEFT_LINKS} />
+            </div>
+          </div>
+
+          <Logo />
+
+          <div className="flex items-center justify-between gap-4">
+            <div className="hidden lg:block">
+              <NavLinks links={RIGHT_LINKS} />
+            </div>
+            {/* Mismo formato que "Tienda online": píldora clara con el ícono en un círculo. */}
             <TrackedLink
-              href={SITE.distribuidora370.url}
-              event="distribuidora_click"
+              href={whatsappHref}
+              event="whatsapp_click"
               params={{ source: "header" }}
-              external
-              className="pressable group inline-flex h-10 items-center gap-2 rounded-full bg-ink-dark/[0.06] pl-1.5 pr-4 text-sm font-semibold text-ink-dark hover:bg-ink-dark hover:text-white"
+              aria-label="Consultar por WhatsApp"
+              className="pressable ml-auto inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-full bg-ink-dark/[0.06] p-1.5 text-sm font-semibold text-ink-dark hover:bg-ink-dark hover:text-white sm:pr-4 lg:ml-0"
             >
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-surface text-brand-700 shadow-sm">
-                <LuShoppingBag className="h-3.5 w-3.5" aria-hidden />
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-whatsapp text-white shadow-sm">
+                <FaWhatsapp className="h-4 w-4" aria-hidden />
               </span>
-              Tienda online
-              <LuArrowUpRight className="h-4 w-4 opacity-60 group-hover:opacity-100" aria-hidden />
+              <span className="hidden sm:inline">WhatsApp</span>
             </TrackedLink>
           </div>
-          <nav aria-label="Principal" className="hidden lg:block">
-            <NavLinks links={LEFT_LINKS} />
-          </nav>
-        </div>
-
-        <Logo />
-
-        <div className="flex items-center justify-between gap-4">
-          <nav aria-label="Secciones" className="hidden lg:block">
-            <NavLinks links={RIGHT_LINKS} />
-          </nav>
-          {/* Mismo formato que "Tienda online": píldora clara con el ícono en un círculo. */}
-          <TrackedLink
-            href={whatsappHref}
-            event="whatsapp_click"
-            params={{ source: "header" }}
-            aria-label="Consultar por WhatsApp"
-            className="pressable ml-auto inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-full bg-ink-dark/[0.06] p-1.5 text-sm font-semibold text-ink-dark hover:bg-ink-dark hover:text-white sm:pr-4 lg:ml-0"
-          >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-whatsapp text-white shadow-sm">
-              <FaWhatsapp className="h-4 w-4" aria-hidden />
-            </span>
-            <span className="hidden sm:inline">WhatsApp</span>
-          </TrackedLink>
-        </div>
-      </Container>
+        </Container>
+      </nav>
     </AutoHideHeader>
   );
 }

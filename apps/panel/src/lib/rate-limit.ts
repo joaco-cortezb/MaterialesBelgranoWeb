@@ -50,6 +50,7 @@ export async function rateLimit({ key, limit, windowMs }: { key: string; limit: 
   }
 
   const now = Date.now();
+  pruneExpired(now);
   const current = buckets.get(key);
   if (!current || current.resetAt <= now) {
     buckets.set(key, { count: 1, resetAt: now + windowMs });
@@ -58,4 +59,13 @@ export async function rateLimit({ key, limit, windowMs }: { key: string; limit: 
   if (current.count >= limit) return { ok: false, resetAt: current.resetAt };
   current.count += 1;
   return { ok: true, resetAt: current.resetAt };
+}
+
+/**
+ * Las claves vencidas no se borraban nunca: con muchas IPs distintas el Map
+ * crecía sin techo. Se limpia sólo cuando ya es grande, así no cuesta nada.
+ */
+function pruneExpired(now: number) {
+  if (buckets.size < 5_000) return;
+  for (const [key, bucket] of buckets) if (bucket.resetAt <= now) buckets.delete(key);
 }

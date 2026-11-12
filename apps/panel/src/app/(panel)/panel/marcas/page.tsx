@@ -9,6 +9,7 @@ export default async function MarcasPage() {
 
   let brands: BrandDTO[] = [];
   let categories: CategoryOption[] = [];
+  let loadError = false;
   try {
     categories = await prisma.category.findMany({ orderBy: { order: "asc" }, select: { slug: true, name: true } });
     const rows = await prisma.brand.findMany({
@@ -18,7 +19,8 @@ export default async function MarcasPage() {
     brands = rows.map((row) => ({ ...row, logo: row.logo ?? "", rubroSlug: row.rubroSlug ?? "" }));
   } catch (error) {
     console.error("No se pudieron leer las marcas", error);
+    loadError = true;
   }
 
-  return <BrandsBoard brands={brands} categories={categories} />;
+  return <BrandsBoard brands={brands} categories={categories} loadError={loadError} />;
 }

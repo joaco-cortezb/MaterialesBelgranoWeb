@@ -36,7 +36,7 @@ export async function saveAbout(formData: FormData): Promise<ActionResult> {
     return fail("No se pudo guardar el texto.");
   }
 
-  await revalidateWeb("settings");
+  revalidateWeb("settings");
   revalidatePath("/panel/nosotros");
   return ok("Texto guardado.");
 }

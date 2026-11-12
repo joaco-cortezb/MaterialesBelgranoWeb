@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa6";
 import { ROUTES, SERVICIOS, SITE } from "@mb/shared";
 import { Container } from "@/components/ui/Container";
+import { Eyebrow } from "@/components/ui/SectionHeading";
 import { LogoMarquee } from "@/components/brands/LogoMarquee";
 import { CategoriesCarousel } from "@/components/rubros/CategoriesCarousel";
 import { ServicioIcon } from "@/components/servicios/ServicioIcon";
@@ -11,10 +12,12 @@ import { HomeHero } from "@/components/home/HomeHero";
 import { HomeBanner } from "@/components/sections/HomeBanner";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { servicesSchema } from "@/lib/structured-data";
+import { BASE_OPEN_GRAPH } from "@/lib/metadata";
 import { getBanner, getBrands, getCategories, getHeroSlides, getHomeHeroText, getHomeVideoId } from "@/lib/cms";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
+  openGraph: { ...BASE_OPEN_GRAPH, url: "/" },
 };
 
 export default async function HomePage() {
@@ -38,7 +41,7 @@ export default async function HomePage() {
         <section id="conocenos" aria-labelledby="video-title" className="bg-ink-dark py-14 text-white sm:py-20">
           <Container>
             <div className="mx-auto max-w-2xl text-center">
-              <p className="font-condensed text-base font-semibold uppercase tracking-[0.2em] text-brand-300 sm:text-lg">Por dentro</p>
+              <Eyebrow light>Por dentro</Eyebrow>
               <h2 id="video-title" className="mt-2 text-balance text-2xl font-extrabold tracking-tight sm:text-4xl">
                 Un salón pensado para que elegir sea fácil
               </h2>
@@ -75,7 +78,7 @@ export default async function HomePage() {
       <section aria-labelledby="marcas-title" className="bg-gradient-to-br from-ink-dark via-[#2c3a19] to-brand-700 py-16 text-white sm:py-24">
         <Container>
           <div className="mx-auto max-w-2xl text-center">
-            <p className="font-condensed text-base font-semibold uppercase tracking-[0.2em] text-brand-300 sm:text-lg">Marcas</p>
+            <Eyebrow light>Marcas</Eyebrow>
             <h2 id="marcas-title" className="mt-2 text-balance text-3xl font-extrabold tracking-tight sm:text-5xl">
               Trabajamos con los que saben.
             </h2>
@@ -101,7 +104,7 @@ export default async function HomePage() {
       <section id="servicios" aria-labelledby="servicios-title" className="py-14 sm:py-16">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
-            <p className="font-condensed text-base font-semibold uppercase tracking-[0.2em] text-brand-700 sm:text-lg">Por qué elegirnos</p>
+            <Eyebrow>Por qué elegirnos</Eyebrow>
             <h2 id="servicios-title" className="mt-2 text-balance text-3xl font-extrabold tracking-tight text-ink-dark sm:text-4xl">
               Mismas marcas que todos. <span className="text-brand-600">Otra forma de atenderte.</span>
             </h2>

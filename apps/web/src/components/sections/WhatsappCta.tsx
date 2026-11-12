@@ -5,8 +5,9 @@ import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { whatsappGoHref } from "@/lib/whatsapp";
 
 /**
- * Cierre de página: franja verde de marca. Sin botón: toda la franja es el
- * link a WhatsApp (el círculo con el ícono lo indica).
+ * Cierre de página: franja verde de marca. Toda la franja es el link a
+ * WhatsApp; la píldora oscura con texto lo dice sin dejar dudas (un ícono
+ * solo no se lee como botón).
  */
 export function WhatsappCta({
   source,
@@ -24,7 +25,7 @@ export function WhatsappCta({
           href={whatsappGoHref(source)}
           event="whatsapp_click"
           params={{ source }}
-          className="group relative isolate flex flex-col items-start gap-6 overflow-hidden rounded-3xl bg-brand-500 px-6 py-10 text-ink-dark sm:flex-row sm:items-center sm:justify-between sm:px-12 sm:py-14"
+          className="group relative isolate flex flex-col items-start gap-7 overflow-hidden rounded-3xl bg-brand-500 px-6 py-9 text-ink-dark sm:flex-row sm:items-center sm:justify-between sm:gap-10 sm:px-12 sm:py-14"
         >
           <div aria-hidden className="brand-slabs absolute inset-0 -z-10 opacity-60 mix-blend-multiply" />
           <div className="max-w-2xl">
@@ -33,11 +34,9 @@ export function WhatsappCta({
             </h2>
             <p className="mt-3 text-pretty text-base text-ink-dark/75 sm:text-lg">{text}</p>
           </div>
-          <span
-            aria-hidden
-            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-ink-dark text-whatsapp transition-transform duration-300 ease-[var(--ease-out-strong)] group-hover:scale-110"
-          >
-            <FaWhatsapp className="h-8 w-8" />
+          <span className="inline-flex min-h-13 w-full shrink-0 items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-ink-dark px-7 text-base font-semibold text-white transition-[background-color,transform] duration-300 ease-[var(--ease-out-strong)] group-hover:bg-ink group-active:scale-[0.97] sm:w-auto">
+            <FaWhatsapp className="h-5 w-5 text-whatsapp transition-transform duration-300 ease-[var(--ease-out-strong)] group-hover:-rotate-12 group-hover:scale-110" aria-hidden />
+            Escribir por WhatsApp
           </span>
         </TrackedLink>
       </Container>

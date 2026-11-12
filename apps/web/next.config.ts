@@ -78,13 +78,13 @@ function contentSecurityPolicy(): string {
       "'self'",
       "data:",
       "blob:",
-      "https://*.supabase.co",
+      `https://${storageHost}`,
       "https://i.ytimg.com",
       "https://*.ytimg.com",
       ...GOOGLE_TAG_HOSTS,
       ...GOOGLE_ANALYTICS_HOSTS,
     ],
-    "media-src": ["'self'", "blob:", "https://*.supabase.co"],
+    "media-src": ["'self'", "blob:", `https://${storageHost}`],
     // `unsafe-eval` sólo en el dev server (React Refresh); en producción queda afuera.
     "script-src": [
       "'self'",
@@ -100,7 +100,7 @@ function contentSecurityPolicy(): string {
     "frame-src": ["https://www.youtube-nocookie.com", "https://www.youtube.com", "https://www.google.com"],
     "connect-src": [
       "'self'",
-      "https://*.supabase.co",
+      `https://${storageHost}`,
       "https://www.youtube-nocookie.com",
       VERCEL_ANALYTICS_HOST,
       "https://vitals.vercel-insights.com",

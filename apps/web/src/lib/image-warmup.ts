@@ -38,7 +38,7 @@ async function collectImages(): Promise<WarmItem[]> {
 /**
  * Pide cada imagen al optimizador para que quede procesada y en cache antes de
  * que la pida un visitante (la primera vez tarda ~1 s; desde cache, ~0,2 s).
- * Se corre después de cada cambio del panel, en segundo plano.
+ * Se corre en segundo plano sólo cuando el panel avisa que cambió una imagen.
  */
 export async function warmImageCache(origin: string): Promise<void> {
   const items = await collectImages();

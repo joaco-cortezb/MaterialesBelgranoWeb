@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { Mail, Plus, ShieldCheck, Trash2, UserPen } from "lucide-react";
 import type { Role } from "@/generated/prisma";
-import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, PageHeader, Select } from "@/components/ui";
+import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, LoadErrorNotice, PageHeader, Select } from "@/components/ui";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
 import type { ActionResult } from "@/lib/actions";
@@ -28,7 +28,7 @@ const ROLE_INFO: { role: Role; icon: typeof ShieldCheck; text: string }[] = [
   { role: "EDITOR", icon: UserPen, text: "El contenido de la web: soluciones, marcas, portadas, banners, video y Nosotros (menos WhatsApp)." },
 ];
 
-export function UsersBoard({ users, currentUserId }: { users: UserDTO[]; currentUserId: string }) {
+export function UsersBoard({ users, currentUserId, loadError = false }: { users: UserDTO[]; currentUserId: string; loadError?: boolean }) {
   const [inviting, setInviting] = useState(false);
   const [removing, setRemoving] = useState<UserDTO | null>(null);
   const [changingRole, setChangingRole] = useState<{ user: UserDTO; role: Role } | null>(null);
@@ -51,7 +51,7 @@ export function UsersBoard({ users, currentUserId }: { users: UserDTO[]; current
   return (
     <div>
       <PageHeader title="Equipo" subtitle="Quién puede entrar al panel. El acceso es sólo por invitación.">
-        <Button onClick={() => setInviting(true)}>
+        <Button onClick={() => setInviting(true)} disabled={inviting}>
           <Plus className="h-4 w-4" /> Invitar persona
         </Button>
       </PageHeader>
@@ -69,6 +69,8 @@ export function UsersBoard({ users, currentUserId }: { users: UserDTO[]; current
           </Card>
         ))}
       </div>
+
+      {loadError && <LoadErrorNotice what="las personas del equipo" />}
 
       {inviting && (
         <Card className="mb-6 p-5 sm:p-6">
@@ -121,10 +123,10 @@ export function UsersBoard({ users, currentUserId }: { users: UserDTO[]; current
       )}
 
       {users.length === 0 ? (
-        <EmptyState title="No hay usuarios" hint="Invitá al primero con el botón de arriba." />
+        !loadError && <EmptyState title="Todavía no hay nadie en el equipo" hint="Invitá a la primera persona con “Invitar persona”." />
       ) : (
         <Card className="overflow-hidden">
-          <div className="hidden grid-cols-[minmax(0,1fr)_11rem_10rem_6rem] gap-4 border-b border-line bg-surface-2/60 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-ink-soft md:grid">
+          <div aria-hidden="true" className="hidden grid-cols-[minmax(0,1fr)_11rem_10rem_10rem] gap-4 border-b border-line bg-surface-2/60 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-ink-soft md:grid">
             <span>Persona</span>
             <span className="text-center">Rol</span>
             <span className="text-center">Último ingreso</span>
@@ -134,18 +136,20 @@ export function UsersBoard({ users, currentUserId }: { users: UserDTO[]; current
             {users.map((user) => {
               const isMe = user.id === currentUserId;
               return (
-                <li key={user.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-3 px-5 py-4 md:grid-cols-[minmax(0,1fr)_11rem_10rem_6rem]">
+                <li key={user.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-3 px-5 py-4 md:grid-cols-[minmax(0,1fr)_11rem_10rem_10rem]">
                   <div className="flex min-w-0 items-center gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-800">
                       {(user.fullName || user.email).slice(0, 1).toUpperCase()}
                     </span>
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                         <span className="truncate font-semibold text-ink">{user.fullName || user.email.split("@")[0]}</span>
                         {isMe && <Badge tone="green">Vos</Badge>}
-                        {user.pending && <Badge>Pendiente</Badge>}
+                        {user.pending && <Badge tone="warning">Invitación pendiente</Badge>}
                       </div>
                       <p className="truncate text-sm text-ink-soft">{user.email}</p>
+                      {/* En celular no hay columna de "Último ingreso": va debajo del email. */}
+                      <p className="text-xs text-ink-soft md:hidden">Último ingreso: {user.lastSignInAt ? formatDateTime(user.lastSignInAt) : "nunca"}</p>
                     </div>
                   </div>
                   {isMe ? (
@@ -168,19 +172,19 @@ export function UsersBoard({ users, currentUserId }: { users: UserDTO[]; current
                       ))}
                     </Select>
                   )}
-                  <span className="hidden text-center text-sm text-ink-soft md:block">{user.lastSignInAt ? formatDateTime(user.lastSignInAt) : "Nunca"}</span>
+                  <span className="hidden text-center text-sm text-ink-soft md:block"><span className="sr-only">Último ingreso: </span>{user.lastSignInAt ? formatDateTime(user.lastSignInAt) : "Nunca"}</span>
                   <div className="col-start-2 row-start-1 flex justify-end gap-1.5 md:col-start-auto md:row-start-auto md:justify-center">
                     {user.pending ? (
-                      <Button size="sm" variant="secondary" disabled={pending} onClick={() => setResending(user)}>
-                        <Mail className="h-4 w-4" /> Reenviar invitación
+                      <Button size="sm" variant="secondary" disabled={pending} onClick={() => setResending(user)} aria-label={`Reenviar invitación a ${user.email}`} title="Reenviar invitación">
+                        <Mail className="h-4 w-4" aria-hidden="true" /> <span className="hidden sm:inline">Reenviar</span>
                       </Button>
                     ) : (
-                      <IconButton label="Enviar enlace para entrar o cambiar la contraseña" disabled={pending} onClick={() => setResending(user)}>
+                      <IconButton label={`Mandar a ${user.email} un enlace para entrar o cambiar la contraseña`} disabled={pending} onClick={() => setResending(user)}>
                         <Mail className="h-4 w-4" />
                       </IconButton>
                     )}
                     {!isMe && (
-                      <IconButton label="Quitar acceso" disabled={pending} onClick={() => setRemoving(user)} className="hover:text-[var(--color-danger)]">
+                      <IconButton label={`Quitar el acceso a ${user.email}`} disabled={pending} onClick={() => setRemoving(user)} className="hover:text-[var(--color-danger)]">
                         <Trash2 className="h-4 w-4" />
                       </IconButton>
                     )}

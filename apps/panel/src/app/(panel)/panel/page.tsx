@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { ArrowRight, LayoutGrid, MousePointerClick, Tags } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa6";
 import { prisma } from "@/lib/prisma";
-import { Card, PageHeader } from "@/components/ui";
+import { Card, LoadErrorNotice, PageHeader } from "@/components/ui";
 import { NAV_ITEMS } from "@/components/panel/nav";
 import { requireProfile } from "@/lib/auth";
 import { canViewSection } from "@/lib/permissions";
@@ -38,11 +38,7 @@ export default async function PanelHome() {
     <div>
       <PageHeader title="Inicio" subtitle="Resumen de la web y de las consultas que llegan por WhatsApp." />
 
-      {stats === null && (
-        <Card className="mb-6 px-5 py-4 text-sm text-ink-soft">
-          No se pudo leer la base de datos. Verificá <code className="rounded bg-surface-2 px-1">DATABASE_URL</code> y que las migraciones estén aplicadas.
-        </Card>
-      )}
+      {stats === null && <LoadErrorNotice what="los números del resumen" />}
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <Tile icon={<FaWhatsapp />} tone="whatsapp" value={stats?.clicks30 ?? "—"} label={`Consultas por WhatsApp (${DAYS} días)`} />
@@ -57,16 +53,16 @@ export default async function PanelHome() {
           {shortcuts.map((item) => {
             const Icon = item.icon;
             return (
-              <Link key={item.href} href={item.href} className="group">
-                <Card className="flex h-full items-center gap-4 p-5 transition-[transform,border-color] duration-200 group-hover:-translate-y-0.5 group-hover:border-brand-300">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-800 transition-colors group-hover:bg-brand group-hover:text-brand-ink">
+              <Link key={item.href} href={item.href} className="group rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-2">
+                <Card className="flex h-full items-center gap-4 p-5 transition-[translate,scale,border-color] duration-200 group-hover:-translate-y-0.5 group-hover:border-brand-300 group-active:scale-[0.99]">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-800 transition-colors duration-200 group-hover:bg-brand group-hover:text-brand-ink">
                     <Icon className="h-6 w-6" />
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="font-semibold text-ink">{item.label}</div>
-                    <div className="truncate text-sm text-ink-soft">{item.description}</div>
+                    <div className="text-sm text-ink-soft">{item.description}</div>
                   </div>
-                  <ArrowRight className="h-4 w-4 shrink-0 text-ink-soft transition-transform group-hover:translate-x-1" />
+                  <ArrowRight aria-hidden="true" className="h-4 w-4 shrink-0 text-ink-soft transition-transform duration-200 group-hover:translate-x-1" />
                 </Card>
               </Link>
             );
@@ -81,6 +77,7 @@ function Tile({ icon, value, label, tone = "brand" }: { icon: ReactNode; value: 
   return (
     <Card className="flex h-full flex-col items-start gap-4 p-5">
       <span
+        aria-hidden="true"
         className={`flex h-11 w-11 items-center justify-center rounded-xl [&>svg]:h-5 [&>svg]:w-5 ${tone === "whatsapp" ? "bg-[#25d366] text-white" : "bg-brand-50 text-brand-800"}`}
       >
         {icon}

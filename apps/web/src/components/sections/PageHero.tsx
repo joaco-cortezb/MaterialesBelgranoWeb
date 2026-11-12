@@ -17,7 +17,7 @@ export function PageHero({
 }) {
   return (
     <section className="relative isolate overflow-hidden bg-ink-dark text-white">
-      {image && (
+      {image ? (
         <Media
           src={image.url}
           alt={image.alt}
@@ -27,6 +27,8 @@ export function PageHero({
           quality={75}
           className="absolute inset-0 -z-10"
         />
+      ) : (
+        <div aria-hidden className="brand-slabs absolute inset-0 -z-10" />
       )}
       <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-t from-ink-dark via-ink-dark/75 to-ink-dark/40" />
       <Container className="py-20 sm:py-28">

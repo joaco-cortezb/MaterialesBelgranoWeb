@@ -15,7 +15,7 @@ import { whatsappGoHref } from "@/lib/whatsapp";
 export function HomeHero({ slides, title, text, nextSectionId }: { slides: HeroSlide[]; title: string; text?: string; nextSectionId?: string }) {
   return (
     <section className="relative isolate flex min-h-[calc(100svh-4rem)] max-h-[1000px] items-center justify-center overflow-hidden bg-ink-dark text-white sm:min-h-[calc(100svh-5rem)]">
-      <HeroSlides slides={slides} />
+      {slides.length > 0 ? <HeroSlides slides={slides} /> : <div aria-hidden className="brand-slabs absolute inset-0 -z-20" />}
 
       {/* Velo: más oscuro abajo y al centro para que el texto siempre se lea. */}
       <div aria-hidden className="absolute inset-0 -z-10 bg-ink-dark/45" />
@@ -30,12 +30,13 @@ export function HomeHero({ slides, title, text, nextSectionId }: { slides: HeroS
           <h1 className="text-balance text-[2rem] font-extrabold leading-[1.06] tracking-tight sm:text-5xl lg:text-[3.75rem]">{title}</h1>
           {text && <p className="mx-auto mt-4 max-w-xl text-pretty text-base font-light leading-relaxed text-white/85 sm:mt-5 sm:text-lg">{text}</p>}
 
-          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:mt-10 sm:flex-row">
+          {/* En celular los dos botones miden lo mismo: se leen como un par. */}
+          <div className="mx-auto mt-8 flex max-w-xs flex-col items-center justify-center gap-3 sm:mt-10 sm:max-w-none sm:flex-row sm:gap-4">
             <TrackedLink
               href={whatsappGoHref("inicio")}
               event="whatsapp_click"
               params={{ source: "inicio" }}
-              className="pressable inline-flex min-h-13 items-center gap-2.5 whitespace-nowrap rounded-full bg-brand-500 px-7 text-base font-semibold text-ink-dark !duration-500 hover:bg-white"
+              className="pressable inline-flex min-h-13 w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-brand-500 px-7 text-base font-semibold text-ink-dark !duration-500 hover:bg-white sm:w-auto"
             >
               <FaWhatsapp className="h-5 w-5" aria-hidden />
               Consultar por WhatsApp
@@ -43,7 +44,7 @@ export function HomeHero({ slides, title, text, nextSectionId }: { slides: HeroS
 
             <Link
               href={ROUTES.rubros}
-              className="pressable group inline-flex min-h-13 items-center gap-2 rounded-full border border-white/60 px-7 text-base font-semibold text-white backdrop-blur-sm !duration-500 hover:border-white hover:bg-white hover:text-ink-dark"
+              className="pressable group inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-full border border-white/60 px-7 text-base font-semibold text-white backdrop-blur-sm !duration-500 hover:border-white hover:bg-white hover:text-ink-dark sm:w-auto"
             >
               Ver soluciones <FaArrowRight className="h-3.5 w-3.5 transition-transform duration-500 group-hover:translate-x-1" aria-hidden />
             </Link>

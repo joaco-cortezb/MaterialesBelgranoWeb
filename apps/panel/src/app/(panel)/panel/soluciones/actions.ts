@@ -5,7 +5,7 @@ import { categorySchema } from "@mb/shared";
 import { prisma } from "@/lib/prisma";
 import { requireSection } from "@/lib/auth";
 import { revalidateWeb } from "@/lib/revalidate";
-import { assertConfigured, assertMutationAllowed, attempt, fail, firstIssue, moveInList, ok, type ActionResult } from "@/lib/actions";
+import { assertConfigured, assertMutationAllowed, attempt, fail, firstIssue, ok, reorderChanges, type ActionResult } from "@/lib/actions";
 
 const PATH = "/panel/soluciones";
 
@@ -18,9 +18,9 @@ async function guard(): Promise<ActionResult | null> {
   return null;
 }
 
-async function finish(message?: string, alsoBrands = false): Promise<ActionResult> {
-  await revalidateWeb("categories");
-  if (alsoBrands) await revalidateWeb("brands");
+/** `warm`: sólo si se cargó o cambió la imagen (la web precalienta una sola vez). */
+async function finish(message?: string, alsoBrands = false, warm = false): Promise<ActionResult> {
+  revalidateWeb(alsoBrands ? ["categories", "brands"] : "categories", { warm });
   revalidatePath(PATH);
   return ok(message);
 }
@@ -53,11 +53,13 @@ export async function saveCategory(id: string, formData: FormData): Promise<Acti
   };
 
   let slugChanged = false;
+  let imageChanged = Boolean(data.image);
   try {
     if (id) {
-      const current = await prisma.category.findUnique({ where: { id }, select: { slug: true } });
+      const current = await prisma.category.findUnique({ where: { id }, select: { slug: true, image: true } });
       if (!current) return fail("La solución no existe.");
       slugChanged = current.slug !== d.slug;
+      imageChanged = Boolean(data.image) && data.image !== current.image;
       await prisma.$transaction([
         prisma.category.update({ where: { id }, data }),
         // Las marcas quedan asociadas aunque cambie la URL.
@@ -71,7 +73,7 @@ export async function saveCategory(id: string, formData: FormData): Promise<Acti
     console.error("No se pudo guardar la solución", error);
     return fail("No se pudo guardar la solución.");
   }
-  return finish("Solución guardada.", slugChanged);
+  return finish("Solución guardada.", slugChanged, imageChanged);
 }
 
 export async function deleteCategory(id: string): Promise<ActionResult> {
@@ -103,11 +105,11 @@ export async function reorderCategory(id: string, dir: -1 | 1): Promise<ActionRe
   const blocked = await guard();
   if (blocked) return blocked;
 
-  const items = await prisma.category.findMany({ orderBy: [{ order: "asc" }, { createdAt: "asc" }], select: { id: true } });
-  const ids = moveInList(items.map((item) => item.id), id, dir);
-  if (!ids) return ok();
+  const items = await prisma.category.findMany({ orderBy: [{ order: "asc" }, { createdAt: "asc" }], select: { id: true, order: true } });
+  const changes = reorderChanges(items, id, dir);
+  if (!changes?.length) return ok();
   const failed = await attempt(
-    () => prisma.$transaction(ids.map((categoryId, order) => prisma.category.update({ where: { id: categoryId }, data: { order } }))),
+    () => prisma.$transaction(changes.map((change) => prisma.category.update({ where: { id: change.id }, data: { order: change.order } }))),
     "No se pudo cambiar el orden.",
   );
   if (failed) return failed;

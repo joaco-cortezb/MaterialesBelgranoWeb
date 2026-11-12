@@ -59,31 +59,36 @@
   --default-transition-timing-function: var(--ease-out-strong);
 }
 
-* {
-  border-color: var(--line);
-}
+/* Las reglas de base van en `@layer base`: sin capa le ganan a todas las
+   utilidades de Tailwind v4 (ningún `border-*` de color ni `rounded-*` en
+   foco se aplicaba). */
+@layer base {
+  * {
+    border-color: var(--line);
+  }
 
-/* Scroll suave sólo para anclas de la misma página: con
-   `data-scroll-behavior="smooth"` Next lo desactiva al cambiar de ruta, así
-   la página nueva aparece arriba directamente. */
-html {
-  scroll-behavior: smooth;
-}
+  /* Scroll suave sólo para anclas de la misma página: con
+     `data-scroll-behavior="smooth"` Next lo desactiva al cambiar de ruta, así
+     la página nueva aparece arriba directamente. */
+  html {
+    scroll-behavior: smooth;
+  }
 
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  overflow-x: hidden;
-}
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
 
-/* Un solo anillo de foco limpio, visible sobre fondos claros y oscuros. */
-:where(a, button, [tabindex], input, textarea, select, summary):focus-visible {
-  outline: 2px solid var(--color-brand-600);
-  outline-offset: 3px;
-  border-radius: 4px;
+  /* Un solo anillo de foco limpio, visible sobre fondos claros y oscuros. */
+  :where(a, button, [tabindex], input, textarea, select, summary):focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
 }
 
 ::selection {
@@ -116,6 +121,10 @@ body {
     transform: translateY(-3px);
     box-shadow: 0 14px 32px -16px rgba(36, 38, 31, 0.28);
     border-color: var(--color-brand-300);
+  }
+  /* Al apretar baja: sin esto el hover le gana al `:active` de `.pressable`. */
+  .card-hover:active {
+    transform: translateY(-1px) scale(0.98);
   }
 }
 
@@ -226,7 +235,8 @@ body {
     transition: none;
   }
   .pressable:active,
-  .card-hover:hover {
+  .card-hover:hover,
+  .card-hover:active {
     transform: none;
   }
 }

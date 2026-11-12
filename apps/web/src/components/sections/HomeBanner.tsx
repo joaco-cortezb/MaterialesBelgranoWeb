@@ -12,9 +12,9 @@ export const BANNER_SIZES = {
 
 /**
  * Banner: sólo imagen (el diseño ya trae su texto). Un `<picture>` con la
- * versión de celular y la de computadora: el navegador baja una sola. Se
- * pide sin esperar a que el usuario llegue (prioridad baja), así ya está
- * cuando aparece. Si el panel le cargó un link, el banner entero lo abre.
+ * versión de celular y la de computadora: el navegador baja una sola. Van
+ * siempre lejos de la portada: carga diferida (el navegador la pide antes de
+ * que llegue a verse). Si el panel le cargó un link, el banner entero lo abre.
  */
 export function HomeBanner({ banner, className }: { banner: Banner; className?: string }) {
   const [width, height] = BANNER_SIZE;
@@ -29,8 +29,7 @@ export function HomeBanner({ banner, className }: { banner: Banner; className?: 
     width: mobileWidth,
     height: mobileHeight,
     sizes: BANNER_SIZES.mobile,
-    loading: "eager",
-    fetchPriority: "low",
+    loading: "lazy",
   });
 
   const picture = (
