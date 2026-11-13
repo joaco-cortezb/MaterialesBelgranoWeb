@@ -3,8 +3,8 @@ import { cn } from "@mb/shared";
 
 /**
  * Lo que se ve cuando un slot todavía no tiene foto. En vez de un degradé
- * genérico, repite el motivo del isotipo (las tres losas en perspectiva) sobre
- * el gris oscuro de marca, con el ícono de la sección en verde.
+ * genérico, usa la trama del manual (el isotipo MB repetido) sobre
+ * el negro de marca, con el ícono de la sección en verde.
  */
 export function BrandPlaceholder({ icon, className }: { icon: ReactNode; className?: string }) {
   return (

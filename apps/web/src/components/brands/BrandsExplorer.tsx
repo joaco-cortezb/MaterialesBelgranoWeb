@@ -49,7 +49,7 @@ export function BrandsExplorer({ groups }: { groups: Group[] }) {
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-500 text-ink-dark">
                 <RubroIcon slug={group.slug} className="h-4 w-4" />
               </span>
-              <h2 id={`marcas-${group.slug}`} className="text-lg font-bold tracking-tight text-ink-dark sm:text-xl">
+              <h2 id={`marcas-${group.slug}`} className="text-base font-bold tracking-tight text-ink-dark sm:text-lg">
                 {group.name}
               </h2>
               <span aria-hidden className="h-px flex-1 bg-line" />

@@ -1,25 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  --color-brand-50: #f4fae9;
-  --color-brand-100: #e6f3cc;
-  --color-brand-200: #cde79a;
-  --color-brand-300: #b0d866;
-  --color-brand-400: #95ca3d;
-  --color-brand-500: #7cb928;
-  --color-brand-600: #65981f;
-  --color-brand-700: #4f771a;
-  --color-brand-800: #3f5d18;
+  --color-brand-50: #eef7eb;
+  --color-brand-100: #ddf0d7;
+  --color-brand-200: #c2e5b8;
+  --color-brand-300: #a6dc98;
+  --color-brand-400: #8fd27d;
+  --color-brand-500: #77c563;
+  --color-brand-600: #4e9a3d;
+  --color-brand-700: #3b7a2e;
+  --color-brand-800: #2f6126;
 
-  --bg: #f3f5ee;
+  /* Manual de marca 2026: verde #77C563, negro #232323, claro #F4F5F7. */
+  --bg: #f4f5f7;
   --surface: #ffffff;
-  --surface-2: #eaeee2;
-  --ink: #24261f;
-  --ink-soft: #646464;
-  --line: #dcdfd4;
-  --brand: #7cb928;
-  --brand-ink: #24261f;
-  --sidebar: #24261f;
+  --surface-2: #e8ebee;
+  --ink: #232323;
+  --ink-soft: #5c6466;
+  --line: #d8dcdf;
+  --brand: #77c563;
+  --brand-ink: #232323;
+  --sidebar: #232323;
 
   --color-success: #1f7a44;
   --color-success-bg: #e7f4ec;
@@ -59,7 +60,8 @@
   --color-warning: var(--color-warning);
   --color-warning-bg: var(--color-warning-bg);
 
-  --font-sans: var(--font-montserrat);
+  --font-sans: var(--font-abacaxi);
+  --font-display: var(--font-arupala);
   --default-transition-duration: 160ms;
   --default-transition-timing-function: var(--ease-out-strong);
 }
@@ -70,6 +72,11 @@
 @layer base {
   * {
     border-color: var(--line);
+  }
+
+  h1,
+  h2 {
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
   }
 
   body {
@@ -165,7 +172,7 @@
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(36, 38, 31, 0.05), transparent);
+  background: linear-gradient(90deg, transparent, rgba(35, 35, 35, 0.05), transparent);
   animation: shimmer 1.4s infinite;
 }
 

@@ -62,7 +62,7 @@ export default async function RubroPage(props: PageProps<"/soluciones/[slug]">) 
           </div>
           {rubro.subcategories.length > 0 && (
           <aside className="rounded-3xl border border-line bg-surface p-7 sm:p-8">
-            <h2 className="font-condensed text-sm font-semibold uppercase tracking-[0.18em] text-brand-700">Qué incluye</h2>
+            <h2 className="font-sub text-xs font-medium uppercase tracking-[0.12em] text-brand-700">Qué incluye</h2>
             <ul className="mt-5 space-y-3">
               {rubro.subcategories.map((item) => (
                 <li key={item} className="flex gap-3 text-[15px] text-ink">
@@ -105,7 +105,7 @@ export default async function RubroPage(props: PageProps<"/soluciones/[slug]">) 
 
       <nav aria-label="Otras soluciones" className="border-t border-line bg-surface py-10">
         <Container>
-          <p className="font-condensed text-sm font-semibold uppercase tracking-[0.18em] text-ink-soft">Otras soluciones</p>
+          <p className="font-sub text-xs font-medium uppercase tracking-[0.12em] text-ink-soft">Otras soluciones</p>
           <ul className="mt-4 flex flex-wrap gap-2">
             {others.map((item) => (
               <li key={item.slug}>

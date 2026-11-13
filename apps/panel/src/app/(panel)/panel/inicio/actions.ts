@@ -30,5 +30,5 @@ export async function saveHomeVideo(formData: FormData): Promise<ActionResult> {
 
   revalidateWeb("settings");
   revalidatePath("/panel/inicio");
-  return ok(parsed.data.videoUrl ? "Video guardado." : "Video quitado del inicio.");
+  return ok(parsed.data.videoUrl ? "Video guardado." : "Listo: el inicio muestra el video de marca.");
 }

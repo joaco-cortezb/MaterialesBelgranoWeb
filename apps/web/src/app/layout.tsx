@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Barlow_Condensed, Montserrat } from "next/font/google";
+import localFont from "next/font/local";
 import { SITE } from "@mb/shared";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
@@ -13,23 +13,24 @@ import { BASE_OPEN_GRAPH } from "@/lib/metadata";
 import { env } from "@/lib/env";
 
 /**
- * Montserrat ExtraBold es la tipografía de títulos del manual de marca; la
- * usamos también para el texto para no cargar una tercera familia. Barlow
- * Condensed reemplaza a DIN Condensed (no está en Google Fonts) en eyebrows,
- * etiquetas y cifras.
+ * Tipografías del manual de marca: Abacaxi Latin (variable, 100–700) para el
+ * texto y Arupala Grotesk para títulos y etiquetas. Van servidas desde el
+ * propio sitio (`src/fonts`), recortadas a caracteres latinos.
  */
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+const abacaxi = localFont({
+  src: "../fonts/abacaxi-latin-vf.woff2",
+  variable: "--font-abacaxi",
+  weight: "100 700",
   display: "swap",
 });
 
-const barlow = Barlow_Condensed({
-  variable: "--font-barlow",
-  subsets: ["latin"],
-  // Sólo los pesos que se usan (semibold y bold): el 500 no aparece en ningún lado.
-  weight: ["600", "700"],
+const arupala = localFont({
+  src: [
+    { path: "../fonts/arupala-grotesk-500.woff2", weight: "500" },
+    { path: "../fonts/arupala-grotesk-700.woff2", weight: "700" },
+    { path: "../fonts/arupala-grotesk-800.woff2", weight: "800" },
+  ],
+  variable: "--font-arupala",
   display: "swap",
 });
 
@@ -54,7 +55,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   const storageOrigin = safeOrigin(env.SUPABASE_URL);
 
   return (
-    <html lang="es-AR" data-scroll-behavior="smooth" className={`${montserrat.variable} ${barlow.variable} h-full antialiased`}>
+    <html lang="es-AR" data-scroll-behavior="smooth" className={`${abacaxi.variable} ${arupala.variable} h-full antialiased`}>
       <head>
         {storageOrigin && (
           <>

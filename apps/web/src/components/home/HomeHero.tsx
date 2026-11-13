@@ -27,7 +27,7 @@ export function HomeHero({ slides, title, text, nextSectionId }: { slides: HeroS
           <Eyebrow light className="mb-4 sm:mb-5">
             Materiales Belgrano
           </Eyebrow>
-          <h1 className="text-balance text-[2rem] font-extrabold leading-[1.06] tracking-tight sm:text-5xl lg:text-[3.75rem]">{title}</h1>
+          <h1 className="text-balance text-[1.6rem] font-extrabold leading-[1.1] tracking-tight sm:text-4xl lg:text-5xl">{title}</h1>
           {text && <p className="mx-auto mt-4 max-w-xl text-pretty text-base font-light leading-relaxed text-white/85 sm:mt-5 sm:text-lg">{text}</p>}
 
           {/* En celular los dos botones miden lo mismo: se leen como un par. */}

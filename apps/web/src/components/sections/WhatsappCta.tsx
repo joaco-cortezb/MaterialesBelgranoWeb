@@ -29,7 +29,7 @@ export function WhatsappCta({
         >
           <div aria-hidden className="brand-slabs absolute inset-0 -z-10 opacity-60 mix-blend-multiply" />
           <div className="max-w-2xl">
-            <h2 id={`cta-${source}`} className="text-balance text-3xl font-extrabold tracking-tight sm:text-4xl">
+            <h2 id={`cta-${source}`} className="text-balance text-2xl font-extrabold tracking-tight sm:text-3xl">
               {title}
             </h2>
             <p className="mt-3 text-pretty text-base text-ink-dark/75 sm:text-lg">{text}</p>

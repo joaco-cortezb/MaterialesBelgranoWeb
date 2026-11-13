@@ -1,27 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  /* ── Verde de marca #7CB928 y su rampa ── */
-  --color-brand-50: #f4fae9;
-  --color-brand-100: #e6f3cc;
-  --color-brand-200: #cde79a;
-  --color-brand-300: #b0d866;
-  --color-brand-400: #95ca3d;
-  --color-brand-500: #7cb928;
-  --color-brand-600: #65981f;
-  --color-brand-700: #4f771a;
-  --color-brand-800: #3f5d18;
-  --color-brand-900: #344c17;
+  /* ── Verde de marca #77C563 (manual 2026) y su rampa ── */
+  --color-brand-50: #eef7eb;
+  --color-brand-100: #ddf0d7;
+  --color-brand-200: #c2e5b8;
+  --color-brand-300: #a6dc98;
+  --color-brand-400: #8fd27d;
+  --color-brand-500: #77c563;
+  --color-brand-600: #4e9a3d;
+  --color-brand-700: #3b7a2e;
+  --color-brand-800: #2f6126;
+  --color-brand-900: #264c20;
 
-  /* ── Tokens semánticos (del manual de marca: #393c35, #646464, #ffed00) ── */
-  --ink: #393c35;
-  --ink-soft: #646464;
-  --ink-dark: #24261f;
-  --bg: #f7f8f4;
+  /* ── Tokens semánticos. Del manual: negro #232323, claro #F4F5F7 y los
+     secundarios #679C99 (verde agua) y #ACB4B5 (gris). El resto deriva de ahí. ── */
+  --ink: #3d3f41;
+  --ink-soft: #5c6466;
+  --ink-dark: #232323;
+  --bg: #f4f5f7;
   --surface: #ffffff;
-  --surface-2: #eef1e8;
-  --line: #dfe3d8;
-  --accent: #ffed00;
+  --surface-2: #e8ebee;
+  --line: #d8dcdf;
+  --teal: #679c99;
+  --stone: #acb4b5;
   --whatsapp: #25d366;
 
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
@@ -48,11 +50,16 @@
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-line: var(--line);
-  --color-accent: var(--accent);
+  --color-teal: var(--teal);
+  --color-stone: var(--stone);
   --color-whatsapp: var(--whatsapp);
 
-  --font-sans: var(--font-montserrat);
-  --font-condensed: var(--font-barlow);
+  /* Manual: Abacaxi para texto, Arupala Grotesk para títulos y Briller para
+     subtítulos. Briller todavía no está cargada (falta el kit de Adobe Fonts):
+     mientras tanto las etiquetas caen en Arupala. */
+  --font-sans: var(--font-abacaxi);
+  --font-display: var(--font-arupala);
+  --font-sub: "briller", var(--font-arupala);
 
   --ease-out-strong: var(--ease-out-strong);
   --default-transition-duration: 180ms;
@@ -72,6 +79,12 @@
      la página nueva aparece arriba directamente. */
   html {
     scroll-behavior: smooth;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
   }
 
   body {
@@ -119,7 +132,7 @@
   }
   .card-hover:hover {
     transform: translateY(-3px);
-    box-shadow: 0 14px 32px -16px rgba(36, 38, 31, 0.28);
+    box-shadow: 0 14px 32px -16px rgba(35, 35, 35, 0.28);
     border-color: var(--color-brand-300);
   }
   /* Al apretar baja: sin esto el hover le gana al `:active` de `.pressable`. */
@@ -251,7 +264,7 @@
   }
 }
 .bucly-shimmer {
-  background: linear-gradient(100deg, #c5cdb9 0%, #ffffff 40%, var(--color-brand-400) 50%, #ffffff 60%, #c5cdb9 100%);
+  background: linear-gradient(100deg, #c3c9cb 0%, #ffffff 40%, var(--color-brand-400) 50%, #ffffff 60%, #c3c9cb 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -280,18 +293,20 @@
 }
 
 /*
- * Motivo de marca para slots sin foto: franjas inclinadas como las losas del
- * isotipo (verde la cara frontal, gris el lateral), muy tenues.
+ * Trama del manual de marca (el isotipo repetido, una fila al derecho y otra
+ * espejada) para slots sin foto. Va muy tenue, en un pseudo-elemento, para no
+ * competir con el contenido.
  */
 .brand-slabs {
-  background-image:
-    repeating-linear-gradient(
-      -14deg,
-      transparent 0 34px,
-      rgba(124, 185, 40, 0.09) 34px 40px,
-      transparent 40px 72px
-    ),
-    radial-gradient(120% 90% at 85% 10%, rgba(124, 185, 40, 0.2), transparent 60%);
+  background-image: radial-gradient(120% 90% at 85% 10%, rgba(119, 197, 99, 0.2), transparent 60%);
+}
+.brand-slabs::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/brand/trama-mb.png") center / 127px auto;
+  opacity: 0.07;
+  pointer-events: none;
 }
 
 /* Cintas de logos de marcas (LogoMarquee). */

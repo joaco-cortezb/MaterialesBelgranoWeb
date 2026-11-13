@@ -59,7 +59,7 @@ export default async function NosotrosPage() {
             {FACTS.map((fact) => (
               <div key={fact.label}>
                 <dt className="sr-only">{fact.label}</dt>
-                <dd className="whitespace-nowrap font-condensed text-2xl font-bold tracking-tight text-brand-700 sm:text-5xl">{fact.value}</dd>
+                <dd className="whitespace-nowrap font-display text-xl font-extrabold tracking-tight text-brand-700 sm:text-4xl">{fact.value}</dd>
                 <dd className="mt-1 text-[13px] leading-snug text-ink-soft sm:text-sm">{fact.label}</dd>
               </div>
             ))}

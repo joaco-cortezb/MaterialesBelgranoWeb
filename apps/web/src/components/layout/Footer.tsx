@@ -22,14 +22,14 @@ export function Footer() {
       <Container className="py-10 sm:py-12">
         <div className="grid gap-10 lg:grid-cols-[auto_1fr] lg:items-start lg:gap-20">
           <Link href={ROUTES.home} aria-label={`${SITE.name}: ir al inicio`} className="shrink-0 justify-self-center transition-transform duration-300 hover:scale-[1.03] lg:justify-self-start">
-            {/* Mismo logo que el menú, con "BELGRANO" en blanco para el fondo oscuro. */}
+            {/* Mismo logo que el menú, en su versión para fondo oscuro. */}
             <Image
-              src="/brand/logo-materiales-belgrano-h-footer.png"
+              src="/brand/logo-mb-claro.png"
               alt={SITE.name}
-              width={3272}
-              height={1488}
-              sizes="320px"
-              className="h-28 w-auto sm:h-36"
+              width={1200}
+              height={318}
+              sizes="280px"
+              className="h-14 w-auto sm:h-[4.5rem]"
             />
           </Link>
 

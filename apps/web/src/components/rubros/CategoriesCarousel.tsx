@@ -115,7 +115,7 @@ function Slide({ category, active }: { category: Category; active: boolean }) {
       )}
       <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink-dark via-ink-dark/45 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-6 pb-7 text-center sm:px-8 sm:pb-9">
-        <h3 className="text-balance text-2xl font-extrabold tracking-tight sm:text-[1.7rem]">{category.name}</h3>
+        <h3 className="text-balance text-xl font-extrabold tracking-tight sm:text-2xl">{category.name}</h3>
         <p className="mt-2 max-w-xs text-pretty text-sm leading-relaxed text-white/75 sm:text-[15px]">{category.summary}</p>
         <span className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-semibold backdrop-blur-sm transition-colors duration-200 group-hover:bg-brand-500 group-hover:text-ink-dark">
           Ver solución

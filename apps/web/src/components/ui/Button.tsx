@@ -6,7 +6,7 @@ type Variant = "primary" | "dark" | "outline" | "outline-light" | "whatsapp";
 type Size = "md" | "lg" | "compact";
 
 /**
- * Verde de marca con texto oscuro a propósito: blanco sobre #7CB928 no llega
+ * Verde de marca con texto oscuro a propósito: blanco sobre #77C563 no llega
  * al contraste AA. El botón de WhatsApp sigue la misma regla.
  */
 const VARIANTS: Record<Variant, string> = {

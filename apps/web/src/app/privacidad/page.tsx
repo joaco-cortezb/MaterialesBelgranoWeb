@@ -27,7 +27,7 @@ export default function PrivacidadPage() {
       <article className="py-16 sm:py-24">
         <Container width="text">
           <Eyebrow className="mb-3">Legales</Eyebrow>
-          <h1 className="text-balance text-4xl font-extrabold tracking-tight text-ink-dark sm:text-5xl">Privacidad y cookies</h1>
+          <h1 className="text-balance text-3xl font-extrabold tracking-tight text-ink-dark sm:text-4xl">Privacidad y cookies</h1>
           <p className="mt-4 text-sm text-ink-soft">Última actualización: {UPDATED}</p>
 
           <div className="mt-10 space-y-10 text-[16px] leading-relaxed text-ink [&_h2]:text-xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:text-ink-dark [&_p]:mt-3 [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5">

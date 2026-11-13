@@ -19,7 +19,7 @@ export function PageBanner({ slides, eyebrow, title, text }: { slides: HeroSlide
             {eyebrow}
           </Eyebrow>
         )}
-        <h1 className="text-balance text-3xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl">{title}</h1>
+        <h1 className="text-balance text-2xl font-extrabold leading-[1.1] tracking-tight sm:text-4xl">{title}</h1>
         {text && <p className="mx-auto mt-4 max-w-xl text-pretty text-base text-white/80 sm:text-lg">{text}</p>}
       </div>
     </section>

@@ -105,7 +105,7 @@ export function PanelShell({ user, role, webUrl, children }: { user: User; role:
       >
         <div className="flex h-[72px] items-center justify-between px-5">
           <Link href="/panel" className="flex items-center gap-3 rounded-lg" aria-label="Ir al inicio del panel">
-            <Image src="/brand/isotipo.png" alt="" width={36} height={36} className="h-9 w-9" />
+            <Image src="/brand/isotipo-mb.png" alt="" width={300} height={193} className="h-7 w-auto" />
             <span className="leading-tight">
               <span className="block text-sm font-extrabold tracking-tight">Materiales Belgrano</span>
               <span className="block text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300">Panel</span>
@@ -174,7 +174,7 @@ export function PanelShell({ user, role, webUrl, children }: { user: User; role:
       <div className="flex min-h-screen flex-col lg:pl-[var(--w)]" style={{ "--w": `${SIDEBAR_WIDTH}px` } as React.CSSProperties}>
         <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-white/10 bg-sidebar px-4 py-1.5 text-white lg:hidden">
           <Link href="/panel" className="flex min-h-11 min-w-0 items-center gap-2 rounded-lg text-sm font-extrabold tracking-tight">
-            <Image src="/brand/isotipo.png" alt="" width={28} height={28} className="h-7 w-7 shrink-0" />
+            <Image src="/brand/isotipo-mb.png" alt="" width={300} height={193} className="h-5 w-auto shrink-0" />
             <span className="truncate">{currentLabel}</span>
           </Link>
           <button

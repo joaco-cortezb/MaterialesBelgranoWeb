@@ -7,14 +7,14 @@ import Image from "next/image";
 export function AuthShell({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
     <div className="relative grid min-h-svh place-items-center bg-sidebar px-4 pb-10 pt-32 sm:py-32">
-      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(124,185,40,0.25),transparent_60%)]" />
+      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(119,197,99,0.22),transparent_60%)]" />
       <Image
-        src="/brand/logo-materiales-belgrano-h-footer.png"
+        src="/brand/logo-mb-claro.png"
         alt="Materiales Belgrano"
-        width={3272}
-        height={1488}
+        width={800}
+        height={212}
         priority
-        className="absolute left-1/2 top-8 h-auto w-[170px] -translate-x-1/2 sm:top-12 sm:w-[200px]"
+        className="absolute left-1/2 top-8 h-auto w-[200px] -translate-x-1/2 sm:top-12 sm:w-[230px]"
       />
       <div className="animate-fade-up relative w-full max-w-[400px]">
         <div className="rounded-2xl border border-white/10 bg-surface p-7 shadow-2xl">

@@ -36,7 +36,7 @@ export function HomeVideoForm({ initialUrl, loadError = false }: { initialUrl: s
     <div>
       <PageHeader
         title="Video del inicio"
-        subtitle="Un video de YouTube que aparece en el inicio, debajo de la portada. Arranca solo y sin sonido cuando el visitante llega a esa parte."
+        subtitle="El inicio muestra el video de marca debajo de la portada. Si cargás un link de YouTube acá, se muestra ese en su lugar. Arranca solo y sin sonido cuando el visitante llega a esa parte."
       />
       {loadError && <LoadErrorNotice what="los datos del video" />}
       <div className="mx-auto grid max-w-4xl gap-5">
@@ -44,7 +44,7 @@ export function HomeVideoForm({ initialUrl, loadError = false }: { initialUrl: s
           <div className="flex items-center justify-between gap-3">
             <h2 className="font-bold text-ink">Link del video</h2>
             <Badge tone={savedId ? "green" : "gray"}>
-              {savedId ? "Publicado" : "Sin video"}
+              {savedId ? "YouTube publicado" : "Video de marca"}
             </Badge>
           </div>
           <div>
@@ -113,7 +113,7 @@ export function HomeVideoForm({ initialUrl, loadError = false }: { initialUrl: s
                 <p className="text-sm">
                   {invalid
                     ? "Revisá el link."
-                    : "Pegá un link para ver el video acá."}
+                    : "Sin link, el inicio muestra el video de marca. Pegá un link de YouTube para reemplazarlo."}
                 </p>
               </div>
             )}
@@ -123,8 +123,8 @@ export function HomeVideoForm({ initialUrl, loadError = false }: { initialUrl: s
 
       <ConfirmDialog
         open={confirmRemove}
-        title="¿Quitar el video del inicio?"
-        message="La sección del video deja de verse en la web. Podés volver a publicarlo pegando el link de nuevo."
+        title="¿Quitar el video de YouTube?"
+        message="El inicio vuelve a mostrar el video de marca. Podés volver a publicar el de YouTube pegando el link de nuevo."
         confirmLabel="Quitar video"
         danger
         loading={pending}
