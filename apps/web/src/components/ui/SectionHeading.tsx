@@ -6,7 +6,7 @@ export function Eyebrow({ children, className, light = false }: { children: Reac
   return (
     <p
       className={cn(
-        "font-sub text-xs font-medium uppercase tracking-[0.16em] sm:text-[13px]",
+        "font-sub text-xs uppercase tracking-[0.06em] sm:text-[13px]",
         light ? "text-brand-300" : "text-brand-700",
         className,
       )}

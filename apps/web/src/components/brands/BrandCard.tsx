@@ -31,7 +31,7 @@ export function BrandCard({ brand, source }: { brand: Brand; source: string }) {
       ) : (
         <span className="text-balance text-center text-base font-bold leading-tight tracking-tight text-ink-dark">{brand.name}</span>
       )}
-      <span className="inline-flex items-center gap-1 font-sub text-[11px] font-medium uppercase tracking-[0.1em] text-ink-soft transition-colors duration-200 group-hover:text-brand-700">
+      <span className="inline-flex items-center gap-1 font-sub text-[11px] uppercase tracking-[0.04em] text-ink-soft transition-colors duration-200 group-hover:text-brand-700">
         Ver catálogo
         <LuArrowUpRight className="h-3.5 w-3.5 transition-transform duration-200 ease-[var(--ease-out-strong)] group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
       </span>

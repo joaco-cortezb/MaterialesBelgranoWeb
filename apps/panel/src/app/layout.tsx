@@ -19,6 +19,13 @@ const arupala = localFont({
   display: "swap",
 });
 
+const briller = localFont({
+  src: "../fonts/briller-400.woff2",
+  variable: "--font-briller",
+  weight: "400",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: { default: "Panel · Materiales Belgrano", template: "%s · Panel MB" },
   description: "Panel de administración de la web de Materiales Belgrano.",
@@ -27,7 +34,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es-AR" className={`${abacaxi.variable} ${arupala.variable} h-full antialiased`}>
+    <html lang="es-AR" className={`${abacaxi.variable} ${arupala.variable} ${briller.variable} h-full antialiased`}>
       <body className="min-h-full">
         <ToastProvider>{children}</ToastProvider>
       </body>

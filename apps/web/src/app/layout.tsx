@@ -14,7 +14,7 @@ import { env } from "@/lib/env";
 
 /**
  * Tipografías del manual de marca: Abacaxi Latin (variable, 100–700) para el
- * texto y Arupala Grotesk para títulos y etiquetas. Van servidas desde el
+ * texto, Arupala Grotesk para títulos y Briller para subtítulos y etiquetas. Van servidas desde el
  * propio sitio (`src/fonts`), recortadas a caracteres latinos.
  */
 const abacaxi = localFont({
@@ -31,6 +31,13 @@ const arupala = localFont({
     { path: "../fonts/arupala-grotesk-800.woff2", weight: "800" },
   ],
   variable: "--font-arupala",
+  display: "swap",
+});
+
+const briller = localFont({
+  src: "../fonts/briller-400.woff2",
+  variable: "--font-briller",
+  weight: "400",
   display: "swap",
 });
 
@@ -55,7 +62,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   const storageOrigin = safeOrigin(env.SUPABASE_URL);
 
   return (
-    <html lang="es-AR" data-scroll-behavior="smooth" className={`${abacaxi.variable} ${arupala.variable} h-full antialiased`}>
+    <html lang="es-AR" data-scroll-behavior="smooth" className={`${abacaxi.variable} ${arupala.variable} ${briller.variable} h-full antialiased`}>
       <head>
         {storageOrigin && (
           <>

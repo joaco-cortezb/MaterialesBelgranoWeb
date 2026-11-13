@@ -55,11 +55,10 @@
   --color-whatsapp: var(--whatsapp);
 
   /* Manual: Abacaxi para texto, Arupala Grotesk para títulos y Briller para
-     subtítulos. Briller todavía no está cargada (falta el kit de Adobe Fonts):
-     mientras tanto las etiquetas caen en Arupala. */
+     subtítulos y etiquetas. */
   --font-sans: var(--font-abacaxi);
   --font-display: var(--font-arupala);
-  --font-sub: "briller", var(--font-arupala);
+  --font-sub: var(--font-briller);
 
   --ease-out-strong: var(--ease-out-strong);
   --default-transition-duration: 180ms;

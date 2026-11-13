@@ -108,7 +108,7 @@ export function PanelShell({ user, role, webUrl, children }: { user: User; role:
             <Image src="/brand/isotipo-mb.png" alt="" width={300} height={193} className="h-7 w-auto" />
             <span className="leading-tight">
               <span className="block text-sm font-extrabold tracking-tight">Materiales Belgrano</span>
-              <span className="block text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300">Panel</span>
+              <span className="block font-sub text-[10px] uppercase tracking-[0.08em] text-brand-300">Panel</span>
             </span>
           </Link>
           <button ref={closeButtonRef} type="button" onClick={() => setMobileOpen(false)} aria-label="Cerrar menú" className={cn(DARK_ICON_BUTTON, "-mr-2 lg:hidden")}>

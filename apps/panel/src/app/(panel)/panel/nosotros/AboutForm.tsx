@@ -58,7 +58,7 @@ export function AboutForm({ initialHeadline, initialBody, saved }: { initialHead
         <Card className="p-5 sm:p-6">
           <h3 className="font-bold text-ink">Vista previa</h3>
           <div className="mt-4 overflow-hidden rounded-xl bg-sidebar px-5 py-8 text-center text-white">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300">Nosotros</p>
+            <p className="font-sub text-[11px] uppercase tracking-[0.06em] text-brand-300">Nosotros</p>
             <p className="mt-2 text-balance text-xl font-extrabold leading-tight">{headline || "Título"}</p>
           </div>
           <div className="mt-5 space-y-3 text-center text-[15px] leading-relaxed text-ink">
