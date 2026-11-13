@@ -40,52 +40,73 @@ export default async function PanelHome() {
 
       {stats === null && <LoadErrorNotice what="los números del resumen" />}
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        <Tile icon={<FaWhatsapp />} tone="whatsapp" value={stats?.clicks30 ?? "—"} label={`Consultas por WhatsApp (${DAYS} días)`} />
-        <Tile icon={<MousePointerClick />} value={stats?.clicksTotal ?? "—"} label="Consultas por WhatsApp (total)" />
-        <Tile icon={<Tags />} value={stats?.brands ?? "—"} label="Marcas visibles" />
-        <Tile icon={<LayoutGrid />} value={stats?.categories ?? "—"} label="Soluciones visibles" />
-      </div>
+      {/* Números del resumen: un solo panel dividido en columnas con encabezado. */}
+      <Card className="grid grid-cols-2 overflow-hidden lg:grid-cols-4">
+        <Tile icon={<FaWhatsapp />} tone="whatsapp" value={stats?.clicks30 ?? "—"} label={`WhatsApp · ${DAYS} días`} hint="Consultas del último mes" className="border-b border-r lg:border-b-0" />
+        <Tile icon={<MousePointerClick />} value={stats?.clicksTotal ?? "—"} label="WhatsApp · total" hint="Consultas desde el inicio" className="border-b lg:border-b-0 lg:border-r" />
+        <Tile icon={<Tags />} value={stats?.brands ?? "—"} label="Marcas" hint="Visibles en la web" className="border-r" />
+        <Tile icon={<LayoutGrid />} value={stats?.categories ?? "—"} label="Soluciones" hint="Visibles en la web" />
+      </Card>
 
       <section className="mt-10">
         <h2 className="mb-4 text-lg font-bold text-ink">Qué podés administrar</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Accesos en grilla con líneas finas: la barra de la izquierda crece y se pone verde al pasar el mouse. */}
+        <Card className="overflow-hidden">
+          <div className="-mb-px -mr-px grid sm:grid-cols-2 lg:grid-cols-3">
           {shortcuts.map((item) => {
             const Icon = item.icon;
             return (
-              <Link key={item.href} href={item.href} className="group rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-2">
-                <Card className="flex h-full items-center gap-4 p-5 transition-[translate,scale,border-color] duration-200 group-hover:-translate-y-0.5 group-hover:border-brand-300 group-active:scale-[0.99]">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-800 transition-colors duration-200 group-hover:bg-brand group-hover:text-brand-ink">
-                    <Icon className="h-6 w-6" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <div className="font-semibold text-ink">{item.label}</div>
-                    <div className="text-sm text-ink-soft">{item.description}</div>
-                  </div>
-                  <ArrowRight aria-hidden="true" className="h-4 w-4 shrink-0 text-ink-soft transition-transform duration-200 group-hover:translate-x-1" />
-                </Card>
+              <Link
+                key={item.href}
+                href={item.href}
+                className="group relative flex items-center gap-4 border-b border-r border-line px-6 py-6 transition-colors duration-200 hover:bg-brand-50 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500/70 active:bg-brand-100"
+              >
+                <span aria-hidden="true" className="absolute inset-y-0 left-0 my-auto h-6 w-1 rounded-r-full bg-line transition-[height,background-color] duration-200 group-hover:h-10 group-hover:bg-brand" />
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-bg text-ink transition-colors duration-200 group-hover:bg-brand group-hover:text-brand-ink">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <span className="min-w-0 flex-1 transition-transform duration-200 group-hover:translate-x-1 motion-reduce:transform-none">
+                  <span className="block font-semibold text-ink">{item.label}</span>
+                  <span className="block text-sm text-ink-soft">{item.description}</span>
+                </span>
+                <ArrowRight aria-hidden="true" className="h-4 w-4 shrink-0 text-ink-soft transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
             );
           })}
-        </div>
+          </div>
+        </Card>
       </section>
     </div>
   );
 }
 
-function Tile({ icon, value, label, tone = "brand" }: { icon: ReactNode; value: string | number; label: string; tone?: "brand" | "whatsapp" }) {
+function Tile({
+  icon,
+  value,
+  label,
+  hint,
+  tone = "brand",
+  className = "",
+}: {
+  icon: ReactNode;
+  value: string | number;
+  label: string;
+  hint: string;
+  tone?: "brand" | "whatsapp";
+  className?: string;
+}) {
   return (
-    <Card className="flex h-full flex-col items-start gap-4 p-5">
-      <span
-        aria-hidden="true"
-        className={`flex h-11 w-11 items-center justify-center rounded-xl [&>svg]:h-5 [&>svg]:w-5 ${tone === "whatsapp" ? "bg-[#25d366] text-white" : "bg-brand-50 text-brand-800"}`}
-      >
-        {icon}
-      </span>
-      <div>
-        <div className="text-3xl font-extrabold leading-none tracking-tight text-ink tabular-nums">{value}</div>
-        <div className="mt-2 text-sm leading-snug text-ink-soft">{label}</div>
+    <div className={`flex min-w-0 flex-col border-line ${className}`}>
+      <div className="flex items-center gap-2 border-b border-line bg-bg px-4 py-2.5 text-[13px] font-semibold text-ink sm:px-5">
+        <span aria-hidden="true" className={`shrink-0 [&>svg]:h-4 [&>svg]:w-4 ${tone === "whatsapp" ? "text-[#128c4b]" : "text-brand-700"}`}>
+          {icon}
+        </span>
+        <span className="truncate">{label}</span>
       </div>
-    </Card>
+      <div className="px-4 py-5 sm:px-5">
+        <div className="text-3xl font-extrabold leading-none tracking-tight text-ink tabular-nums sm:text-4xl">{value}</div>
+        <div className="mt-2 text-sm leading-snug text-ink-soft">{hint}</div>
+      </div>
+    </div>
   );
 }

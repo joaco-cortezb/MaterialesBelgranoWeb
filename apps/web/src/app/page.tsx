@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/SectionHeading";
 import { LogoMarquee } from "@/components/brands/LogoMarquee";
 import { CategoriesCarousel } from "@/components/rubros/CategoriesCarousel";
-import { ServicioIcon } from "@/components/servicios/ServicioIcon";
+import { ServiciosGrid } from "@/components/servicios/ServiciosGrid";
 import { YouTubeAutoplay } from "@/components/home/YouTubeAutoplay";
 import { BrandReel } from "@/components/home/BrandReel";
 import { HomeHero } from "@/components/home/HomeHero";
@@ -125,7 +125,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* Por qué elegirnos: seis cards iguales, compactas, en una pantalla. */}
+      {/* Por qué elegirnos: grilla de características con líneas finas. */}
       <section id="servicios" aria-labelledby="servicios-title" className="py-14 sm:py-16">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
@@ -134,28 +134,7 @@ export default async function HomePage() {
               Mismas marcas que todos. <span className="text-brand-600">Otra forma de atenderte.</span>
             </h2>
           </div>
-          {/* Un solo panel dividido con líneas finas: cada celda centrada, con un dato grande arriba. */}
-          <ul className="mx-auto mt-8 grid max-w-6xl gap-px overflow-hidden rounded-3xl border border-line bg-line sm:mt-10 sm:grid-cols-2 lg:grid-cols-3">
-            {SERVICIOS.map((servicio) => (
-              <li
-                key={servicio.slug}
-                id={servicio.slug}
-                className="group relative flex flex-col items-center overflow-hidden bg-surface px-6 py-7 text-center transition-colors duration-300 hover:bg-brand-50 sm:px-8 sm:py-10"
-              >
-                <ServicioIcon
-                  icon={servicio.icon}
-                  className="pointer-events-none absolute -right-3 -top-3 h-20 w-20 text-brand-500/10 transition-transform duration-500 group-hover:-rotate-6 group-hover:scale-110"
-                />
-                <p className="text-balance font-display text-lg font-extrabold uppercase leading-tight tracking-tight text-brand-600 sm:text-2xl xl:text-[1.7rem]">{servicio.stat}</p>
-                <span aria-hidden className="mt-4 h-0.5 w-8 rounded-full bg-brand-500 transition-[width] duration-300 group-hover:w-14" />
-                <h3 className="mt-4 text-sm font-bold tracking-tight text-ink-dark sm:text-base">
-                  <span className="sr-only">{servicio.title}: </span>
-                  <span aria-hidden>{servicio.label}</span>
-                </h3>
-                <p className="mt-2 max-w-[30ch] text-pretty text-sm leading-relaxed text-ink-soft sm:text-[15px]">{servicio.short}</p>
-              </li>
-            ))}
-          </ul>
+          <ServiciosGrid />
         </Container>
       </section>
 
