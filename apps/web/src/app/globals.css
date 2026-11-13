@@ -84,6 +84,13 @@
   h2,
   h3 {
     font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+    /* Arupala trae el espacio entre palabras muy angosto: con el interletrado
+       apretado de los títulos las palabras se pegaban ("Envíospor Andreani"). */
+    word-spacing: 0.16em;
+  }
+
+  .font-display {
+    word-spacing: 0.16em;
   }
 
   body {

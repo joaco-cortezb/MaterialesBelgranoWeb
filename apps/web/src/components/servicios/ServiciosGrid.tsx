@@ -49,7 +49,7 @@ export function ServiciosGrid() {
               {servicio.label}
             </span>
           </h3>
-          <p className="relative mt-2 max-w-xs px-7 text-pretty text-sm leading-relaxed text-ink-soft sm:px-9 sm:text-[15px]">{servicio.short}</p>
+          <p className="relative mt-2 px-7 text-pretty text-sm leading-relaxed text-ink-soft sm:px-9 sm:text-[15px]">{servicio.short}</p>
         </li>
       ))}
     </ul>

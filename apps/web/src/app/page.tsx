@@ -130,8 +130,8 @@ export default async function HomePage() {
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             <Eyebrow>Por qué elegirnos</Eyebrow>
-            <h2 id="servicios-title" className="mt-2 text-balance text-2xl font-extrabold tracking-tight text-ink-dark sm:text-3xl">
-              Mismas marcas que todos. <span className="text-brand-600">Otra forma de atenderte.</span>
+            <h2 id="servicios-title" className="mt-2 text-balance text-xl font-extrabold tracking-tight text-ink-dark sm:text-3xl">
+              Mismas marcas que todos. <span className="block text-brand-600">Otra forma de atenderte.</span>
             </h2>
           </div>
           <ServiciosGrid />

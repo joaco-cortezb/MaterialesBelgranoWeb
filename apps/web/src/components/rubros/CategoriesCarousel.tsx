@@ -99,7 +99,7 @@ function Slide({ category, active }: { category: Category; active: boolean }) {
       className={cn(
         "group relative block h-[clamp(380px,calc(100svh-23rem),600px)] overflow-hidden rounded-3xl bg-ink-dark text-white shadow-[0_18px_36px_-22px_rgba(36,38,31,0.5)]",
         "transition-[transform,opacity] duration-500 ease-[var(--ease-out-strong)] motion-reduce:transition-none",
-        active ? "scale-100 opacity-100" : "scale-[0.94] opacity-70",
+        active ? "scale-100 opacity-100" : "scale-[0.94] opacity-85",
       )}
     >
       {category.image ? (
