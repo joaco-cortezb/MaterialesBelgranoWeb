@@ -19,7 +19,7 @@ export function HomeHero({ slides, title, text, nextSectionId }: { slides: HeroS
 
       {/* Velo: más oscuro abajo y al centro para que el texto siempre se lea. */}
       <div aria-hidden className="absolute inset-0 -z-10 bg-ink-dark/45" />
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(36,38,31,0.55)_0%,transparent_70%)]" />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(35,35,35,0.55)_0%,transparent_70%)]" />
       <div aria-hidden className="absolute inset-x-0 bottom-0 -z-10 h-1/3 bg-gradient-to-t from-ink-dark/80 to-transparent" />
 
       <div className="relative z-10 mx-auto max-w-5xl px-5 py-16 text-center sm:px-6">
@@ -27,7 +27,7 @@ export function HomeHero({ slides, title, text, nextSectionId }: { slides: HeroS
           <Eyebrow light className="mb-4 sm:mb-5">
             Materiales Belgrano
           </Eyebrow>
-          <h1 className="text-balance text-[1.6rem] font-extrabold leading-[1.1] tracking-tight sm:text-4xl lg:text-5xl">{title}</h1>
+          <h1 className="text-balance text-[1.6rem] font-extrabold leading-[1.1] tracking-tight sm:text-3xl md:text-4xl lg:text-5xl">{title}</h1>
           {text && <p className="mx-auto mt-4 max-w-xl text-pretty text-base font-light leading-relaxed text-white/85 sm:mt-5 sm:text-lg">{text}</p>}
 
           {/* En celular los dos botones miden lo mismo: se leen como un par. */}

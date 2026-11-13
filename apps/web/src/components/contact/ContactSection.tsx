@@ -35,7 +35,7 @@ export function ContactSection({ whatsapps }: { whatsapps: WhatsappNumber[] }) {
                 <FaWhatsapp className="h-6 w-6" aria-hidden />
               </span>
               <span className="min-w-0 flex-1 leading-tight">
-                <span className="block font-sub text-[11px] uppercase tracking-[0.04em] text-brand-300">
+                <span className="block font-sub text-[13px] uppercase leading-tight tracking-normal text-brand-300">
                   {AUDIENCE_LABEL[number.audience]}
                 </span>
                 <span className="mt-1 block truncate text-base font-bold">{number.label}</span>
@@ -119,7 +119,7 @@ function InfoCard({
         {icon}
       </span>
       <div className="min-w-0 flex-1">
-        <dt className="font-sub text-[11px] uppercase tracking-[0.04em] text-ink-soft">{label}</dt>
+        <dt className="font-sub text-[13px] uppercase tracking-normal text-ink-soft">{label}</dt>
         <dd className="mt-0.5 text-[15px] leading-snug text-ink-dark">
           {href ? (
             <a
