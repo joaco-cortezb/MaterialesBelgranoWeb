@@ -9,10 +9,11 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
     <div className="relative grid min-h-svh place-items-center bg-sidebar px-4 pb-10 pt-32 sm:py-32">
       <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(119,197,99,0.22),transparent_60%)]" />
       <Image
-        src="/brand/logo-mb-claro.png"
+        src="/brand/logo-mb-claro.svg"
         alt="Materiales Belgrano"
-        width={800}
-        height={212}
+        width={953}
+        height={252}
+        unoptimized
         priority
         className="absolute left-1/2 top-8 h-auto w-[200px] -translate-x-1/2 sm:top-12 sm:w-[230px]"
       />

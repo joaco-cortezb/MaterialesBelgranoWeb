@@ -4,7 +4,7 @@ import { ROUTES, SITE, cn } from "@mb/shared";
 
 /**
  * Logo principal del manual de marca (isotipo MB + "materiales belgrano"), en
- * `public/brand/`. Al pasar el mouse crece apenas y se enciende un halo verde
+ * `public/brand/` como SVG (vectorial: nítido a cualquier tamaño y sin pasar por el optimizador). Al pasar el mouse crece apenas y se enciende un halo verde
  * detrás; en touch no hay hover, así que no pasa nada.
  */
 export function Logo({
@@ -19,7 +19,7 @@ export function Logo({
   size?: "md" | "lg";
   priority?: boolean;
 }) {
-  const src = variant === "light" ? "/brand/logo-mb-claro.png" : "/brand/logo-mb.png";
+  const src = variant === "light" ? "/brand/logo-mb-claro.svg" : "/brand/logo-mb.svg";
   return (
     <Link href={ROUTES.home} aria-label={`${SITE.name}: ir al inicio`} className={cn("group relative inline-flex shrink-0 items-center", className)}>
       <span
@@ -29,9 +29,9 @@ export function Logo({
       <Image
         src={src}
         alt={SITE.name}
-        width={1200}
-        height={318}
-        sizes={size === "lg" ? "260px" : "170px"}
+        width={953}
+        height={252}
+        unoptimized
         preload={priority}
         className={cn(
           "w-auto transition-transform duration-300 ease-[var(--ease-out-strong)] group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:group-hover:scale-100",

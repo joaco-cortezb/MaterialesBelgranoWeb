@@ -24,11 +24,11 @@ export function Footer() {
           <Link href={ROUTES.home} aria-label={`${SITE.name}: ir al inicio`} className="shrink-0 justify-self-center transition-transform duration-300 hover:scale-[1.03] lg:justify-self-start">
             {/* Mismo logo que el menú, en su versión para fondo oscuro. */}
             <Image
-              src="/brand/logo-mb-claro.png"
+              src="/brand/logo-mb-claro.svg"
               alt={SITE.name}
-              width={1200}
-              height={318}
-              sizes="280px"
+              width={953}
+              height={252}
+              unoptimized
               className="h-14 w-auto sm:h-[4.5rem]"
             />
           </Link>
