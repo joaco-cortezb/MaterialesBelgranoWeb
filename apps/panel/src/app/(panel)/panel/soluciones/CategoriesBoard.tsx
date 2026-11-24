@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
 import { slugify } from "@mb/shared";
-import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, LoadErrorNotice, PageHeader, Select, Switch, Textarea, scrollIntoViewGently } from "@/components/ui";
+import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, LoadErrorNotice, PageHeader, Switch, Textarea, scrollIntoViewGently } from "@/components/ui";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { FocalPointPicker } from "@/components/ui/FocalPointPicker";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
 import type { ActionResult } from "@/lib/actions";
@@ -47,16 +48,6 @@ const EMPTY: CategoryDTO = {
   active: true,
   brands: 0,
 };
-
-const POSITIONS = [
-  { value: "50% 50%", label: "Centro" },
-  { value: "50% 0%", label: "Arriba" },
-  { value: "50% 100%", label: "Abajo" },
-  { value: "0% 50%", label: "Izquierda" },
-  { value: "100% 50%", label: "Derecha" },
-  { value: "50% 25%", label: "Centro-arriba" },
-  { value: "50% 75%", label: "Centro-abajo" },
-];
 
 export function CategoriesBoard({ categories, webUrl, loadError = false }: { categories: CategoryDTO[]; webUrl: string; loadError?: boolean }) {
   const [editing, setEditing] = useState<CategoryDTO | null>(null);
@@ -183,7 +174,6 @@ function CategoryForm({
   const [position, setPosition] = useState(category.imagePosition);
   const [banner, setBanner] = useState(category.banner);
   const [bannerPosition, setBannerPosition] = useState(category.bannerPosition);
-  const [seoDescription, setSeoDescription] = useState(category.seoDescription);
   const [active, setActive] = useState(category.active);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -256,29 +246,54 @@ function CategoryForm({
         </FormSection>
 
         <FormSection title="Imágenes">
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div className="space-y-4">
-              <div>
-                <Label>Card del carrusel</Label>
-                <ImageUploadField value={image} onChange={setImage} folder="categories" label="imagen de la card" recommended={[1200, 1800]} position={position} />
-                <Hint>La card vertical del inicio. Dejá lo importante al centro.</Hint>
-              </div>
-              <PositionSelect id="position" value={position} onChange={setPosition} />
-            </div>
-            <div className="space-y-4">
-              <div>
-                <Label>Banner de la página</Label>
-                <ImageUploadField value={banner} onChange={setBanner} folder="categories" label="banner de la página" recommended={[2400, 900]} position={bannerPosition} />
-                <Hint>La portada horizontal de la página de la solución. Si no subís uno, se usa la foto de la card.</Hint>
-              </div>
-              <PositionSelect id="bannerPosition" value={bannerPosition} onChange={setBannerPosition} />
-            </div>
+          <div className="grid gap-5 xl:grid-cols-2">
+            <ImageBlock
+              title="Card del carrusel"
+              hint="La card vertical del inicio. En el celular también es la portada de la página."
+              upload={
+                <div className="w-28 shrink-0">
+                  <ImageUploadField value={image} onChange={setImage} folder="categories" label="imagen de la card" recommended={[1200, 1800]} position={position} compactHint />
+                </div>
+              }
+              picker={
+                image && (
+                  <FocalPointPicker
+                    src={image}
+                    value={position}
+                    onChange={setPosition}
+                    previews={[
+                      { label: "Card del carrusel", aspect: "2 / 3" },
+                      { label: "Portada en el celular", aspect: "7 / 8" },
+                    ]}
+                  />
+                )
+              }
+            />
+            <ImageBlock
+              title="Banner de la página"
+              hint="La portada de la página en computadora. Si no subís uno, se usa la foto de la card."
+              upload={
+                <div className="w-48 shrink-0 sm:w-56">
+                  <ImageUploadField value={banner} onChange={setBanner} folder="categories" label="banner de la página" recommended={[2400, 900]} position={bannerPosition} compactHint />
+                </div>
+              }
+              picker={
+                banner && (
+                  <FocalPointPicker
+                    src={banner}
+                    value={bannerPosition}
+                    onChange={setBannerPosition}
+                    previews={[
+                      { label: "Portada en computadora", aspect: "8 / 3" },
+                      { label: "Pantalla ancha", aspect: "4 / 1" },
+                    ]}
+                  />
+                )
+              }
+            />
           </div>
-          <div>
-            <Label htmlFor="imageAlt">Descripción de las fotos</Label>
-            <Input id="imageAlt" name="imageAlt" defaultValue={category.imageAlt} maxLength={200} placeholder="Qué se ve en la foto" />
-            <Hint>La leen Google y los lectores de pantalla.</Hint>
-          </div>
+          {/* Ya no se editan acá: se conservan los valores que tenía cada solución. */}
+          <input type="hidden" name="imageAlt" value={category.imageAlt} />
         </FormSection>
 
         <FormSection title="Página de la solución">
@@ -294,18 +309,9 @@ function CategoryForm({
           </div>
         </FormSection>
 
-        <FormSection title="Google (opcional)">
-          <div>
-            <Label htmlFor="seoTitle">Título en Google</Label>
-            <Input id="seoTitle" name="seoTitle" defaultValue={category.seoTitle} maxLength={70} placeholder={name ? `${name} en Mendoza` : ""} />
-            <Hint>Si queda vacío se usa el nombre. Conviene incluir “Mendoza”.</Hint>
-          </div>
-          <div>
-            <Label htmlFor="seoDescription">Descripción en Google</Label>
-            <Textarea id="seoDescription" name="seoDescription" value={seoDescription} onChange={(event) => setSeoDescription(event.target.value)} rows={2} maxLength={160} />
-            <Hint>Si queda vacía se usa la bajada ({seoDescription.length}/160).</Hint>
-          </div>
-        </FormSection>
+        {/* Título y descripción para Google: se conservan los cargados; si están vacíos la web usa el nombre y la bajada. */}
+        <input type="hidden" name="seoTitle" value={category.seoTitle} />
+        <input type="hidden" name="seoDescription" value={category.seoDescription} />
 
         <div className="flex flex-wrap gap-2 border-t border-line pt-5">
           <Button type="submit" loading={pending} loadingText="Guardando…">
@@ -320,18 +326,17 @@ function CategoryForm({
   );
 }
 
-function PositionSelect({ id, value, onChange }: { id: string; value: string; onChange: (value: string) => void }) {
+function ImageBlock({ title, hint, upload, picker }: { title: string; hint: string; upload: React.ReactNode; picker: React.ReactNode }) {
   return (
-    <div>
-      <Label htmlFor={id}>Encuadre</Label>
-      <Select id={id} value={value} onChange={(event) => onChange(event.target.value)}>
-        {POSITIONS.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </Select>
-      <Hint>Qué parte de la foto queda a la vista cuando se recorta.</Hint>
+    <div className="space-y-3 rounded-2xl border border-line p-4">
+      <div className="flex items-start gap-4">
+        {upload}
+        <div className="min-w-0 pt-0.5">
+          <p className="text-[13px] font-semibold text-ink">{title}</p>
+          <Hint>{hint}</Hint>
+        </div>
+      </div>
+      {picker}
     </div>
   );
 }
