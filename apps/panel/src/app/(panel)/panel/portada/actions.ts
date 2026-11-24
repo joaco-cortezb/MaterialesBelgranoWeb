@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { HERO_MAX_SLIDES, heroSlideSchema, heroTextSchema, isHeroPage, SETTING_KEYS } from "@mb/shared";
+import { HERO_MAX_SLIDES, HERO_TEXT, heroSlideSchema, heroTextSchema, isHeroPage } from "@mb/shared";
 import { prisma } from "@/lib/prisma";
 import { requireSection } from "@/lib/auth";
 import { revalidateWeb } from "@/lib/revalidate";
@@ -90,26 +90,20 @@ export async function reorderHeroSlide(id: string, dir: -1 | 1): Promise<ActionR
   return finish();
 }
 
-/** Título y bajada de la portada del inicio (vacío = texto por defecto / sin bajada). */
-export async function saveHomeHeroText(formData: FormData): Promise<ActionResult> {
+/** Título y bajada de la portada de una página (título vacío = el de por defecto; bajada vacía = sin bajada). */
+export async function saveHeroText(page: string, formData: FormData): Promise<ActionResult> {
   const blocked = await guard();
   if (blocked) return blocked;
+  if (!isHeroPage(page)) return fail("Página inválida.");
 
   const parsed = heroTextSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return fail(firstIssue(parsed.error));
+  const { titleKey, textKey } = HERO_TEXT[page];
 
   try {
     await prisma.$transaction([
-      prisma.setting.upsert({
-        where: { key: SETTING_KEYS.homeHeroTitle },
-        create: { key: SETTING_KEYS.homeHeroTitle, value: parsed.data.title },
-        update: { value: parsed.data.title },
-      }),
-      prisma.setting.upsert({
-        where: { key: SETTING_KEYS.homeHeroText },
-        create: { key: SETTING_KEYS.homeHeroText, value: parsed.data.text },
-        update: { value: parsed.data.text },
-      }),
+      prisma.setting.upsert({ where: { key: titleKey }, create: { key: titleKey, value: parsed.data.title }, update: { value: parsed.data.title } }),
+      prisma.setting.upsert({ where: { key: textKey }, create: { key: textKey, value: parsed.data.text }, update: { value: parsed.data.text } }),
     ]);
   } catch (error) {
     console.error("No se pudo guardar el texto de la portada", error);
@@ -117,5 +111,6 @@ export async function saveHomeHeroText(formData: FormData): Promise<ActionResult
   }
   revalidateWeb("settings");
   revalidatePath(PATH);
+  revalidatePath("/panel/nosotros");
   return ok("Texto de la portada guardado.");
 }

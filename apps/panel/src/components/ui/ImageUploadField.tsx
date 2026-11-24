@@ -111,7 +111,8 @@ export function ImageUploadField({
   const aspectRatio = previewClassName?.includes("aspect-") || !recommended ? undefined : `${recommended[0]} / ${recommended[1]}`;
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
+      <div className="group/media relative">
       <div
         role="button"
         tabIndex={0}
@@ -174,12 +175,6 @@ export function ImageUploadField({
             {isFallback && (
               <span className="absolute left-2 top-2 rounded-full bg-ink/75 px-2.5 py-0.5 text-[11px] font-semibold text-white">Imagen por defecto</span>
             )}
-            {/* En touch no hay hover: el botón queda siempre visible en pantallas chicas. */}
-            <div className="absolute inset-0 flex items-end justify-end p-2 text-white transition-[background-color] sm:items-center sm:justify-center sm:p-0 sm:group-hover:bg-ink/50">
-              <span className="inline-flex items-center gap-1.5 rounded-lg bg-ink/75 px-2.5 py-1 text-xs font-semibold sm:px-3 sm:py-1.5 sm:text-sm sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100 sm:group-focus-visible:opacity-100">
-                <ImageUp className="h-4 w-4" /> {isFallback ? "Subir" : "Reemplazar"}
-              </span>
-            </div>
           </>
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 p-4 text-center text-ink-soft">
@@ -196,22 +191,35 @@ export function ImageUploadField({
         )}
       </div>
 
-      <div className="flex items-start justify-between gap-3">
-        <p className="text-xs leading-relaxed text-ink-soft">
-          {compactHint && recommended ? `${recommended[0]} × ${recommended[1]} px` : uploadHint(folder, recommended)}
-        </p>
-        {value && (
+      {/* Acciones sobre la foto: Reemplazar y Quitar juntas, al medio. Con mouse
+          aparecen al pasar por encima; en touch (sin hover) quedan siempre a la vista. */}
+      {shown && !uploading && (
+        <div className="pointer-events-none absolute inset-0 flex flex-wrap content-center items-center justify-center gap-1.5 rounded-xl p-2 transition-[background-color] duration-150 [@media(hover:hover)]:group-hover/media:bg-ink/45 [@media(hover:hover)]:group-focus-within/media:bg-ink/45">
           <button
             type="button"
-            onClick={() => setConfirmRemove(true)}
-            disabled={uploading}
-            aria-label={`Quitar ${label.toLowerCase()}`}
-            className="-my-2 -mr-2 inline-flex min-h-9 shrink-0 items-center gap-1 rounded-lg px-2 text-xs font-semibold text-[var(--color-danger)] hover:bg-[var(--color-danger-bg)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-danger)]/50 pointer-coarse:min-h-11"
+            onClick={() => inputRef.current?.click()}
+            className="pointer-events-auto inline-flex min-h-8 items-center gap-1.5 rounded-lg bg-ink/80 px-2.5 text-xs font-semibold text-white transition-opacity hover:bg-ink focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/media:opacity-100 [@media(hover:hover)]:group-focus-within/media:opacity-100"
           >
-            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" /> Quitar
+            <ImageUp className="h-3.5 w-3.5" aria-hidden="true" /> {isFallback ? "Subir" : "Reemplazar"}
           </button>
-        )}
+          {value && (
+            <button
+              type="button"
+              onClick={() => setConfirmRemove(true)}
+              aria-label={`Quitar ${label.toLowerCase()}`}
+              className="pointer-events-auto inline-flex min-h-8 items-center gap-1.5 rounded-lg bg-[var(--color-danger)] px-2.5 text-xs font-semibold text-white transition-opacity hover:brightness-110 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/media:opacity-100 [@media(hover:hover)]:group-focus-within/media:opacity-100"
+            >
+              <Trash2 className="h-3.5 w-3.5" aria-hidden="true" /> Quitar
+            </button>
+          )}
+        </div>
+      )}
       </div>
+
+      {/* Una sola línea debajo: la medida (y en columnas anchas, formatos y peso). */}
+      <p className={cn("text-xs text-ink-soft", compactHint ? "truncate tabular-nums" : "leading-relaxed")}>
+        {compactHint && recommended ? `${recommended[0]} × ${recommended[1]}` : uploadHint(folder, recommended)}
+      </p>
 
       <ConfirmDialog
         open={confirmRemove}

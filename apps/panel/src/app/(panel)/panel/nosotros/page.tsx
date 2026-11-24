@@ -27,8 +27,10 @@ export default async function NosotrosPage() {
     ]);
     for (const row of rows) {
       if (row.key === SETTING_KEYS.aboutHeadline && typeof row.value === "string") headline = row.value;
-      if (row.key === SETTING_KEYS.aboutBody && typeof row.value === "string") body = row.value;
-      saved = true;
+      if (row.key === SETTING_KEYS.aboutBody && typeof row.value === "string") {
+        body = row.value;
+        saved = true;
+      }
     }
     photos = Object.fromEntries(slots.map((slot) => [slot.key, { url: slot.url, alt: slot.alt, position: slot.position ?? "50% 50%" }]));
   } catch (error) {
@@ -46,7 +48,7 @@ export default async function NosotrosPage() {
         <h2 id="historia-title" className="mb-4 text-lg font-bold text-ink">
           Historia
         </h2>
-        <AboutForm initialHeadline={headline.trim() || DEFAULT_ABOUT_HEADLINE} initialBody={body.trim() || DEFAULT_ABOUT_BODY} saved={saved} />
+        <AboutForm headline={headline.trim() || DEFAULT_ABOUT_HEADLINE} initialBody={body.trim() || DEFAULT_ABOUT_BODY} saved={saved} />
       </section>
 
       <section id="fotos" aria-labelledby="fotos-title" className="mt-10 scroll-mt-6">

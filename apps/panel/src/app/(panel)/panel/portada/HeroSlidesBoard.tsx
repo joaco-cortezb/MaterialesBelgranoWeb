@@ -9,23 +9,23 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
 import type { ActionResult } from "@/lib/actions";
-import { deleteHeroSlide, reorderHeroSlide, saveHeroSlide, saveHomeHeroText, toggleHeroSlideActive } from "./actions";
+import { deleteHeroSlide, reorderHeroSlide, saveHeroSlide, saveHeroText, toggleHeroSlideActive } from "./actions";
 
 export type HeroSlideDTO = { id: string; url: string; urlMobile: string; alt: string; position: string; active: boolean };
 
 const NEW_SLIDE: HeroSlideDTO = { id: "", url: "", urlMobile: "", alt: "", position: "50% 50%", active: true };
 
-type HeroTextValue = { title: string; text: string; defaultTitle: string };
+export type HeroTextValue = { title: string; text: string; defaultTitle: string };
 
 export function HeroSlidesBoard({
   slides: allSlides,
   initialPage,
-  heroText,
+  heroTexts,
   loadError = false,
 }: {
   slides: (HeroSlideDTO & { page: string })[];
   initialPage: HeroPage;
-  heroText: HeroTextValue;
+  heroTexts: Record<HeroPage, HeroTextValue>;
   loadError?: boolean;
 }) {
   const [page, setPage] = useState<HeroPage>(initialPage);
@@ -78,7 +78,7 @@ export function HeroSlidesBoard({
       <div role="tabpanel" id={tabIds("portadas", page).panel} aria-labelledby={tabIds("portadas", page).tab}>
         <p className="mx-auto mb-5 max-w-3xl text-center text-sm text-ink-soft">{config.hint}</p>
 
-        {page === "inicio" && <HeroTextCard value={heroText} />}
+        <HeroTextCard key={page} page={page} value={heroTexts[page]} />
 
         {visibleCount === 0 && !adding && (
           <Card className="mb-5 px-5 py-4 text-sm text-ink-soft">
@@ -263,7 +263,13 @@ function SlideCard({
   );
 }
 
-function HeroTextCard({ value }: { value: HeroTextValue }) {
+const HERO_TEXT_HELP: Record<HeroPage, { title: string; text: string }> = {
+  inicio: { title: "El texto grande de la portada del inicio.", text: "Una línea corta debajo del título." },
+  marcas: { title: "El título sobre la foto de la página Marcas.", text: "Una línea corta debajo del título." },
+  nosotros: { title: "El título sobre la foto de la página Nosotros. La historia se edita en la sección Nosotros.", text: "Opcional: una línea corta debajo del título." },
+};
+
+function HeroTextCard({ page, value }: { page: HeroPage; value: HeroTextValue }) {
   const [title, setTitle] = useState(value.title);
   const [text, setText] = useState(value.text);
   const [pending, startTransition] = useTransition();
@@ -275,7 +281,7 @@ function HeroTextCard({ value }: { value: HeroTextValue }) {
     formData.set("title", title);
     formData.set("text", text);
     startTransition(async () => {
-      const result = await saveHomeHeroText(formData);
+      const result = await saveHeroText(page, formData);
       if (result.ok) toast.success(result.message ?? "Guardado.");
       else toast.error(result.error);
     });
@@ -287,13 +293,13 @@ function HeroTextCard({ value }: { value: HeroTextValue }) {
       <div className="mt-4 grid gap-4">
         <div>
           <Label htmlFor="hero-title">Título</Label>
-          <Input id="hero-title" value={title} onChange={(event) => setTitle(event.target.value)} maxLength={120} placeholder={value.defaultTitle} />
-          <Hint>Es el texto grande de la portada del inicio. Si lo dejás vacío, se usa el que aparece de ejemplo.</Hint>
+          <Input id="hero-title" value={title} onChange={(event) => setTitle(event.target.value)} maxLength={160} placeholder={value.defaultTitle} />
+          <Hint>{HERO_TEXT_HELP[page].title} Si lo dejás vacío, se usa el que aparece de ejemplo.</Hint>
         </div>
         <div>
           <Label htmlFor="hero-text">Bajada (opcional)</Label>
           <Textarea id="hero-text" value={text} onChange={(event) => setText(event.target.value)} maxLength={240} rows={2} />
-          <Hint>Una línea corta debajo del título. Si la borrás y guardás, la portada queda sin bajada.</Hint>
+          <Hint>{HERO_TEXT_HELP[page].text} Si la dejás vacía, la portada va sin bajada.</Hint>
         </div>
       </div>
       <div className="mt-4 flex flex-wrap items-center justify-end gap-3">

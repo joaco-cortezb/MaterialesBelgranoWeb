@@ -6,12 +6,11 @@ import {
   BANNER_CONFIG,
   DEFAULT_ABOUT_BODY,
   DEFAULT_ABOUT_HEADLINE,
-  DEFAULT_HOME_HERO_TEXT,
-  DEFAULT_HOME_HERO_TITLE,
   HERO_PAGE_CONFIG,
   IMAGE_SLOTS,
   PUBLIC_SETTING_KEYS,
   SETTING_KEYS,
+  HERO_TEXT,
   SITE,
   splitParagraphs,
   seedCategories,
@@ -354,15 +353,20 @@ const getSettings = withFallback(readSettings, (): Record<string, unknown> => ({
 
 
 
-/** Textos de la portada del inicio (título obligatorio, bajada opcional). */
-export async function getHomeHeroText(): Promise<{ title: string; text: string }> {
+/** Título y bajada de la portada de una página (título vacío = el de por defecto; bajada vacía = sin bajada). */
+export async function getPageHeroText(page: HeroPage): Promise<{ title: string; text: string }> {
   const settings = await getSettings();
-  const title = settings[SETTING_KEYS.homeHeroTitle];
-  const text = settings[SETTING_KEYS.homeHeroText];
+  const config = HERO_TEXT[page];
+  const title = settings[config.titleKey];
+  const text = settings[config.textKey];
   return {
-    title: typeof title === "string" && title.trim() ? title.trim() : DEFAULT_HOME_HERO_TITLE,
-    text: typeof text === "string" ? text.trim() : DEFAULT_HOME_HERO_TEXT,
+    title: typeof title === "string" && title.trim() ? title.trim() : config.defaultTitle,
+    text: typeof text === "string" ? text.trim() : config.defaultText,
   };
+}
+
+export function getHomeHeroText() {
+  return getPageHeroText("inicio");
 }
 
 export async function getAboutContent(): Promise<AboutContent> {

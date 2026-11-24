@@ -10,7 +10,7 @@ import { ContactSection } from "@/components/contact/ContactSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/structured-data";
 import { BASE_OPEN_GRAPH } from "@/lib/metadata";
-import { getAboutContent, getDefaultWhatsapp, getHeroSlides, getImageSlots, getWhatsappNumbers } from "@/lib/cms";
+import { getAboutContent, getDefaultWhatsapp, getHeroSlides, getImageSlots, getPageHeroText, getWhatsappNumbers } from "@/lib/cms";
 
 export const metadata: Metadata = {
   title: "Nosotros y contacto",
@@ -32,19 +32,20 @@ const FACTS = [
 ];
 
 export default async function NosotrosPage() {
-  const [about, slides, images, numbers, fallback] = await Promise.all([
+  const [about, slides, images, numbers, fallback, hero] = await Promise.all([
     getAboutContent(),
     getHeroSlides("nosotros"),
     getImageSlots(GALLERY.map((item) => item.key)),
     getWhatsappNumbers(),
     getDefaultWhatsapp(),
+    getPageHeroText("nosotros"),
   ]);
   const whatsapps = numbers.length > 0 ? numbers : [fallback];
 
   return (
     <>
       <JsonLd schema={breadcrumbSchema([{ name: "Nosotros", path: ROUTES.nosotros }])} />
-      <PageBanner slides={slides} eyebrow="Nosotros" title={about.headline} />
+      <PageBanner slides={slides} eyebrow="Nosotros" title={hero.title} text={hero.text || undefined} />
 
       {/* Historia: poco texto, centrado, con tres datos que la resumen. */}
       <section className="py-16 sm:py-24">

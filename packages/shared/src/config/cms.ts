@@ -15,6 +15,9 @@ export const SETTING_KEYS = {
   homeHeroTitle: "home.heroTitle",
   homeHeroText: "home.heroText",
   aboutHeadline: "about.headline",
+  marcasHeroTitle: "marcas.heroTitle",
+  marcasHeroText: "marcas.heroText",
+  nosotrosHeroText: "nosotros.heroText",
   aboutBody: "about.body",
 } as const;
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];
@@ -81,3 +84,19 @@ export function splitParagraphs(text: string): string[] {
     .map((paragraph) => paragraph.trim())
     .filter(Boolean);
 }
+
+/**
+ * Textos de la portada de cada página (título y bajada), editables desde
+ * Portadas en el panel. El título de Nosotros es el mismo `about.headline` de
+ * antes (ya estaba cargado). Bajada vacía = la portada va sin bajada.
+ */
+export const HERO_TEXT: Record<"inicio" | "marcas" | "nosotros", { titleKey: SettingKey; textKey: SettingKey; defaultTitle: string; defaultText: string }> = {
+  inicio: { titleKey: SETTING_KEYS.homeHeroTitle, textKey: SETTING_KEYS.homeHeroText, defaultTitle: DEFAULT_HOME_HERO_TITLE, defaultText: DEFAULT_HOME_HERO_TEXT },
+  marcas: {
+    titleKey: SETTING_KEYS.marcasHeroTitle,
+    textKey: SETTING_KEYS.marcasHeroText,
+    defaultTitle: "Los fabricantes que trabajamos",
+    defaultText: "Mirá el catálogo oficial de cada marca y pedinos el producto por WhatsApp.",
+  },
+  nosotros: { titleKey: SETTING_KEYS.aboutHeadline, textKey: SETTING_KEYS.nosotrosHeroText, defaultTitle: DEFAULT_ABOUT_HEADLINE, defaultText: "" },
+};

@@ -6,7 +6,7 @@ import { PageBanner } from "@/components/sections/PageBanner";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/structured-data";
 import { BASE_OPEN_GRAPH } from "@/lib/metadata";
-import { getBanner, getBrands, getCategories, getHeroSlides } from "@/lib/cms";
+import { getBanner, getBrands, getCategories, getHeroSlides, getPageHeroText } from "@/lib/cms";
 import { HomeBanner } from "@/components/sections/HomeBanner";
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 export default async function MarcasPage() {
-  const [brands, categories, slides, banner] = await Promise.all([getBrands(), getCategories(), getHeroSlides("marcas"), getBanner("marcas")]);
+  const [brands, categories, slides, banner, hero] = await Promise.all([getBrands(), getCategories(), getHeroSlides("marcas"), getBanner("marcas"), getPageHeroText("marcas")]);
   const groups = categories
     .map((rubro) => ({ slug: rubro.slug, name: rubro.name, brands: brands.filter((brand) => (brand.rubroSlugs ?? []).includes(rubro.slug)) }))
     .filter((group) => group.brands.length > 0);
@@ -31,8 +31,8 @@ export default async function MarcasPage() {
       <PageBanner
         slides={slides}
         eyebrow="Marcas"
-        title="Los fabricantes que trabajamos"
-        text="Mirá el catálogo oficial de cada marca y pedinos el producto por WhatsApp."
+        title={hero.title}
+        text={hero.text || undefined}
       />
       <section className="py-14 sm:py-20">
         <Container>

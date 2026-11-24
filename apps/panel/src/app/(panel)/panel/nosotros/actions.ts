@@ -16,21 +16,15 @@ export async function saveAbout(formData: FormData): Promise<ActionResult> {
 
   const parsed = aboutSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return fail(firstIssue(parsed.error));
-  const { headline, body } = parsed.data;
+  const { body } = parsed.data;
 
   try {
-    await prisma.$transaction([
-      prisma.setting.upsert({
-        where: { key: SETTING_KEYS.aboutHeadline },
-        create: { key: SETTING_KEYS.aboutHeadline, value: headline },
-        update: { value: headline },
-      }),
-      prisma.setting.upsert({
-        where: { key: SETTING_KEYS.aboutBody },
-        create: { key: SETTING_KEYS.aboutBody, value: body },
-        update: { value: body },
-      }),
-    ]);
+    // El título de la portada se edita en Portadas; acá sólo la historia.
+    await prisma.setting.upsert({
+      where: { key: SETTING_KEYS.aboutBody },
+      create: { key: SETTING_KEYS.aboutBody, value: body },
+      update: { value: body },
+    });
   } catch (error) {
     console.error("No se pudo guardar el texto de Nosotros", error);
     return fail("No se pudo guardar el texto.");

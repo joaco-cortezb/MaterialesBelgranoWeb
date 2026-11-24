@@ -102,7 +102,7 @@ export const heroSlideSchema = z.object({
 });
 
 export const heroTextSchema = z.object({
-  title: z.string().trim().max(120).optional().default(""),
+  title: z.string().trim().max(160).optional().default(""),
   text: z.string().trim().max(240).optional().default(""),
 });
 
@@ -130,7 +130,6 @@ export const bannerSchema = z.object({
 });
 
 export const aboutSchema = z.object({
-  headline: z.string().trim().min(1, "El título es obligatorio").max(160),
   body: z.string().trim().min(1, "El texto es obligatorio").max(1200),
 });
 

@@ -1,7 +1,7 @@
-import { DEFAULT_HOME_HERO_TEXT, DEFAULT_HOME_HERO_TITLE, isHeroPage, SETTING_KEYS, type HeroPage } from "@mb/shared";
+import { HERO_PAGES, HERO_TEXT, isHeroPage, type HeroPage } from "@mb/shared";
 import { prisma } from "@/lib/prisma";
 import { requireSectionView } from "@/lib/auth";
-import { HeroSlidesBoard, type HeroSlideDTO } from "./HeroSlidesBoard";
+import { HeroSlidesBoard, type HeroSlideDTO, type HeroTextValue } from "./HeroSlidesBoard";
 
 export const dynamic = "force-dynamic";
 
@@ -11,9 +11,10 @@ export default async function PortadaPage({ searchParams }: { searchParams: Prom
   const initialPage: HeroPage = pagina && isHeroPage(pagina) ? pagina : "inicio";
 
   let slides: (HeroSlideDTO & { page: string })[] = [];
-  let heroTitle = DEFAULT_HOME_HERO_TITLE;
   // Sin nada guardado se precarga lo que hoy muestra la web.
-  let heroText = DEFAULT_HOME_HERO_TEXT;
+  const heroTexts = Object.fromEntries(
+    HERO_PAGES.map((page) => [page, { title: HERO_TEXT[page].defaultTitle, text: HERO_TEXT[page].defaultText, defaultTitle: HERO_TEXT[page].defaultTitle }]),
+  ) as Record<HeroPage, HeroTextValue>;
   let loadError = false;
   try {
     const [rows, settings] = await Promise.all([
@@ -21,13 +22,15 @@ export default async function PortadaPage({ searchParams }: { searchParams: Prom
         orderBy: [{ order: "asc" }, { createdAt: "asc" }],
         select: { id: true, page: true, url: true, urlMobile: true, alt: true, position: true, active: true },
       }),
-      prisma.setting.findMany({ where: { key: { in: [SETTING_KEYS.homeHeroTitle, SETTING_KEYS.homeHeroText] } } }),
+      prisma.setting.findMany({ where: { key: { in: HERO_PAGES.flatMap((page) => [HERO_TEXT[page].titleKey, HERO_TEXT[page].textKey]) } } }),
     ]);
     slides = rows;
-    const title = settings.find((row) => row.key === SETTING_KEYS.homeHeroTitle)?.value;
-    const text = settings.find((row) => row.key === SETTING_KEYS.homeHeroText)?.value;
-    if (typeof title === "string" && title.trim()) heroTitle = title;
-    if (typeof text === "string") heroText = text;
+    for (const page of HERO_PAGES) {
+      const title = settings.find((row) => row.key === HERO_TEXT[page].titleKey)?.value;
+      const text = settings.find((row) => row.key === HERO_TEXT[page].textKey)?.value;
+      if (typeof title === "string" && title.trim()) heroTexts[page].title = title;
+      if (typeof text === "string") heroTexts[page].text = text;
+    }
   } catch (error) {
     console.error("No se pudieron leer las portadas", error);
     loadError = true;
@@ -38,7 +41,7 @@ export default async function PortadaPage({ searchParams }: { searchParams: Prom
       slides={slides}
       initialPage={initialPage}
       loadError={loadError}
-      heroText={{ title: heroTitle, text: heroText, defaultTitle: DEFAULT_HOME_HERO_TITLE }}
+      heroTexts={heroTexts}
     />
   );
 }

@@ -151,7 +151,7 @@ function BrandForm({
     <Card ref={cardRef} className="mb-6 scroll-mt-24 p-5 sm:p-6">
       <h2 className="text-lg font-bold text-ink">{brand.id ? `Editar ${brand.name}` : "Nueva marca"}</h2>
       <form
-        className="mt-5 grid gap-5 sm:grid-cols-[220px_1fr]"
+        className="mt-5 space-y-5"
         onSubmit={(event) => {
           event.preventDefault();
           const formData = new FormData(event.currentTarget);
@@ -159,50 +159,59 @@ function BrandForm({
           onSubmit(formData);
         }}
       >
-        <div>
-          <Label>Logo</Label>
-          <ImageUploadField value={logo} onChange={setLogo} folder="brands" label="logo" recommended={[800, 267]} objectFit="contain" compactHint />
-          <Hint>Ideal en PNG o WEBP con fondo transparente. Sin logo, la tarjeta muestra el nombre y la marca no entra en la cinta de logos del inicio.</Hint>
+        {/* Logo chico a la izquierda y los dos datos al lado: todo entra en un bloque compacto. */}
+        <div className="grid gap-5 sm:grid-cols-[176px_minmax(0,1fr)]">
+          <div>
+            <Label>Logo</Label>
+            <ImageUploadField value={logo} onChange={setLogo} folder="brands" label="logo" recommended={[800, 267]} objectFit="contain" compactHint />
+          </div>
+          <div className="grid content-start gap-4 lg:grid-cols-2">
+            <div>
+              <Label htmlFor="name">Nombre</Label>
+              <Input id="name" name="name" defaultValue={brand.name} required maxLength={120} autoFocus />
+            </div>
+            <div>
+              <Label htmlFor="catalogUrl">Link del catálogo</Label>
+              <Input id="catalogUrl" name="catalogUrl" type="url" inputMode="url" placeholder="https://" defaultValue={brand.catalogUrl} required />
+            </div>
+            <p className="text-xs leading-relaxed text-ink-soft lg:col-span-2">
+              Logo ideal en PNG o WEBP con fondo transparente (sin logo, la tarjeta muestra el nombre y la marca no entra en la cinta del inicio). El link es la dirección completa del catálogo, con https://.
+            </p>
+          </div>
         </div>
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="name">Nombre</Label>
-            <Input id="name" name="name" defaultValue={brand.name} required maxLength={120} autoFocus />
-          </div>
-          <div>
-            <Label htmlFor="catalogUrl">Link del catálogo</Label>
-            <Input id="catalogUrl" name="catalogUrl" type="url" inputMode="url" placeholder="https://" defaultValue={brand.catalogUrl} required />
-            <Hint>La dirección completa, copiada del navegador (empieza con https://). Se abre en otra pestaña.</Hint>
-          </div>
-          <fieldset>
-            <legend className="mb-1.5 block text-[13px] font-semibold text-ink">Soluciones</legend>
-            {categories.length === 0 ? (
-              <p className="text-sm text-ink-soft">Todavía no hay soluciones cargadas.</p>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {categories.map((rubro) => (
-                  <label
-                    key={rubro.slug}
-                    className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-line bg-surface px-4 text-sm font-semibold text-ink transition-colors hover:border-brand-300 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-500/40"
-                  >
-                    <input type="checkbox" name="rubroSlugs" value={rubro.slug} defaultChecked={brand.rubroSlugs.includes(rubro.slug)} />
-                    {rubro.name}
-                  </label>
-                ))}
-              </div>
-            )}
-            <Hint>Marcá todas las que correspondan: la marca aparece en la página de cada una. Si no marcás ninguna, va en “Otras marcas”.</Hint>
-          </fieldset>
+
+        <fieldset>
+          <legend className="mb-1.5 block text-[13px] font-semibold text-ink">Soluciones</legend>
+          {categories.length === 0 ? (
+            <p className="text-sm text-ink-soft">Todavía no hay soluciones cargadas.</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {categories.map((rubro) => (
+                <label
+                  key={rubro.slug}
+                  className="flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-line bg-surface px-3.5 text-[13px] font-semibold text-ink transition-colors hover:border-brand-300 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-500/40 pointer-coarse:min-h-11"
+                >
+                  <input type="checkbox" name="rubroSlugs" value={rubro.slug} defaultChecked={brand.rubroSlugs.includes(rubro.slug)} />
+                  {rubro.name}
+                </label>
+              ))}
+            </div>
+          )}
+          <Hint>La marca aparece en la página de cada solución marcada. Sin ninguna, va en “Otras marcas”.</Hint>
+        </fieldset>
+
+        {/* Pie: visibilidad a la izquierda y las acciones a la derecha, en una sola fila. */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
           <div className="flex min-h-11 items-center">
             <input type="hidden" name="active" value={active ? "on" : ""} />
             <Switch checked={active} onChange={setActive} label="Visible en la web" text="Visible en la web" />
           </div>
-          <div className="flex flex-wrap gap-2 pt-2">
-            <Button type="submit" loading={pending} loadingText="Guardando…">
-              Guardar
-            </Button>
+          <div className="flex flex-wrap gap-2">
             <Button type="button" variant="secondary" onClick={onCancel} disabled={pending}>
               Cancelar
+            </Button>
+            <Button type="submit" loading={pending} loadingText="Guardando…">
+              Guardar
             </Button>
           </div>
         </div>

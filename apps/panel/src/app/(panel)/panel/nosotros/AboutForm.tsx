@@ -2,21 +2,21 @@
 
 import { useState, useTransition } from "react";
 import { splitParagraphs } from "@mb/shared";
-import { Badge, Button, Card, Hint, Input, Label, SaveNote, Textarea } from "@/components/ui";
+import Link from "next/link";
+import { Badge, Button, Card, Hint, Label, SaveNote, Textarea } from "@/components/ui";
 import { useToast } from "@/components/ui/Toast";
 import { saveAbout } from "./actions";
 
-export function AboutForm({ initialHeadline, initialBody, saved }: { initialHeadline: string; initialBody: string; saved: boolean }) {
-  const [headline, setHeadline] = useState(initialHeadline);
+/** Historia de Nosotros. El título de la portada se muestra en la vista previa pero se edita en Portadas. */
+export function AboutForm({ headline, initialBody, saved }: { headline: string; initialBody: string; saved: boolean }) {
   const [body, setBody] = useState(initialBody);
   const [pending, startTransition] = useTransition();
   const toast = useToast();
-  const dirty = !saved || headline !== initialHeadline || body !== initialBody;
+  const dirty = !saved || body !== initialBody;
   const paragraphs = splitParagraphs(body);
 
   function save() {
     const formData = new FormData();
-    formData.set("headline", headline);
     formData.set("body", body);
     startTransition(async () => {
       const result = await saveAbout(formData);
@@ -34,11 +34,6 @@ export function AboutForm({ initialHeadline, initialBody, saved }: { initialHead
             <Badge tone={saved ? "green" : "gray"}>{saved ? "Guardado" : "Texto por defecto"}</Badge>
           </div>
           <div>
-            <Label htmlFor="headline">Título</Label>
-            <Input id="headline" value={headline} onChange={(event) => setHeadline(event.target.value)} maxLength={160} />
-            <Hint>Va sobre la foto de portada de Nosotros.</Hint>
-          </div>
-          <div>
             <Label htmlFor="body">Historia</Label>
             <Textarea id="body" value={body} onChange={(event) => setBody(event.target.value)} maxLength={1200} rows={9} aria-describedby="body-hint" />
             <div id="body-hint">
@@ -48,8 +43,8 @@ export function AboutForm({ initialHeadline, initialBody, saved }: { initialHead
             </div>
           </div>
           <div className="mt-auto flex flex-wrap items-center justify-end gap-3">
-            <SaveNote dirty={dirty && saved} missing={!headline.trim() ? "Falta el título." : !body.trim() ? "Falta la historia." : null} />
-            <Button onClick={save} disabled={!dirty || !headline.trim() || !body.trim()} loading={pending} loadingText="Guardando…">
+            <SaveNote dirty={dirty && saved} missing={!body.trim() ? "Falta la historia." : null} />
+            <Button onClick={save} disabled={!dirty || !body.trim()} loading={pending} loadingText="Guardando…">
               Guardar
             </Button>
           </div>
@@ -59,8 +54,15 @@ export function AboutForm({ initialHeadline, initialBody, saved }: { initialHead
           <h3 className="font-bold text-ink">Vista previa</h3>
           <div className="mt-4 overflow-hidden rounded-xl bg-sidebar px-5 py-8 text-center text-white">
             <p className="font-sub text-xs font-semibold uppercase tracking-[0.14em] text-brand-300">Nosotros</p>
-            <p className="mt-2 text-balance text-xl font-extrabold leading-tight">{headline || "Título"}</p>
+            <p className="mt-2 text-balance text-xl font-extrabold leading-tight">{headline}</p>
           </div>
+          <p className="mt-2 text-xs text-ink-soft">
+            El título de la portada se cambia en{" "}
+            <Link href="/panel/portada?pagina=nosotros" className="font-semibold text-brand-700 underline underline-offset-2 hover:text-brand-800">
+              Portadas
+            </Link>
+            .
+          </p>
           <div className="mt-5 space-y-3 text-center text-[15px] leading-relaxed text-ink">
             {paragraphs.length > 0 ? paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>) : <p className="text-ink-soft">Sin texto.</p>}
           </div>
