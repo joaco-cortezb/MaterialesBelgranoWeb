@@ -26,6 +26,13 @@ if (!hasDatabaseUrl) {
 const isDeployEnvironment = Boolean(process.env.VERCEL || process.env.CI);
 const isForced = process.env.RUN_MIGRATIONS === "1";
 
+// En Vercel sólo el deploy de Producción migra: un Preview (cualquier rama)
+// nunca tiene que tocar la base real.
+if (process.env.VERCEL && process.env.VERCEL_ENV !== "production" && !isForced) {
+  console.log(`Vercel ${process.env.VERCEL_ENV ?? "?"}: no se aplican migraciones (sólo en production).`);
+  process.exit(0);
+}
+
 if (!isDeployEnvironment && !isForced) {
   console.log("Build local: no se aplican migraciones. Si querés aplicarlas: RUN_MIGRATIONS=1 pnpm build");
   process.exit(0);

@@ -31,17 +31,20 @@ export async function uploadToStorage(
       cacheControl: STORAGE_CACHE_CONTROL,
       upsert: false,
     });
-    if (error) return { ok: false, error: error.message };
+    if (error) {
+      console.error("[storage] la subida falló", error);
+      return { ok: false, error: "No se pudo guardar la imagen. Probá de nuevo." };
+    }
 
     const {
       data: { publicUrl },
     } = supabase.storage.from(env.SUPABASE_STORAGE_BUCKET).getPublicUrl(storagePath);
     return { ok: true, url: publicUrl };
   } catch (error) {
-    return {
-      ok: false,
-      error: error instanceof Error ? error.message : "Error desconocido al subir el archivo.",
-      invalid: error instanceof InvalidUploadError,
-    };
+    // Los motivos de un archivo inválido se muestran tal cual; cualquier otro
+    // error se registra y al usuario le llega un mensaje genérico.
+    if (error instanceof InvalidUploadError) return { ok: false, error: error.message, invalid: true };
+    console.error("[storage] error inesperado al subir", error);
+    return { ok: false, error: "No se pudo subir el archivo. Probá de nuevo." };
   }
 }

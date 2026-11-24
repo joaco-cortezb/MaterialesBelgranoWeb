@@ -34,5 +34,9 @@ export async function updatePassword(formData: FormData): Promise<Result> {
 
   const { error } = await supabase.auth.updateUser({ password });
   if (error) return { ok: false, error: "No se pudo guardar la contraseña. Pedí un enlace nuevo." };
+  // Con la contraseña nueva se cierran las otras sesiones abiertas de la cuenta
+  // (si alguien tenía una robada, queda afuera). Si falla, la contraseña ya cambió.
+  const { error: signOutError } = await supabase.auth.signOut({ scope: "others" });
+  if (signOutError) console.error("No se pudieron cerrar las otras sesiones", signOutError);
   return { ok: true };
 }

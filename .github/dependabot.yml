@@ -1,0 +1,17 @@
+# Actualizaciones semanales de dependencias (como en CSIR): agrupadas para no
+# llenar de PRs; las de seguridad llegan igual apenas se publican.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      minor-y-parches:
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
