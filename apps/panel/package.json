@@ -24,7 +24,7 @@
     "@supabase/supabase-js": "^2.110.2",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.4",
-    "file-type": "21.3.4",
+    "file-type": "22.3.0",
     "lucide-react": "^1.24.0",
     "next": "16.4.5",
     "pg": "^8.22.0",
