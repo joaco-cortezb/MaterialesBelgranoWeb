@@ -112,7 +112,7 @@ export function ImageUploadField({
 
   return (
     <div className="space-y-1.5">
-      <div className="group/media relative">
+      <div className="group/media @container relative">
       <div
         role="button"
         tabIndex={0}
@@ -194,22 +194,26 @@ export function ImageUploadField({
       {/* Acciones sobre la foto: Reemplazar y Quitar juntas, al medio. Con mouse
           aparecen al pasar por encima; en touch (sin hover) quedan siempre a la vista. */}
       {shown && !uploading && (
-        <div className="pointer-events-none absolute inset-0 flex flex-wrap content-center items-center justify-center gap-1.5 rounded-xl p-2 transition-[background-color] duration-150 [@media(hover:hover)]:group-hover/media:bg-ink/45 [@media(hover:hover)]:group-focus-within/media:bg-ink/45">
+        <div className="pointer-events-none absolute inset-0 flex flex-wrap content-center items-center justify-center gap-1.5 rounded-xl p-1.5 transition-[background-color] duration-150 [@media(hover:hover)]:group-hover/media:bg-ink/45 [@media(hover:hover)]:group-focus-within/media:bg-ink/45">
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="pointer-events-auto inline-flex min-h-8 items-center gap-1.5 rounded-lg bg-ink/80 px-2.5 text-xs font-semibold text-white transition-opacity hover:bg-ink focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/media:opacity-100 [@media(hover:hover)]:group-focus-within/media:opacity-100"
+            aria-label={`${isFallback ? "Subir" : "Reemplazar"} ${label.toLowerCase()}`}
+            className="pointer-events-auto inline-flex min-h-8 min-w-8 items-center justify-center gap-1.5 rounded-lg bg-ink/80 px-2 text-xs @[15rem]:px-2.5 font-semibold text-white transition-opacity hover:bg-ink focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/media:opacity-100 [@media(hover:hover)]:group-focus-within/media:opacity-100"
           >
-            <ImageUp className="h-3.5 w-3.5" aria-hidden="true" /> {isFallback ? "Subir" : "Reemplazar"}
+            <ImageUp className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            {/* En recuadros angostos (logos, fotos de celular) van sólo los íconos. */}
+            <span className="hidden @[15rem]:inline">{isFallback ? "Subir" : "Reemplazar"}</span>
           </button>
           {value && (
             <button
               type="button"
               onClick={() => setConfirmRemove(true)}
               aria-label={`Quitar ${label.toLowerCase()}`}
-              className="pointer-events-auto inline-flex min-h-8 items-center gap-1.5 rounded-lg bg-[var(--color-danger)] px-2.5 text-xs font-semibold text-white transition-opacity hover:brightness-110 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/media:opacity-100 [@media(hover:hover)]:group-focus-within/media:opacity-100"
+              className="pointer-events-auto inline-flex min-h-8 min-w-8 items-center justify-center gap-1.5 rounded-lg bg-[var(--color-danger)] px-2 text-xs @[15rem]:px-2.5 font-semibold text-white transition-opacity hover:brightness-110 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/media:opacity-100 [@media(hover:hover)]:group-focus-within/media:opacity-100"
             >
-              <Trash2 className="h-3.5 w-3.5" aria-hidden="true" /> Quitar
+              <Trash2 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              <span className="hidden @[15rem]:inline">Quitar</span>
             </button>
           )}
         </div>
