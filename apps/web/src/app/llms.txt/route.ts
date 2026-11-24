@@ -48,7 +48,7 @@ ${SERVICIOS.map((servicio) => `- ${servicio.title}: ${servicio.description}`).jo
 
 ## Datos estructurados
 
-El sitio publica JSON-LD: Store/LocalBusiness con horarios y zona de cobertura, BreadcrumbList en todas las páginas y FAQPage en cada rubro.
+El sitio publica JSON-LD: Store/LocalBusiness con horarios y zona de cobertura, BreadcrumbList en todas las páginas y CollectionPage en cada solución.
 
 ## Uso
 

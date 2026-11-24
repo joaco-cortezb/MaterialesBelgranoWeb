@@ -4,11 +4,13 @@ import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/SectionHeading";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/structured-data";
+import { BASE_OPEN_GRAPH } from "@/lib/metadata";
 
 export const metadata: Metadata = {
   title: "Privacidad y cookies",
-  description: `Qué datos recopila el sitio de ${SITE.name}, para qué los usa y qué cookies de terceros intervienen (mapa y video).`,
+  description: `Qué datos recopila el sitio de ${SITE.name}, para qué los usa y qué cookies de terceros intervienen (el mapa de Google).`,
   alternates: { canonical: ROUTES.privacidad },
+  openGraph: { ...BASE_OPEN_GRAPH, title: `Privacidad y cookies | ${SITE.name}`, url: ROUTES.privacidad },
 };
 
 /** Fecha de la última revisión del texto. Actualizarla si cambia algo de abajo. */
