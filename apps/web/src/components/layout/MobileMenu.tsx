@@ -74,7 +74,7 @@ export function MobileMenu({ links, whatsappHref }: { links: readonly NavLink[];
             <span
               key={index}
               className={cn(
-                "absolute left-0 h-0.5 w-5 rounded-full bg-current transition-[transform,opacity] duration-200 ease-[var(--ease-out-strong)]",
+                "absolute left-0 h-0.5 w-5 rounded-full bg-current transition-[transform,scale,translate,opacity] duration-200 ease-[var(--ease-out-strong)]",
                 index === 0 && (open ? "top-[7px] rotate-45" : "top-0"),
                 index === 1 && (open ? "top-[7px] opacity-0" : "top-[7px]"),
                 index === 2 && (open ? "top-[7px] -rotate-45" : "top-[14px]"),

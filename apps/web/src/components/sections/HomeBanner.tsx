@@ -40,7 +40,7 @@ export function HomeBanner({ banner, className }: { banner: Banner; className?: 
     </picture>
   );
   const boxClass =
-    "block overflow-hidden rounded-2xl bg-ink-dark transition-[transform,box-shadow] duration-300 ease-[var(--ease-out-strong)] sm:rounded-3xl";
+    "block overflow-hidden rounded-2xl bg-ink-dark transition-[transform,scale,translate,box-shadow] duration-300 ease-[var(--ease-out-strong)] sm:rounded-3xl";
 
   return (
     <section className={cn("py-8 sm:py-10", className)}>

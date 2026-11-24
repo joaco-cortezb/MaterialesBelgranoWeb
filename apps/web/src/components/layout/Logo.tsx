@@ -24,7 +24,7 @@ export function Logo({
     <Link href={ROUTES.home} aria-label={`${SITE.name}: ir al inicio`} className={cn("group relative inline-flex shrink-0 items-center", className)}>
       <span
         aria-hidden
-        className="absolute inset-[-20%] -z-10 rounded-full bg-brand-400/45 opacity-0 blur-2xl transition-[opacity,transform] duration-300 ease-[var(--ease-out-strong)] scale-75 group-hover:scale-100 group-hover:opacity-100 motion-reduce:transition-none"
+        className="absolute inset-[-20%] -z-10 rounded-full bg-brand-400/45 opacity-0 blur-2xl transition-[opacity,transform,scale,translate] duration-300 ease-[var(--ease-out-strong)] scale-75 group-hover:scale-100 group-hover:opacity-100 motion-reduce:transition-none"
       />
       <Image
         src={src}

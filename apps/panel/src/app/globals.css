@@ -62,7 +62,7 @@
 
   --font-sans: var(--font-abacaxi);
   --font-display: var(--font-arupala);
-  --font-sub: var(--font-briller);
+  --font-sub: var(--font-abacaxi);
   --default-transition-duration: 160ms;
   --default-transition-timing-function: var(--ease-out-strong);
 }

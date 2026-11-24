@@ -75,12 +75,16 @@ export type Category = {
   summary: string;
   /** Párrafos de la página de la solución. */
   description: string[];
+  /** Ya no se muestran en la web; quedan en la base por si se retoman. */
   subcategories: string[];
   faqs: Faq[];
-  /** URL pública (Storage) o ruta en `public/`; vacío = sin foto. */
+  /** Foto de la card del carrusel. URL pública (Storage) o ruta en `public/`; vacío = sin foto. */
   image: string;
   imageAlt: string;
   imagePosition: string;
+  /** Portada de la página de la solución; vacío = se usa `image`. */
+  banner: string;
+  bannerPosition: string;
   whatsappMessage: string;
   seoTitle: string;
   seoDescription: string;

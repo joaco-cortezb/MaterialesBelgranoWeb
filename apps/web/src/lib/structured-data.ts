@@ -1,4 +1,4 @@
-import { ROUTES, SITE, type Category, type Faq, type Servicio } from "@mb/shared";
+import { ROUTES, SITE, type Category, type Servicio } from "@mb/shared";
 import { absoluteUrl, siteUrl } from "@/lib/site-url";
 
 /**
@@ -88,21 +88,9 @@ export function breadcrumbSchema(items: Array<{ name: string; path: string }>) {
   };
 }
 
-export function faqSchema(faqs: readonly Faq[]) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: { "@type": "Answer", text: faq.answer },
-    })),
-  };
-}
-
 /**
- * Un rubro es una categoría de oferta del negocio. Lo que incluye va como
- * lista de nombres: un `Offer`/`Product` sin precio no es válido para Google.
+ * Un rubro es una categoría de oferta del negocio. Sólo con lo que se ve en
+ * la página: un `Offer`/`Product` sin precio no es válido para Google.
  */
 export function rubroSchema(rubro: Category) {
   const url = absoluteUrl(ROUTES.rubro(rubro.slug));
@@ -115,15 +103,6 @@ export function rubroSchema(rubro: Category) {
     description: rubro.seoDescription,
     inLanguage: "es-AR",
     isPartOf: { "@id": `${siteUrl()}/#website` },
-    about: {
-      "@type": "ItemList",
-      name: rubro.name,
-      itemListElement: rubro.subcategories.map((name, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        name,
-      })),
-    },
     provider: { "@id": STORE_ID },
   };
 }

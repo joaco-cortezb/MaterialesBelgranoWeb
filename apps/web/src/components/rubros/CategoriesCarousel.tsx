@@ -16,8 +16,13 @@ import { RubroIcon } from "@/components/rubros/RubroIcon";
  * encima o al interactuar, y la card del centro queda en primer plano.
  * Con `prefers-reduced-motion` no hay autoplay. Las cards toman el alto que
  * queda en la pantalla para que la sección entera (título, controles y
- * carrusel) se vea sin scrollear.
+ * carrusel) se vea sin scrollear. La pista ocupa todo el ancho de la pantalla
+ * (no el del contenedor): las cards de los costados se cortan con el borde.
+ * Con pocas soluciones se repiten para que el loop siempre tenga con qué
+ * llenar pantallas anchas; las copias no se anuncian ni se recorren con Tab.
  */
+const MIN_SLIDES = 8;
+
 export function CategoriesCarousel({ categories }: { categories: Category[] }) {
   const [reducedMotion] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -42,6 +47,11 @@ export function CategoriesCarousel({ categories }: { categories: Category[] }) {
 
   if (categories.length === 0) return null;
 
+  const total = categories.length;
+  const copies = Math.max(1, Math.ceil(MIN_SLIDES / total));
+  const slides = Array.from({ length: total * copies }, (_, index) => categories[index % total]);
+  const current = selected % total;
+
   return (
     <div className="relative" aria-roledescription="carrusel" aria-label="Soluciones">
       {/* Controles arriba y al centro: siempre a la vista junto con las cards. */}
@@ -54,15 +64,15 @@ export function CategoriesCarousel({ categories }: { categories: Category[] }) {
             <button
               key={category.slug}
               type="button"
-              onClick={() => emblaApi?.scrollTo(index)}
+              onClick={() => emblaApi?.scrollTo(index + (selected - current))}
               aria-label={`Ir a ${category.name}`}
-              aria-current={index === selected}
+              aria-current={index === current}
               className="group flex h-11 min-w-6 items-center justify-center px-2"
             >
               <span
                 className={cn(
                   "block h-1.5 rounded-full transition-[width,background-color] duration-300 ease-[var(--ease-out-strong)]",
-                  index === selected ? "w-7 bg-brand-600" : "w-1.5 bg-ink/20 group-hover:bg-ink/40",
+                  index === current ? "w-7 bg-brand-600" : "w-1.5 bg-ink/20 group-hover:bg-ink/40",
                 )}
               />
             </button>
@@ -72,19 +82,23 @@ export function CategoriesCarousel({ categories }: { categories: Category[] }) {
           <FaArrowRight className="h-4 w-4" aria-hidden />
         </ArrowButton>
       </div>
-      <div ref={emblaRef} className="-mb-10 mt-2 overflow-hidden pb-14 pt-4">
+      <div ref={emblaRef} className="-mb-10 mt-2 -mx-[max(1rem,calc((100vw-100%)/2))] overflow-hidden pb-14 pt-4 sm:-mx-[max(1.5rem,calc((100vw-100%)/2))]">
         <div className="-ml-4 flex touch-pan-y sm:-ml-6">
-          {categories.map((category, index) => (
-            <div
-              key={category.slug}
-              role="group"
-              aria-roledescription="diapositiva"
-              aria-label={`${index + 1} de ${categories.length}: ${category.name}`}
-              className="min-w-0 shrink-0 grow-0 basis-[78%] pl-4 sm:basis-[44%] sm:pl-6 lg:basis-[30%]"
-            >
-              <Slide category={category} active={index === selected} />
-            </div>
-          ))}
+          {slides.map((category, index) => {
+            const copy = index >= total;
+            return (
+              <div
+                key={`${category.slug}-${index}`}
+                role={copy ? undefined : "group"}
+                aria-roledescription={copy ? undefined : "diapositiva"}
+                aria-label={copy ? undefined : `${index + 1} de ${total}: ${category.name}`}
+                aria-hidden={copy || undefined}
+                className="min-w-0 shrink-0 grow-0 basis-[80vw] pl-4 sm:basis-[46vw] sm:pl-6 lg:basis-[30vw] xl:basis-[25vw] 2xl:basis-[22vw]"
+              >
+                <Slide category={category} active={index === selected} tabIndex={copy ? -1 : undefined} />
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -92,13 +106,14 @@ export function CategoriesCarousel({ categories }: { categories: Category[] }) {
   );
 }
 
-function Slide({ category, active }: { category: Category; active: boolean }) {
+function Slide({ category, active, tabIndex }: { category: Category; active: boolean; tabIndex?: number }) {
   return (
     <Link
       href={ROUTES.rubro(category.slug)}
+      tabIndex={tabIndex}
       className={cn(
         "group relative block h-[clamp(380px,calc(100svh-23rem),600px)] overflow-hidden rounded-3xl bg-ink-dark text-white shadow-[0_18px_36px_-22px_rgba(36,38,31,0.5)]",
-        "transition-[transform,opacity] duration-500 ease-[var(--ease-out-strong)] motion-reduce:transition-none",
+        "transition-[transform,scale,translate,opacity] duration-500 ease-[var(--ease-out-strong)] motion-reduce:transition-none",
         active ? "scale-100 opacity-100" : "scale-[0.94] opacity-85",
       )}
     >
@@ -107,7 +122,7 @@ function Slide({ category, active }: { category: Category; active: boolean }) {
           src={category.image}
           alt={category.imageAlt}
           position={category.imagePosition}
-          sizes="(min-width: 1280px) 360px, (min-width: 1024px) 30vw, (min-width: 640px) 44vw, 78vw"
+          sizes="(min-width: 1536px) 22vw, (min-width: 1280px) 25vw, (min-width: 1024px) 30vw, (min-width: 640px) 46vw, 80vw"
           className="absolute inset-0 transition-transform duration-700 ease-[var(--ease-out-strong)] group-hover:scale-[1.04]"
         />
       ) : (

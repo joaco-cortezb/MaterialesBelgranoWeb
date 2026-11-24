@@ -42,7 +42,7 @@ export function ContactSection({ whatsapps }: { whatsapps: WhatsappNumber[] }) {
                     href={whatsappGoHref("contacto", number.id === "fallback" ? undefined : number.id)}
                     event="whatsapp_click"
                     params={{ source: "contacto", audience: number.audience }}
-                    className="group flex items-center gap-4 rounded-2xl bg-ink-dark px-4 py-3.5 text-white transition-[transform,background-color] duration-300 ease-[var(--ease-out-strong)] hover:-translate-y-0.5 hover:bg-ink active:translate-y-0 active:scale-[0.98] motion-reduce:transform-none sm:px-5"
+                    className="group flex items-center gap-4 rounded-2xl bg-ink-dark px-4 py-3.5 text-white transition-[transform,scale,translate,background-color] duration-300 ease-[var(--ease-out-strong)] hover:-translate-y-0.5 hover:bg-ink active:translate-y-0 active:scale-[0.98] motion-reduce:transform-none sm:px-5"
                   >
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-whatsapp text-ink-dark transition-transform duration-300 group-hover:scale-110">
                       <FaWhatsapp className="h-5 w-5" aria-hidden />
@@ -123,7 +123,7 @@ export function ContactSection({ whatsapps }: { whatsapps: WhatsappNumber[] }) {
 function InfoCell({ icon, label, className, children }: { icon: React.ReactNode; label: string; className?: string; children: React.ReactNode }) {
   return (
     <div className={`flex min-w-0 flex-col border-line ${className ?? ""}`}>
-      <dt className="flex items-center gap-2.5 border-b border-line bg-bg px-6 py-3 font-sub text-[13px] uppercase text-ink-dark sm:px-7">
+      <dt className="flex items-center gap-2.5 border-b border-line bg-bg px-6 py-3 font-sub text-xs font-semibold uppercase tracking-[0.12em] text-ink-dark sm:px-7">
         <span className="text-brand-700 [&>svg]:h-3.5 [&>svg]:w-3.5" aria-hidden>
           {icon}
         </span>

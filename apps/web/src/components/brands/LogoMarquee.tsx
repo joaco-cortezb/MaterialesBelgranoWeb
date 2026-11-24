@@ -39,7 +39,7 @@ function MarqueeRow({ brands, source, reverse, repeated }: { brands: Brand[]; so
   while (run.length < MIN_PER_RUN) run.push(...brands);
 
   return (
-    <div className="marquee group flex overflow-hidden" data-reverse={reverse || undefined}>
+    <div className="marquee group flex overflow-hidden py-1.5" data-reverse={reverse || undefined}>
       {[0, 1].map((copy) => (
         <ul key={copy} aria-hidden={copy === 1 || repeated || undefined} className="marquee-track flex shrink-0 items-center gap-3 pr-3 sm:gap-4 sm:pr-4">
           {run.map((brand, index) => {
@@ -53,14 +53,14 @@ function MarqueeRow({ brands, source, reverse, repeated }: { brands: Brand[]; so
                   external
                   tabIndex={duplicate ? -1 : undefined}
                   aria-label={`${brand.name}: abrir catálogo en una pestaña nueva`}
-                  className="group/logo flex h-24 w-48 items-center justify-center rounded-2xl border border-line bg-surface px-6 transition-[border-color,box-shadow] duration-200 hover:border-brand-300 hover:shadow-[0_10px_24px_-16px_rgba(36,38,31,0.35)] sm:h-32 sm:w-64 sm:px-9"
+                  className="group/logo flex h-24 w-48 items-center justify-center rounded-2xl border border-line bg-surface px-6 transition-[border-color,box-shadow,translate] duration-200 ease-[var(--ease-out-strong)] hover:-translate-y-1 hover:border-brand-300 hover:shadow-[0_10px_24px_-16px_rgba(36,38,31,0.35)] sm:h-32 sm:w-64 sm:px-9"
                 >
                   <Image
                     src={brand.logo}
                     alt={duplicate ? "" : `Logo de ${brand.name}`}
                     width={184}
                     height={56}
-                    className="h-11 w-full object-contain opacity-75 grayscale transition-[filter,opacity] duration-300 group-hover/logo:opacity-100 group-hover/logo:grayscale-0 [@media(hover:none)]:opacity-100 [@media(hover:none)]:grayscale-0 sm:h-14"
+                    className="h-11 w-full object-contain sm:h-14"
                   />
                 </TrackedLink>
               </li>

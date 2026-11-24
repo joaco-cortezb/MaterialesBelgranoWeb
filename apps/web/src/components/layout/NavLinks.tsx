@@ -47,7 +47,7 @@ export function NavLinks({
                 <span
                   aria-hidden
                   className={cn(
-                    "absolute inset-x-3 -bottom-0.5 h-0.5 origin-left rounded-full bg-brand-500 transition-[transform,opacity] duration-200 ease-[var(--ease-out-strong)]",
+                    "absolute inset-x-3 -bottom-0.5 h-0.5 origin-left rounded-full bg-brand-500 transition-[transform,scale,translate,opacity] duration-300 ease-[var(--ease-out-strong)]",
                     // La página actual lo tiene fijo; en las demás asoma al pasar el mouse.
                     active ? "scale-x-100" : "scale-x-0 opacity-60 group-hover:scale-x-100",
                   )}

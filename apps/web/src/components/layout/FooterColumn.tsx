@@ -16,7 +16,7 @@ export function FooterColumn({ label, children }: { label: string; children: Rea
 
   return (
     <div className="min-w-0 border-b border-white/10 sm:border-0">
-      <h2 className="font-sub text-[13px] uppercase tracking-normal text-brand-400">
+      <h2 className="font-sub text-xs font-semibold uppercase tracking-[0.14em] text-brand-400">
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}

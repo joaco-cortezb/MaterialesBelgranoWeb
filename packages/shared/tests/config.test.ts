@@ -21,8 +21,6 @@ test("cada solución inicial pasa la validación del panel", () => {
     const parsed = categorySchema.safeParse({
       ...category,
       description: category.description.join("\n\n"),
-      subcategories: category.subcategories.join("\n"),
-      faqs: JSON.stringify(category.faqs),
       active: "on",
     });
     assert.ok(parsed.success, `${category.slug}: ${parsed.success ? "" : parsed.error.issues[0]?.message}`);

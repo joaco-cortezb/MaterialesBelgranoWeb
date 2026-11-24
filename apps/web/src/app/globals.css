@@ -54,11 +54,12 @@
   --color-stone: var(--stone);
   --color-whatsapp: var(--whatsapp);
 
-  /* Manual: Abacaxi para texto, Arupala Grotesk para títulos y Briller para
-     subtítulos y etiquetas. */
+  /* Manual: Abacaxi para texto, Arupala Grotesk para títulos. Las etiquetas
+     (eyebrows) van en Abacaxi en mayúsculas: Briller, la del manual, es tan
+     extendida que en tamaños chicos costaba leerla. */
   --font-sans: var(--font-abacaxi);
   --font-display: var(--font-arupala);
-  --font-sub: var(--font-briller);
+  --font-sub: var(--font-abacaxi);
 
   --ease-out-strong: var(--ease-out-strong);
   --default-transition-duration: 180ms;
@@ -126,6 +127,27 @@
 }
 .pressable:active {
   transform: scale(0.97);
+}
+
+/* Subrayado que se dibuja de izquierda a derecha al pasar el mouse (sobre el
+   propio link o sobre la card que lo contiene, con `group`). */
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1.5px;
+  padding-bottom: 2px;
+  transition: background-size 320ms var(--ease-out-strong);
+}
+.link-underline:hover,
+.group:hover .link-underline,
+.group:focus-visible .link-underline {
+  background-size: 100% 1.5px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .link-underline {
+    transition: none;
+  }
 }
 
 /* Hover sólo en punteros finos: en touch el hover queda pegado. */

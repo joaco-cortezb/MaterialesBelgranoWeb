@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import { ArrowDown, ArrowUp, ExternalLink, Pencil, Plus, Trash2, X } from "lucide-react";
-import { slugify, type Faq } from "@mb/shared";
+import { ArrowDown, ArrowUp, ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
+import { slugify } from "@mb/shared";
 import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, LoadErrorNotice, PageHeader, Select, Switch, Textarea, scrollIntoViewGently } from "@/components/ui";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
@@ -18,12 +18,11 @@ export type CategoryDTO = {
   summary: string;
   /** Párrafos separados por una línea en blanco. */
   description: string;
-  /** Una por línea. */
-  subcategories: string;
-  faqs: Faq[];
   image: string;
   imageAlt: string;
   imagePosition: string;
+  banner: string;
+  bannerPosition: string;
   whatsappMessage: string;
   seoTitle: string;
   seoDescription: string;
@@ -37,20 +36,17 @@ const EMPTY: CategoryDTO = {
   name: "",
   summary: "",
   description: "",
-  subcategories: "",
-  faqs: [],
   image: "",
   imageAlt: "",
   imagePosition: "50% 50%",
+  banner: "",
+  bannerPosition: "50% 50%",
   whatsappMessage: "",
   seoTitle: "",
   seoDescription: "",
   active: true,
   brands: 0,
 };
-
-let faqKey = 0;
-const withKey = (faq: Faq) => ({ ...faq, key: ++faqKey });
 
 const POSITIONS = [
   { value: "50% 50%", label: "Centro" },
@@ -185,9 +181,8 @@ function CategoryForm({
   const [summary, setSummary] = useState(category.summary);
   const [image, setImage] = useState(category.image);
   const [position, setPosition] = useState(category.imagePosition);
-  // Cada pregunta lleva una clave propia: con el índice, al quitar una el foco y
-  // el cursor saltaban a la de abajo.
-  const [faqs, setFaqs] = useState<(Faq & { key: number })[]>(() => category.faqs.map(withKey));
+  const [banner, setBanner] = useState(category.banner);
+  const [bannerPosition, setBannerPosition] = useState(category.bannerPosition);
   const [seoDescription, setSeoDescription] = useState(category.seoDescription);
   const [active, setActive] = useState(category.active);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -196,10 +191,6 @@ function CategoryForm({
   useEffect(() => {
     scrollIntoViewGently(cardRef.current);
   }, []);
-
-  function updateFaq(index: number, patch: Partial<Faq>) {
-    setFaqs((items) => items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
-  }
 
   return (
     <Card ref={cardRef} className="mb-6 scroll-mt-24 p-5 sm:p-6">
@@ -211,10 +202,8 @@ function CategoryForm({
           const formData = new FormData(event.currentTarget);
           formData.set("image", image);
           formData.set("imagePosition", position);
-          formData.set(
-            "faqs",
-            JSON.stringify(faqs.filter((faq) => faq.question.trim() || faq.answer.trim()).map(({ question, answer }) => ({ question, answer }))),
-          );
+          formData.set("banner", banner);
+          formData.set("bannerPosition", bannerPosition);
           onSubmit(formData);
         }}
       >
@@ -266,30 +255,29 @@ function CategoryForm({
           </div>
         </FormSection>
 
-        <FormSection title="Imagen">
-          <div className="grid gap-5 sm:grid-cols-[260px_1fr]">
-            <div>
-              <ImageUploadField value={image} onChange={setImage} folder="categories" label="imagen de la solución" recommended={[2000, 2000]} position={position} />
-              <Hint>Se usa en la card vertical del carrusel y en la portada horizontal de la página: dejá lo importante al centro.</Hint>
+        <FormSection title="Imágenes">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="space-y-4">
+              <div>
+                <Label>Card del carrusel</Label>
+                <ImageUploadField value={image} onChange={setImage} folder="categories" label="imagen de la card" recommended={[1200, 1600]} position={position} />
+                <Hint>La card vertical del inicio. Dejá lo importante al centro.</Hint>
+              </div>
+              <PositionSelect id="position" value={position} onChange={setPosition} />
             </div>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="imageAlt">Descripción de la foto</Label>
-                <Input id="imageAlt" name="imageAlt" defaultValue={category.imageAlt} maxLength={200} placeholder="Qué se ve en la foto" />
-                <Hint>La leen Google y los lectores de pantalla.</Hint>
+                <Label>Banner de la página</Label>
+                <ImageUploadField value={banner} onChange={setBanner} folder="categories" label="banner de la página" recommended={[2400, 900]} position={bannerPosition} />
+                <Hint>La portada horizontal de la página de la solución. Si no subís uno, se usa la foto de la card.</Hint>
               </div>
-              <div>
-                <Label htmlFor="position">Encuadre</Label>
-                <Select id="position" value={position} onChange={(event) => setPosition(event.target.value)}>
-                  {POSITIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </Select>
-                <Hint>Las cards del carrusel son verticales: elegí qué parte de la foto se ve.</Hint>
-              </div>
+              <PositionSelect id="bannerPosition" value={bannerPosition} onChange={setBannerPosition} />
             </div>
+          </div>
+          <div>
+            <Label htmlFor="imageAlt">Descripción de las fotos</Label>
+            <Input id="imageAlt" name="imageAlt" defaultValue={category.imageAlt} maxLength={200} placeholder="Qué se ve en la foto" />
+            <Hint>La leen Google y los lectores de pantalla.</Hint>
           </div>
         </FormSection>
 
@@ -297,36 +285,7 @@ function CategoryForm({
           <div>
             <Label htmlFor="description">Texto</Label>
             <Textarea id="description" name="description" defaultValue={category.description} rows={7} maxLength={6000} />
-            <Hint>Separá los párrafos con una línea en blanco. El primero tiene que explicar en dos líneas qué venden y dónde: es lo que leen Google y los buscadores con IA.</Hint>
-          </div>
-          <div>
-            <Label htmlFor="subcategories">Qué incluye</Label>
-            <Textarea id="subcategories" name="subcategories" defaultValue={category.subcategories} rows={5} maxLength={2000} />
-            <Hint>Una línea por subcategoría. Si queda vacío, el recuadro no se muestra.</Hint>
-          </div>
-          <div>
-            <Label>Preguntas frecuentes</Label>
-            <div className="space-y-3">
-              {faqs.map((faq, index) => (
-                <div key={faq.key} className="rounded-xl border border-line bg-surface-2 p-3">
-                  <div className="flex items-start gap-2">
-                    <div className="flex-1 space-y-2">
-                      <Input value={faq.question} onChange={(event) => updateFaq(index, { question: event.target.value })} placeholder="Pregunta" maxLength={200} aria-label={`Pregunta ${index + 1}`} />
-                      <Textarea value={faq.answer} onChange={(event) => updateFaq(index, { answer: event.target.value })} placeholder="Respuesta directa, de dos o tres oraciones" rows={3} maxLength={1200} aria-label={`Respuesta ${index + 1}`} />
-                    </div>
-                    <IconButton label={`Quitar pregunta ${index + 1}`} onClick={() => setFaqs((items) => items.filter((_, i) => i !== index))}>
-                      <X className="h-4 w-4" />
-                    </IconButton>
-                  </div>
-                </div>
-              ))}
-              {faqs.length < 12 && (
-                <Button type="button" variant="secondary" size="sm" onClick={() => setFaqs((items) => [...items, withKey({ question: "", answer: "" })])}>
-                  <Plus className="h-4 w-4" /> Agregar pregunta
-                </Button>
-              )}
-            </div>
-            <Hint>Aparecen en la página y en los resultados de Google. Si no hay ninguna, la sección no se muestra. Máximo 12.</Hint>
+            <Hint>Va debajo de la portada, antes de las marcas. Separá los párrafos con una línea en blanco. El primero tiene que explicar en dos líneas qué venden y dónde: es lo que leen Google y los buscadores con IA.</Hint>
           </div>
           <div>
             <Label htmlFor="whatsappMessage">Mensaje de WhatsApp</Label>
@@ -358,6 +317,22 @@ function CategoryForm({
         </div>
       </form>
     </Card>
+  );
+}
+
+function PositionSelect({ id, value, onChange }: { id: string; value: string; onChange: (value: string) => void }) {
+  return (
+    <div>
+      <Label htmlFor={id}>Encuadre</Label>
+      <Select id={id} value={value} onChange={(event) => onChange(event.target.value)}>
+        {POSITIONS.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </Select>
+      <Hint>Qué parte de la foto queda a la vista cuando se recorta.</Hint>
+    </div>
   );
 }
 

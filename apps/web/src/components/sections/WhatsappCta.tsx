@@ -13,19 +13,20 @@ export function WhatsappCta({
   source,
   title = "¿Tenés una obra o un proyecto? Pasanos el listado.",
   text = "Te cotizamos todo junto por WhatsApp.",
+  bare = false,
 }: {
   source: WhatsappSource;
   title?: string;
   text?: string;
+  /** Sin sección ni contenedor propios: para ponerlo dentro de otra sección. */
+  bare?: boolean;
 }) {
-  return (
-    <section aria-labelledby={`cta-${source}`} className="py-14 sm:py-20">
-      <Container>
+  const banner = (
         <TrackedLink
           href={whatsappGoHref(source)}
           event="whatsapp_click"
           params={{ source }}
-          className="group relative isolate flex flex-col items-start gap-7 overflow-hidden rounded-3xl bg-brand-500 px-6 py-9 text-ink-dark sm:flex-row sm:items-center sm:justify-between sm:gap-10 sm:px-12 sm:py-14"
+          className="group relative isolate flex flex-col items-start gap-6 overflow-hidden rounded-3xl bg-brand-500 px-6 py-8 text-ink-dark sm:flex-row sm:items-center sm:justify-between sm:gap-10 sm:px-12 sm:py-14"
         >
           <div aria-hidden className="brand-slabs absolute inset-0 -z-10 opacity-60 mix-blend-multiply" />
           <div className="max-w-2xl">
@@ -34,12 +35,16 @@ export function WhatsappCta({
             </h2>
             <p className="mt-3 text-pretty text-base text-ink-dark/75 sm:text-lg">{text}</p>
           </div>
-          <span className="inline-flex min-h-13 w-full shrink-0 items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-ink-dark px-7 text-base font-semibold text-white transition-[background-color,transform] duration-300 ease-[var(--ease-out-strong)] group-hover:bg-ink group-active:scale-[0.97] sm:w-auto">
+          <span className="inline-flex min-h-13 w-full shrink-0 items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-ink-dark px-7 text-base font-semibold text-white transition-[background-color,transform,scale,translate] duration-300 ease-[var(--ease-out-strong)] group-hover:bg-ink group-active:scale-[0.97] sm:w-auto">
             <FaWhatsapp className="h-5 w-5 text-whatsapp transition-transform duration-300 ease-[var(--ease-out-strong)] group-hover:-rotate-12 group-hover:scale-110" aria-hidden />
             Escribir por WhatsApp
           </span>
         </TrackedLink>
-      </Container>
+  );
+  if (bare) return banner;
+  return (
+    <section aria-labelledby={`cta-${source}`} className="py-14 sm:py-20">
+      <Container>{banner}</Container>
     </section>
   );
 }

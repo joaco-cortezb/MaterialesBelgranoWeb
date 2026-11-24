@@ -41,11 +41,11 @@ export async function saveCategory(id: string, formData: FormData): Promise<Acti
     slug: d.slug,
     summary: d.summary,
     description: d.description,
-    subcategories: d.subcategories,
-    faqs: d.faqs,
     image: d.image || null,
     imageAlt: d.imageAlt || null,
     imagePosition: d.imagePosition,
+    banner: d.banner || null,
+    bannerPosition: d.bannerPosition,
     whatsappMessage: d.whatsappMessage,
     seoTitle: d.seoTitle || null,
     seoDescription: d.seoDescription || null,
@@ -53,13 +53,13 @@ export async function saveCategory(id: string, formData: FormData): Promise<Acti
   };
 
   let slugChanged = false;
-  let imageChanged = Boolean(data.image);
+  let imageChanged = Boolean(data.image || data.banner);
   try {
     if (id) {
-      const current = await prisma.category.findUnique({ where: { id }, select: { slug: true, image: true } });
+      const current = await prisma.category.findUnique({ where: { id }, select: { slug: true, image: true, banner: true } });
       if (!current) return fail("La solución no existe.");
       slugChanged = current.slug !== d.slug;
-      imageChanged = Boolean(data.image) && data.image !== current.image;
+      imageChanged = (Boolean(data.image) && data.image !== current.image) || (Boolean(data.banner) && data.banner !== current.banner);
       await prisma.$transaction([
         prisma.category.update({ where: { id }, data }),
         // Las marcas quedan asociadas aunque cambie la URL.

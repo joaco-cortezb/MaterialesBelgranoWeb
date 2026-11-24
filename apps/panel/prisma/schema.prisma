@@ -86,6 +86,8 @@ model Category {
   image           String?
   imageAlt        String?
   imagePosition   String   @default("50% 50%")
+  banner          String? // portada de la página de la solución; vacío = usa `image`
+  bannerPosition  String   @default("50% 50%")
   whatsappMessage String   @default("")
   seoTitle        String?
   seoDescription  String?

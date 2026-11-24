@@ -207,6 +207,8 @@ export function seedCategories(): Category[] {
     image: rubro.fallbackImage,
     imageAlt: rubro.fallbackImage ? `${rubro.name} en Materiales Belgrano` : "",
     imagePosition: "50% 50%",
+    banner: "",
+    bannerPosition: "50% 50%",
     whatsappMessage: rubro.whatsappMessage,
     seoTitle: rubro.seoTitle,
     seoDescription: rubro.seoDescription,

@@ -44,20 +44,6 @@ const imageUrl = z
   .max(500)
   .refine((value) => isSafeImageUrl(value), "URL de imagen inválida");
 
-const lines = (max: number, maxItems: number) =>
-  z
-    .string()
-    .max(max)
-    .optional()
-    .default("")
-    .transform((value) => value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean))
-    .refine((items) => items.length <= maxItems, `Máximo ${maxItems} ítems`);
-
-const faqItem = z.object({
-  question: z.string().trim().min(1, "Falta la pregunta").max(200),
-  answer: z.string().trim().min(1, "Falta la respuesta").max(1200),
-});
-
 export const brandSchema = z.object({
   name: z.string().trim().min(1, "El nombre es obligatorio").max(120),
   catalogUrl: z
@@ -155,7 +141,10 @@ export const aboutSchema = z.object({
   body: z.string().trim().min(1, "El texto es obligatorio").max(1200),
 });
 
-/** Formulario de solución del panel. `faqs` llega como JSON (lista de preguntas). */
+/**
+ * Formulario de solución del panel. "Qué incluye" y las preguntas frecuentes ya
+ * no se editan (la web no las muestra): quedan en la base sin tocarse.
+ */
 export const categorySchema = z.object({
   name: z.string().trim().min(1, "El nombre es obligatorio").max(80),
   slug: z
@@ -173,25 +162,17 @@ export const categorySchema = z.object({
     .optional()
     .default("")
     .transform((value) => value.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean)),
-  subcategories: lines(2000, 20),
-  // Tope antes del `JSON.parse`: 12 preguntas con sus máximos entran holgadas.
-  faqs: z
-    .string()
-    .max(40_000, "Preguntas frecuentes demasiado largas")
-    .optional()
-    .default("[]")
-    .transform((value, ctx) => {
-      try {
-        return JSON.parse(value) as unknown;
-      } catch {
-        ctx.addIssue({ code: "custom", message: "Preguntas frecuentes inválidas" });
-        return z.NEVER;
-      }
-    })
-    .pipe(z.array(faqItem).max(12, "Máximo 12 preguntas")),
   image: imageUrl.optional().default(""),
   imageAlt: z.string().trim().max(200).optional().default(""),
   imagePosition: z
+    .string()
+    .trim()
+    .max(20)
+    .optional()
+    .default("50% 50%")
+    .refine((value) => /^\d{1,3}% \d{1,3}%$/.test(value), "Encuadre inválido"),
+  banner: imageUrl.optional().default(""),
+  bannerPosition: z
     .string()
     .trim()
     .max(20)

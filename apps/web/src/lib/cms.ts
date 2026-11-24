@@ -161,6 +161,8 @@ type CategoryRow = {
   image: string | null;
   imageAlt: string | null;
   imagePosition: string | null;
+  banner: string | null;
+  bannerPosition: string | null;
   whatsappMessage: string;
   seoTitle: string | null;
   seoDescription: string | null;
@@ -186,6 +188,8 @@ function categoryFromRow(row: CategoryRow): Category {
     image: row.image ?? "",
     imageAlt: row.imageAlt || row.name,
     imagePosition: row.imagePosition || "50% 50%",
+    banner: row.banner ?? "",
+    bannerPosition: row.bannerPosition || "50% 50%",
     whatsappMessage: row.whatsappMessage,
     seoTitle: row.seoTitle || row.name,
     seoDescription: row.seoDescription || row.summary,
@@ -204,7 +208,7 @@ const readCategories = unstable_cache(
     if (!supabase) return seedCategories();
     const { data, error } = await supabase
       .from("Category")
-      .select("id, slug, name, summary, description, subcategories, faqs, image, imageAlt, imagePosition, whatsappMessage, seoTitle, seoDescription, order")
+      .select("id, slug, name, summary, description, subcategories, faqs, image, imageAlt, imagePosition, banner, bannerPosition, whatsappMessage, seoTitle, seoDescription, order")
       .eq("active", true)
       .order("order", { ascending: true });
     if (error) throw new Error(error.message);
