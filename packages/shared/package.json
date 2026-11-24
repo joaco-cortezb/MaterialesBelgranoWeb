@@ -23,9 +23,9 @@
   },
   "devDependencies": {
     "@mb/tsconfig": "workspace:*",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.6.6",
     "eslint": "^9.39.4",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.0"
+    "typescript-eslint": "^8.73.0"
   }
 }
