@@ -39,7 +39,8 @@ model Brand {
   slug       String   @unique
   logo       String? // URL pública en Storage
   catalogUrl String
-  rubroSlug  String? // slug de `Category`; null = sin solución
+  rubroSlug  String? // obsoleto: la primera de `rubroSlugs` (compatibilidad)
+  rubroSlugs String[] @default([]) // slugs de `Category`; vacío = sin solución
   order      Int      @default(0)
   active     Boolean  @default(true)
   createdAt  DateTime @default(now())

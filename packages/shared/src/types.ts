@@ -10,7 +10,8 @@ export type Brand = {
   /** URL pública en Storage; vacío = card sin logo (sólo nombre). */
   logo: string;
   catalogUrl: string;
-  rubroSlug: string | null;
+  /** Soluciones donde aparece (slugs de `Category`); vacío = sin solución. */
+  rubroSlugs: string[];
   order: number;
   active: boolean;
 };

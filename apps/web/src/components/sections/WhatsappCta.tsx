@@ -1,5 +1,5 @@
 import { FaWhatsapp } from "react-icons/fa6";
-import type { WhatsappSource } from "@mb/shared";
+import { cn, type WhatsappSource } from "@mb/shared";
 import { Container } from "@/components/ui/Container";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { whatsappGoHref } from "@/lib/whatsapp";
@@ -26,10 +26,14 @@ export function WhatsappCta({
           href={whatsappGoHref(source)}
           event="whatsapp_click"
           params={{ source }}
-          className="group relative isolate flex flex-col items-start gap-6 overflow-hidden rounded-3xl bg-brand-500 px-6 py-8 text-ink-dark sm:flex-row sm:items-center sm:justify-between sm:gap-10 sm:px-12 sm:py-14"
+          className={cn(
+            "group relative isolate flex flex-col gap-6 overflow-hidden rounded-3xl bg-brand-500 px-6 py-8 text-ink-dark sm:px-12 sm:py-14",
+            // Dentro de una página centrada va todo centrado; suelta, texto a la izquierda y botón a la derecha.
+            bare ? "items-center text-center" : "items-start sm:flex-row sm:items-center sm:justify-between sm:gap-10",
+          )}
         >
           <div aria-hidden className="brand-slabs absolute inset-0 -z-10 opacity-60 mix-blend-multiply" />
-          <div className="max-w-2xl">
+          <div className={cn("max-w-2xl", bare && "mx-auto")}>
             <h2 id={`cta-${source}`} className="text-balance text-2xl font-extrabold tracking-tight sm:text-3xl">
               {title}
             </h2>

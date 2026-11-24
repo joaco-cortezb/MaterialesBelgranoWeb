@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
-import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, LoadErrorNotice, PageHeader, Select, Switch, scrollIntoViewGently } from "@/components/ui";
+import { Badge, Button, Card, EmptyState, Hint, IconButton, Input, Label, LoadErrorNotice, PageHeader, Switch, scrollIntoViewGently } from "@/components/ui";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { useToast } from "@/components/ui/Toast";
@@ -15,13 +15,13 @@ export type BrandDTO = {
   name: string;
   logo: string;
   catalogUrl: string;
-  rubroSlug: string;
+  rubroSlugs: string[];
   active: boolean;
 };
 
 export type CategoryOption = { slug: string; name: string };
 
-const EMPTY: BrandDTO = { id: "", name: "", logo: "", catalogUrl: "", rubroSlug: "", active: true };
+const EMPTY: BrandDTO = { id: "", name: "", logo: "", catalogUrl: "", rubroSlugs: [], active: true };
 
 export function BrandsBoard({ brands, categories, loadError = false }: { brands: BrandDTO[]; categories: CategoryOption[]; loadError?: boolean }) {
   const [editing, setEditing] = useState<BrandDTO | null>(null);
@@ -80,7 +80,9 @@ export function BrandsBoard({ brands, categories, loadError = false }: { brands:
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="truncate font-semibold text-ink">{brand.name}</span>
-                    {brand.rubroSlug && <Badge>{categories.find((category) => category.slug === brand.rubroSlug)?.name ?? brand.rubroSlug}</Badge>}
+                    {brand.rubroSlugs.map((slug) => (
+                      <Badge key={slug}>{categories.find((category) => category.slug === slug)?.name ?? slug}</Badge>
+                    ))}
                   </div>
                   <a href={brand.catalogUrl} target="_blank" rel="noopener noreferrer" className="mt-0.5 inline-flex max-w-full items-center gap-1 truncate text-xs text-ink-soft hover:text-ink">
                     <ExternalLink className="h-3 w-3 shrink-0" /> <span className="truncate">{brand.catalogUrl}</span>
@@ -172,18 +174,25 @@ function BrandForm({
             <Input id="catalogUrl" name="catalogUrl" type="url" inputMode="url" placeholder="https://" defaultValue={brand.catalogUrl} required />
             <Hint>La dirección completa, copiada del navegador (empieza con https://). Se abre en otra pestaña.</Hint>
           </div>
-          <div>
-            <Label htmlFor="rubroSlug">Solución</Label>
-            <Select id="rubroSlug" name="rubroSlug" defaultValue={brand.rubroSlug}>
-              <option value="">Sin solución</option>
-              {categories.map((rubro) => (
-                <option key={rubro.slug} value={rubro.slug}>
-                  {rubro.name}
-                </option>
-              ))}
-            </Select>
-            <Hint>La marca aparece también en la página de esa solución.</Hint>
-          </div>
+          <fieldset>
+            <legend className="mb-1.5 block text-[13px] font-semibold text-ink">Soluciones</legend>
+            {categories.length === 0 ? (
+              <p className="text-sm text-ink-soft">Todavía no hay soluciones cargadas.</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {categories.map((rubro) => (
+                  <label
+                    key={rubro.slug}
+                    className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-line bg-surface px-4 text-sm font-semibold text-ink transition-colors hover:border-brand-300 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-500/40"
+                  >
+                    <input type="checkbox" name="rubroSlugs" value={rubro.slug} defaultChecked={brand.rubroSlugs.includes(rubro.slug)} />
+                    {rubro.name}
+                  </label>
+                ))}
+              </div>
+            )}
+            <Hint>Marcá todas las que correspondan: la marca aparece en la página de cada una. Si no marcás ninguna, va en “Otras marcas”.</Hint>
+          </fieldset>
           <div className="flex min-h-11 items-center">
             <input type="hidden" name="active" value={active ? "on" : ""} />
             <Switch checked={active} onChange={setActive} label="Visible en la web" text="Visible en la web" />

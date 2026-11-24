@@ -52,7 +52,6 @@ const nextConfig: NextConfig = {
     contentDispositionType: "attachment",
     remotePatterns: [
       { protocol: "https", hostname: storageHost, pathname: "/storage/v1/object/public/**" },
-      { protocol: "https", hostname: "i.ytimg.com" },
     ],
   },
 };
@@ -79,8 +78,6 @@ function contentSecurityPolicy(): string {
       "data:",
       "blob:",
       `https://${storageHost}`,
-      "https://i.ytimg.com",
-      "https://*.ytimg.com",
       ...GOOGLE_TAG_HOSTS,
       ...GOOGLE_ANALYTICS_HOSTS,
     ],
@@ -90,18 +87,16 @@ function contentSecurityPolicy(): string {
       "'self'",
       "'unsafe-inline'",
       ...(isProduction ? [] : ["'unsafe-eval'"]),
-      "https://www.youtube.com",
       VERCEL_ANALYTICS_HOST,
       ...GOOGLE_TAG_HOSTS,
     ],
     "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
     "font-src": ["'self'", "data:", "https://fonts.gstatic.com"],
-    // Video de YouTube (facade) y mapa de Google en /contacto.
-    "frame-src": ["https://www.youtube-nocookie.com", "https://www.youtube.com", "https://www.google.com"],
+    // Sólo el mapa de Google de Contacto (el video del inicio es un archivo propio).
+    "frame-src": ["https://www.google.com"],
     "connect-src": [
       "'self'",
       `https://${storageHost}`,
-      "https://www.youtube-nocookie.com",
       VERCEL_ANALYTICS_HOST,
       "https://vitals.vercel-insights.com",
       ...GOOGLE_TAG_HOSTS,

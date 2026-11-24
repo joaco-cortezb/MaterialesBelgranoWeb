@@ -13,9 +13,10 @@ export default async function SolucionesPage() {
   try {
     const [rows, brandCounts] = await Promise.all([
       prisma.category.findMany({ orderBy: { order: "asc" } }),
-      prisma.brand.groupBy({ by: ["rubroSlug"], _count: { _all: true } }),
+      prisma.brand.findMany({ select: { rubroSlugs: true } }),
     ]);
-    const brandsBySlug = new Map(brandCounts.map((row) => [row.rubroSlug, row._count._all]));
+    const brandsBySlug = new Map<string, number>();
+    for (const brand of brandCounts) for (const slug of brand.rubroSlugs) brandsBySlug.set(slug, (brandsBySlug.get(slug) ?? 0) + 1);
     categories = rows.map((row) => ({
       id: row.id,
       slug: row.slug,

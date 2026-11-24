@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { BANNER_KEYS, HERO_PAGES, IMAGE_SLOT_KEYS } from "./config/image-slots.ts";
-import { safeExternalUrl, youtubeVideoId } from "./lib/safe-url.ts";
+import { safeExternalUrl } from "./lib/safe-url.ts";
 import { normalizeWhatsappPhone } from "./lib/whatsapp-url.ts";
 
 /** Validación de los formularios del panel. Un solo lugar para web y panel. */
@@ -52,12 +52,13 @@ export const brandSchema = z.object({
     .max(500)
     .refine((value) => Boolean(safeExternalUrl(value)), "La URL del catálogo tiene que empezar con https://"),
   logo: imageUrl.optional().default(""),
-  rubroSlug: z
-    .string()
-    .trim()
+  // Llega como lista (varias casillas con el mismo nombre en el formulario).
+  rubroSlugs: z
+    .array(z.string().trim().refine((value) => SLUG_PATTERN.test(value), "Solución inválida"))
+    .max(20)
     .optional()
-    .default("")
-    .refine((value) => value === "" || SLUG_PATTERN.test(value), "Solución inválida"),
+    .default([])
+    .transform((items) => [...new Set(items)]),
   active: checkbox,
 });
 
@@ -126,14 +127,6 @@ export const bannerSchema = z.object({
   imageMobile: imageUrl.refine((value) => value !== "", "Subí la imagen para celular"),
   url: bannerLink,
   active: checkbox,
-});
-
-export const homeVideoSchema = z.object({
-  videoUrl: z
-    .string()
-    .trim()
-    .max(300)
-    .refine((value) => value === "" || Boolean(youtubeVideoId(value)), "Pegá un link de YouTube válido (youtube.com/watch?v=… o youtu.be/…)"),
 });
 
 export const aboutSchema = z.object({

@@ -40,8 +40,23 @@ export function BrandCard({ brand, source }: { brand: Brand; source: string }) {
   );
 }
 
-/** Grilla de cards de marca: dos por fila en celular, hasta cuatro en pantallas anchas. */
-export function BrandCardList({ brands, source }: { brands: Brand[]; source: string }) {
+/**
+ * Cards de marca: dos por fila en celular, hasta cuatro en pantallas anchas.
+ * Con `center`, si la última fila queda incompleta (o hay una sola marca) las
+ * cards quedan centradas en vez de pegadas a la izquierda.
+ */
+export function BrandCardList({ brands, source, center = false }: { brands: Brand[]; source: string; center?: boolean }) {
+  if (center) {
+    return (
+      <ul className="flex flex-wrap justify-center gap-3 sm:gap-4">
+        {brands.map((brand) => (
+          <li key={brand.id} className="w-[calc(50%-0.375rem)] sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-3rem)/4)]">
+            <BrandCard brand={brand} source={source} />
+          </li>
+        ))}
+      </ul>
+    );
+  }
   return (
     <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
       {brands.map((brand) => (

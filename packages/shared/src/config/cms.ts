@@ -12,7 +12,6 @@ export const CMS_TAGS = ["brands", "images", "whatsapp", "settings", "categories
 export type CmsTag = (typeof CMS_TAGS)[number];
 
 export const SETTING_KEYS = {
-  homeVideoUrl: "home.videoUrl",
   homeHeroTitle: "home.heroTitle",
   homeHeroText: "home.heroText",
   aboutHeadline: "about.headline",

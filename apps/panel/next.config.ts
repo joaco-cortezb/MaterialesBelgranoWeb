@@ -41,13 +41,13 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              `img-src 'self' data: blob: https://${storageHost} https://i.ytimg.com ${webUrl}`,
+              `img-src 'self' data: blob: https://${storageHost} ${webUrl}`,
               `media-src 'self' blob: https://${storageHost}`,
               // `unsafe-eval` sólo lo necesita el dev server (React Refresh).
               `script-src 'self' 'unsafe-inline'${isProduction ? "" : " 'unsafe-eval'"}`,
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self' data:",
-              "frame-src https://www.youtube-nocookie.com",
+              "frame-src 'none'",
               `connect-src 'self' https://${storageHost}`,
               "object-src 'none'",
               "base-uri 'self'",
@@ -70,7 +70,6 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30,
     remotePatterns: [
       { protocol: "https", hostname: storageHost, pathname: "/storage/v1/object/public/**" },
-      { protocol: "https", hostname: "i.ytimg.com" },
     ],
   },
 };

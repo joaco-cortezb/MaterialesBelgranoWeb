@@ -260,7 +260,7 @@ function CategoryForm({
             <div className="space-y-4">
               <div>
                 <Label>Card del carrusel</Label>
-                <ImageUploadField value={image} onChange={setImage} folder="categories" label="imagen de la card" recommended={[1200, 1600]} position={position} />
+                <ImageUploadField value={image} onChange={setImage} folder="categories" label="imagen de la card" recommended={[1200, 1800]} position={position} />
                 <Hint>La card vertical del inicio. Dejá lo importante al centro.</Hint>
               </div>
               <PositionSelect id="position" value={position} onChange={setPosition} />

@@ -7,14 +7,13 @@ import { Eyebrow } from "@/components/ui/SectionHeading";
 import { LogoMarquee } from "@/components/brands/LogoMarquee";
 import { CategoriesCarousel } from "@/components/rubros/CategoriesCarousel";
 import { ServiciosGrid } from "@/components/servicios/ServiciosGrid";
-import { YouTubeAutoplay } from "@/components/home/YouTubeAutoplay";
 import { BrandReel } from "@/components/home/BrandReel";
 import { HomeHero } from "@/components/home/HomeHero";
 import { HomeBanner } from "@/components/sections/HomeBanner";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { servicesSchema } from "@/lib/structured-data";
 import { BASE_OPEN_GRAPH } from "@/lib/metadata";
-import { getBanner, getBrands, getCategories, getHeroSlides, getHomeHeroText, getHomeVideoId } from "@/lib/cms";
+import { getBanner, getBrands, getCategories, getHeroSlides, getHomeHeroText } from "@/lib/cms";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -22,12 +21,11 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [heroSlides, heroText, categories, brands, videoId, bannerSoluciones, bannerFinal] = await Promise.all([
+  const [heroSlides, heroText, categories, brands, bannerSoluciones, bannerFinal] = await Promise.all([
     getHeroSlides("inicio"),
     getHomeHeroText(),
     getCategories(),
     getBrands(),
-    getHomeVideoId(),
     getBanner("inicio.soluciones"),
     getBanner("inicio.final"),
   ]);
@@ -37,23 +35,9 @@ export default async function HomePage() {
       <JsonLd schema={servicesSchema(SERVICIOS)} />
       <HomeHero slides={heroSlides} title={heroText.title} text={heroText.text} nextSectionId="conocenos" />
 
-      {/* Video: fondo oscuro para que el video sea lo que resalta. Si en el panel
-          hay un link de YouTube va ese (apaisado); si no, el video de marca (vertical). */}
+      {/* Video de marca: fondo oscuro para que el video sea lo que resalta. */}
       <section id="conocenos" aria-labelledby="video-title" className="bg-ink-dark py-14 text-white sm:py-20">
         <Container>
-          {videoId ? (
-            <>
-              <div className="mx-auto max-w-2xl text-center">
-                <Eyebrow light>Por dentro</Eyebrow>
-                <h2 id="video-title" className="mt-2 text-balance text-xl font-extrabold tracking-tight sm:text-3xl">
-                  Un salón pensado para que elegir sea fácil
-                </h2>
-              </div>
-              <div className="relative mx-auto mt-8 aspect-video max-w-5xl overflow-hidden rounded-2xl bg-black shadow-[0_30px_80px_-30px_rgba(119,197,99,0.45)] ring-1 ring-white/10 sm:mt-10">
-                <YouTubeAutoplay videoId={videoId} title={`Video institucional de ${SITE.name}`} />
-              </div>
-            </>
-          ) : (
             <div className="mx-auto grid max-w-4xl items-center gap-8 md:grid-cols-[1fr_auto] md:gap-14">
               <div className="text-center md:text-left">
                 <Eyebrow light>Por dentro</Eyebrow>
@@ -74,7 +58,6 @@ export default async function HomePage() {
                 <BrandReel title={`Video de ${SITE.name}: el salón, el depósito y el equipo`} />
               </div>
             </div>
-          )}
         </Container>
       </section>
 

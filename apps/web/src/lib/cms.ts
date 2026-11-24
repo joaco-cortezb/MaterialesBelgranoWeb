@@ -15,7 +15,6 @@ import {
   SITE,
   splitParagraphs,
   seedCategories,
-  youtubeVideoId,
   type AboutContent,
   type Brand,
   type Category,
@@ -56,7 +55,7 @@ function withFallback<T>(read: () => Promise<T>, fallback: () => T, what: string
 
 /* ── Marcas ──────────────────────────────────────────────────────────────── */
 
-const BRAND_SELECT = "id, name, slug, logo, catalogUrl, rubroSlug, order, active";
+const BRAND_SELECT = "id, name, slug, logo, catalogUrl, rubroSlugs, order, active";
 
 type BrandRow = {
   id: string;
@@ -64,7 +63,7 @@ type BrandRow = {
   slug: string;
   logo: string | null;
   catalogUrl: string;
-  rubroSlug: string | null;
+  rubroSlugs: string[] | null;
   order: number;
   active: boolean;
 };
@@ -76,7 +75,7 @@ function brandFromRow(row: BrandRow): Brand {
     slug: row.slug,
     logo: row.logo ?? "",
     catalogUrl: row.catalogUrl,
-    rubroSlug: row.rubroSlug,
+    rubroSlugs: row.rubroSlugs ?? [],
     order: row.order,
     active: row.active,
   };
@@ -94,7 +93,9 @@ const readBrands = unstable_cache(
     if (error) throw new Error(error.message);
     return (data as BrandRow[]).map(brandFromRow);
   },
-  ["cms-brands"],
+  // La versión en la clave descarta lo cacheado con la forma anterior (Vercel
+  // conserva la caché de datos entre deploys).
+  ["cms-brands-v2"],
   { tags: ["brands"], revalidate: FALLBACK_TTL_SECONDS },
 );
 
@@ -102,7 +103,7 @@ export const getBrands = withFallback(readBrands, (): Brand[] => [], "las marcas
 
 export async function getBrandsForRubro(rubroSlug: string): Promise<Brand[]> {
   const brands = await getBrands();
-  return brands.filter((brand) => brand.rubroSlug === rubroSlug);
+  return brands.filter((brand) => (brand.rubroSlugs ?? []).includes(rubroSlug));
 }
 
 /* ── Slots de imagen ─────────────────────────────────────────────────────── */
@@ -214,7 +215,7 @@ const readCategories = unstable_cache(
     if (error) throw new Error(error.message);
     return (data as CategoryRow[]).map(categoryFromRow);
   },
-  ["cms-categories"],
+  ["cms-categories-v2"],
   { tags: ["categories"], revalidate: FALLBACK_TTL_SECONDS },
 );
 
@@ -351,12 +352,6 @@ const readSettings = unstable_cache(
 
 const getSettings = withFallback(readSettings, (): Record<string, unknown> => ({}), "los settings");
 
-/** ID del video de YouTube del inicio, o `null` si no hay uno válido cargado. */
-export async function getHomeVideoId(): Promise<string | null> {
-  const settings = await getSettings();
-  const value = settings[SETTING_KEYS.homeVideoUrl];
-  return typeof value === "string" ? youtubeVideoId(value) : null;
-}
 
 
 /** Textos de la portada del inicio (título obligatorio, bajada opcional). */

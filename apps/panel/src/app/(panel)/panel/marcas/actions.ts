@@ -29,17 +29,19 @@ export async function saveBrand(id: string, formData: FormData): Promise<ActionR
   const blocked = await guard();
   if (blocked) return blocked;
 
-  const parsed = brandSchema.safeParse(Object.fromEntries(formData));
+  const parsed = brandSchema.safeParse({ ...Object.fromEntries(formData), rubroSlugs: formData.getAll("rubroSlugs") });
   if (!parsed.success) return fail(firstIssue(parsed.error));
   const d = parsed.data;
-  if (d.rubroSlug && !(await prisma.category.findUnique({ where: { slug: d.rubroSlug }, select: { id: true } }))) {
-    return fail("La solución elegida no existe.");
+  if (d.rubroSlugs.length > 0) {
+    const found = await prisma.category.count({ where: { slug: { in: d.rubroSlugs } } });
+    if (found !== d.rubroSlugs.length) return fail("Alguna de las soluciones elegidas ya no existe.");
   }
   const data = {
     name: d.name,
     catalogUrl: d.catalogUrl,
     logo: d.logo || null,
-    rubroSlug: d.rubroSlug || null,
+    rubroSlugs: d.rubroSlugs,
+    rubroSlug: d.rubroSlugs[0] ?? null,
     active: d.active === "on",
   };
 

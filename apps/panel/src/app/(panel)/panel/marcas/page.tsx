@@ -14,9 +14,9 @@ export default async function MarcasPage() {
     categories = await prisma.category.findMany({ orderBy: { order: "asc" }, select: { slug: true, name: true } });
     const rows = await prisma.brand.findMany({
       orderBy: { order: "asc" },
-      select: { id: true, name: true, logo: true, catalogUrl: true, rubroSlug: true, active: true },
+      select: { id: true, name: true, logo: true, catalogUrl: true, rubroSlugs: true, active: true },
     });
-    brands = rows.map((row) => ({ ...row, logo: row.logo ?? "", rubroSlug: row.rubroSlug ?? "" }));
+    brands = rows.map((row) => ({ ...row, logo: row.logo ?? "" }));
   } catch (error) {
     console.error("No se pudieron leer las marcas", error);
     loadError = true;

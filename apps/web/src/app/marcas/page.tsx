@@ -20,9 +20,9 @@ export const metadata: Metadata = {
 export default async function MarcasPage() {
   const [brands, categories, slides, banner] = await Promise.all([getBrands(), getCategories(), getHeroSlides("marcas"), getBanner("marcas")]);
   const groups = categories
-    .map((rubro) => ({ slug: rubro.slug, name: rubro.name, brands: brands.filter((brand) => brand.rubroSlug === rubro.slug) }))
+    .map((rubro) => ({ slug: rubro.slug, name: rubro.name, brands: brands.filter((brand) => (brand.rubroSlugs ?? []).includes(rubro.slug)) }))
     .filter((group) => group.brands.length > 0);
-  const ungrouped = brands.filter((brand) => !brand.rubroSlug || !categories.some((rubro) => rubro.slug === brand.rubroSlug));
+  const ungrouped = brands.filter((brand) => !(brand.rubroSlugs ?? []).some((slug) => categories.some((rubro) => rubro.slug === slug)));
   if (ungrouped.length > 0) groups.push({ slug: "otras", name: "Otras marcas", brands: ungrouped });
 
   return (

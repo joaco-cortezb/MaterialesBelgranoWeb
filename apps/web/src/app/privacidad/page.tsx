@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 /** Fecha de la última revisión del texto. Actualizarla si cambia algo de abajo. */
-const UPDATED = "26 de octubre de 2026";
+const UPDATED = "24 de noviembre de 2026";
 
 /**
  * Política de privacidad y cookies. Describe lo que el sitio hace hoy: no hay
@@ -59,13 +59,10 @@ export default function PrivacidadPage() {
 
             <section>
               <h2>Cookies</h2>
-              <p>Este sitio no usa cookies propias. Dos contenidos de terceros pueden usarlas o guardar información en tu navegador:</p>
+              <p>Este sitio no usa cookies propias. Un contenido de terceros puede usarlas o guardar información en tu navegador:</p>
               <ul>
                 <li>
                   <strong>Mapa de Google Maps</strong> en la sección de contacto, sujeto a la política de privacidad de Google.
-                </li>
-                <li>
-                  <strong>Video de YouTube</strong>, embebido en modo de privacidad mejorada (youtube-nocookie.com).
                 </li>
               </ul>
               <p>Podés bloquear o borrar estas cookies desde la configuración de tu navegador; el resto del sitio sigue funcionando igual.</p>

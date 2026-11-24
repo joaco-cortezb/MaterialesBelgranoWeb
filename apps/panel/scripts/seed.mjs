@@ -31,6 +31,7 @@ const newBrands = BRANDS_SEED.filter((brand) => !existingSlugs.has(brand.slug)).
   slug: brand.slug,
   catalogUrl: brand.catalogUrl,
   rubroSlug: brand.rubroSlug,
+  rubroSlugs: brand.rubroSlug ? [brand.rubroSlug] : [],
   order: brand.order,
   active: true,
   updatedAt: now,

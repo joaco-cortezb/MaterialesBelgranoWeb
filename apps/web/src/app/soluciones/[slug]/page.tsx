@@ -58,13 +58,14 @@ export default async function RubroPage(props: PageProps<"/soluciones/[slug]">) 
       <JsonLd schema={breadcrumbSchema([{ name: rubro.name, path: ROUTES.rubro(rubro.slug) }])} />
       <JsonLd schema={rubroSchema(rubro)} />
 
-      <PageHero eyebrow="Solución" title={rubro.seoTitle} text={rubro.summary} image={cover} />
+      {/* Con banner propio: el banner en computadora y la foto vertical de la card en celular. */}
+      <PageHero eyebrow="Solución" title={rubro.seoTitle} text={rubro.summary} image={cover} imageMobile={rubro.banner ? rubro.image : undefined} />
 
       <div className="bg-surface">
         {rubro.description.length > 0 && (
           <section aria-label={`Sobre ${name}`} className="pt-12 sm:pt-20">
             <Container>
-              <div className="max-w-3xl space-y-5 text-pretty text-base leading-relaxed text-ink sm:text-lg">
+              <div className="mx-auto max-w-3xl space-y-5 text-center text-pretty text-base leading-relaxed text-ink sm:text-lg">
                 {rubro.description.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}
@@ -79,12 +80,13 @@ export default async function RubroPage(props: PageProps<"/soluciones/[slug]">) 
               <>
                 <SectionHeading
                   id="marcas-rubro"
+                  align="center"
                   eyebrow="Marcas"
                   title={`Marcas de ${name} que trabajamos`}
                   text="Entrá al catálogo del fabricante y consultanos por WhatsApp el modelo que necesitás."
                 />
                 <div className="mt-8 sm:mt-10">
-                  <BrandsGrid brands={brands} source={`rubro_${rubro.slug}`} />
+                  <BrandsGrid brands={brands} source={`rubro_${rubro.slug}`} center />
                 </div>
               </>
             )}
@@ -102,8 +104,8 @@ export default async function RubroPage(props: PageProps<"/soluciones/[slug]">) 
         {others.length > 0 && (
           <nav aria-label="Otras soluciones" className="border-t border-line py-10">
             <Container>
-              <p className="font-sub text-xs font-semibold uppercase tracking-[0.14em] text-ink-soft">Otras soluciones</p>
-              <ul className="mt-4 flex flex-wrap gap-2">
+              <p className="text-center font-sub text-xs font-semibold uppercase tracking-[0.14em] text-ink-soft">Otras soluciones</p>
+              <ul className="mt-4 flex flex-wrap justify-center gap-2">
                 {others.map((item) => (
                   <li key={item.slug}>
                     <Link

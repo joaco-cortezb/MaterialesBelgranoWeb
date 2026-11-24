@@ -50,7 +50,7 @@ export default async function PanelHome() {
 
       <section className="mt-10">
         <h2 className="mb-4 text-lg font-bold text-ink">Qué podés administrar</h2>
-        {/* Accesos en grilla con líneas finas: la barra de la izquierda crece y se pone verde al pasar el mouse. */}
+        {/* Accesos en grilla con líneas finas: al pasar el mouse se tiñe la celda y el ícono se pone verde. */}
         <Card className="overflow-hidden">
           <div className="-mb-px -mr-px grid sm:grid-cols-2 lg:grid-cols-3">
           {shortcuts.map((item) => {
@@ -61,7 +61,6 @@ export default async function PanelHome() {
                 href={item.href}
                 className="group relative flex items-center gap-4 border-b border-r border-line px-6 py-6 transition-colors duration-200 hover:bg-brand-50 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500/70 active:bg-brand-100"
               >
-                <span aria-hidden="true" className="absolute inset-y-0 left-0 my-auto h-6 w-1 rounded-r-full bg-line transition-[height,background-color] duration-200 group-hover:h-10 group-hover:bg-brand" />
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-bg text-ink transition-colors duration-200 group-hover:bg-brand group-hover:text-brand-ink">
                   <Icon className="h-5 w-5" />
                 </span>

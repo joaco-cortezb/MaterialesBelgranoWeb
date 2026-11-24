@@ -63,7 +63,12 @@ export async function saveCategory(id: string, formData: FormData): Promise<Acti
       await prisma.$transaction([
         prisma.category.update({ where: { id }, data }),
         // Las marcas quedan asociadas aunque cambie la URL.
-        ...(slugChanged ? [prisma.brand.updateMany({ where: { rubroSlug: current.slug }, data: { rubroSlug: d.slug } })] : []),
+        ...(slugChanged
+          ? [
+              prisma.$executeRaw`UPDATE "Brand" SET "rubroSlugs" = array_replace("rubroSlugs", ${current.slug}, ${d.slug}) WHERE ${current.slug} = ANY("rubroSlugs")`,
+              prisma.brand.updateMany({ where: { rubroSlug: current.slug }, data: { rubroSlug: d.slug } }),
+            ]
+          : []),
       ]);
     } else {
       const last = await prisma.category.findFirst({ orderBy: { order: "desc" }, select: { order: true } });
@@ -84,7 +89,7 @@ export async function deleteCategory(id: string): Promise<ActionResult> {
   const failed = await attempt(
     () =>
       prisma.$transaction([
-        prisma.brand.updateMany({ where: { rubroSlug: current.slug }, data: { rubroSlug: null } }),
+        prisma.$executeRaw`UPDATE "Brand" SET "rubroSlugs" = array_remove("rubroSlugs", ${current.slug}), "rubroSlug" = (array_remove("rubroSlugs", ${current.slug}))[1] WHERE ${current.slug} = ANY("rubroSlugs") OR "rubroSlug" = ${current.slug}`,
         prisma.category.delete({ where: { id } }),
       ]),
     "No se pudo eliminar la solución.",
